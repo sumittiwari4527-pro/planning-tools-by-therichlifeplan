@@ -177,6 +177,32 @@ const fmt = (n: number) =>
     ? `$${(n / 1_000).toFixed(1)}K`
     : `$${n.toFixed(0)}`;
 
+  const Field = ({ label, value, onChange, prefix = "$", tooltip }: { label: string; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; prefix?: string; tooltip?: string }) => (
+    <div>
+      <div className="flex items-center gap-1.5 mb-1.5">
+        <label className="text-[#6b7a99] text-xs font-medium">{label}</label>
+        {tooltip && (
+          <div className="group relative">
+            <Info size={11} className="text-[#c4cad9] cursor-help" />
+            <div className="absolute left-0 bottom-5 w-48 bg-[#0f1523] text-white text-xs rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 leading-relaxed">
+              {tooltip}
+            </div>
+          </div>
+        )}
+      </div>
+      <div className="relative">
+        {prefix && <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#c4cad9] font-mono text-sm">{prefix}</span>}
+        <input
+          type="text"
+          inputMode="decimal"
+          value={value}
+          onChange={onChange}
+          className={`${inputCls} ${prefix ? "pl-7" : ""}`}
+        />
+      </div>
+    </div>
+  );
+
 function FIRECalculator() {
   const [income, setIncome] = useState("120000");
   const [expenses, setExpenses] = useState("48000");
@@ -186,7 +212,7 @@ function FIRECalculator() {
   const [withdrawalRate, setWithdrawalRate] = useState("4");
 
   // Use refs to track focused inputs and prevent blur on mobile
-  const focusedInputRef = useRef<string | null>(null);
+  // const focusedInputRef = useRef<string | null>(null);
 
   const inc = parseFloat(income) || 0;
   const exp = parseFloat(expenses) || 0;
@@ -252,32 +278,32 @@ function FIRECalculator() {
     setWithdrawalRate(e.target.value);
   }, []);
 
-  const Field = ({ label, value, onChange, prefix = "$", tooltip }: { label: string; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; prefix?: string; tooltip?: string }) => (
-    <div>
-      <div className="flex items-center gap-1.5 mb-1.5">
-        <label className="text-[#6b7a99] text-xs font-medium">{label}</label>
-        {tooltip && (
-          <div className="group relative">
-            <Info size={11} className="text-[#c4cad9] cursor-help" />
-            <div className="absolute left-0 bottom-5 w-48 bg-[#0f1523] text-white text-xs rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 leading-relaxed">
-              {tooltip}
-            </div>
-          </div>
-        )}
-      </div>
-      <div className="relative">
-        {prefix && <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#c4cad9] font-mono text-sm">{prefix}</span>}
-        <input
-          type="number"
-          value={value}
-          onChange={onChange}
-          onFocus={() => { focusedInputRef.current = label; }}
-          onBlur={() => { focusedInputRef.current = null; }}
-          className={`${inputCls} ${prefix ? "pl-7" : ""}`}
-        />
-      </div>
-    </div>
-  );
+  // const Field = ({ label, value, onChange, prefix = "$", tooltip }: { label: string; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; prefix?: string; tooltip?: string }) => (
+  //   <div>
+  //     <div className="flex items-center gap-1.5 mb-1.5">
+  //       <label className="text-[#6b7a99] text-xs font-medium">{label}</label>
+  //       {tooltip && (
+  //         <div className="group relative">
+  //           <Info size={11} className="text-[#c4cad9] cursor-help" />
+  //           <div className="absolute left-0 bottom-5 w-48 bg-[#0f1523] text-white text-xs rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 leading-relaxed">
+  //             {tooltip}
+  //           </div>
+  //         </div>
+  //       )}
+  //     </div>
+  //     <div className="relative">
+  //       {prefix && <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#c4cad9] font-mono text-sm">{prefix}</span>}
+  //       <input
+  //         type="number"
+  //         value={value}
+  //         onChange={onChange}
+  //         onFocus={() => { focusedInputRef.current = label; }}
+  //         onBlur={() => { focusedInputRef.current = null; }}
+  //         className={`${inputCls} ${prefix ? "pl-7" : ""}`}
+  //       />
+  //     </div>
+  //   </div>
+  // );
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload?.length) return null;
