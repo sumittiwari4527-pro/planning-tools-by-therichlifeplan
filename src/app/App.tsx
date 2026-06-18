@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Menu, X, Flame, Percent, TrendingUp, Hash,
@@ -177,6 +178,8 @@ const fmt = (n: number) =>
     ? `$${(n / 1_000).toFixed(1)}K`
     : `$${n.toFixed(0)}`;
 
+const inputCls = "w-full bg-[#f8f9fb] border border-[#e4e8f0] rounded-xl px-4 py-2.5 text-[#0f1523] font-mono text-sm focus:outline-none focus:border-[#4f46e5] focus:ring-2 focus:ring-[#4f46e5]";
+
   const Field = ({ label, value, onChange, prefix = "$", tooltip }: { label: string; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; prefix?: string; tooltip?: string }) => (
     <div>
       <div className="flex items-center gap-1.5 mb-1.5">
@@ -251,7 +254,7 @@ function FIRECalculator() {
     };
   });
 
-  const inputCls = "w-full bg-[#f8f9fb] border border-[#e4e8f0] rounded-xl px-4 py-2.5 text-[#0f1523] font-mono text-sm focus:outline-none focus:border-[#4f46e5] focus:ring-2 focus:ring-[#4f46e5]";
+  // const inputCls = "w-full bg-[#f8f9fb] border border-[#e4e8f0] rounded-xl px-4 py-2.5 text-[#0f1523] font-mono text-sm focus:outline-none focus:border-[#4f46e5] focus:ring-2 focus:ring-[#4f46e5]";
 
   // Memoized handlers to prevent re-renders that cause blur
   const handleIncomeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
