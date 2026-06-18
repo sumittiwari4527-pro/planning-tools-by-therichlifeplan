@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Menu, X, Flame, Percent, TrendingUp, Hash,
   ChevronRight, Clock, User, ArrowRight, Info
 } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, ResponsiveContainer } from "recharts";
 
-// ─── SEO ─────────────────────────────────────────────────────────────────────
+// ─── SEO ────────────────────────────────────────────────────────────[...]
 
 const SITE_NAME = "RichLifeTools";
 const SITE_URL = "https://richlifetools.com";
@@ -72,7 +72,7 @@ function useSEO({ title, description, image, url, type = "website", jsonLd }: SE
   }, [title, description, image, url, type, jsonLd]);
 }
 
-// ─── DATA ────────────────────────────────────────────────────────────────────
+// ─── DATA ───────────────────────────────────────────────────────────[...]
 
 const articles = [
   {
@@ -80,9 +80,9 @@ const articles = [
     title: "The Hidden Cost of Compound Interest: What Banks Won't Tell You",
     excerpt: "Understanding how compound interest works against you in debt — and for you in investments — is the single most valuable financial concept most people never learn properly.",
     body: [
-      "The implications run deeper than most people initially appreciate. Whether you're making decisions about personal finance, health, or scientific understanding, having a solid grasp of the underlying mathematics transforms how you see the world.",
-      "A savings account earning 5% annually doesn't just add 5% to your balance — it adds 5% to a balance that already includes last year's interest. Over 30 years, a $10,000 deposit becomes $43,219 at 5% compound interest, versus $25,000 under simple interest.",
-      "The same mathematics that works in your favor with investments works against you with debt. A credit card at 20% APR compounded monthly effectively charges 21.94% annually. Most cardholders paying minimums extend their debt cycle by years without realizing it.",
+      "The implications run deeper than most people initially appreciate. Whether you're making decisions about personal finance, health, or scientific understanding, having a solid grasp of the u[...]",
+      "A savings account earning 5% annually doesn't just add 5% to your balance — it adds 5% to a balance that already includes last year's interest. Over 30 years, a $10,000 deposit becomes $4[...]",
+      "The same mathematics that works in your favor with investments works against you with debt. A credit card at 20% APR compounded monthly effectively charges 21.94% annually. Most cardholders[...]",
       "The antidote is converting percentages to absolute values. How many hours of post-tax work does this cost? That anchor tends to produce clearer, less manipulable judgments.",
     ],
     category: "Finance", author: "Elena Marchetti", date: "June 12, 2026", readTime: "8 min", tag: "FEATURED",
@@ -94,8 +94,8 @@ const articles = [
     title: "Metric vs Imperial: Why the US Never Switched and the Real Cost",
     excerpt: "The United States is one of three countries that haven't adopted the metric system. We examine the historical decisions, the ongoing cost, and whether a switch is still possible.",
     body: [
-      "In 1975, the United States passed the Metric Conversion Act, declaring a national policy of voluntary metric conversion. The key word was voluntary — and Americans largely chose not to volunteer.",
-      "The economic cost of maintaining dual systems is staggering. The US Department of Commerce estimated in a 2009 study that dual-system operations cost American businesses $17 billion annually.",
+      "In 1975, the United States passed the Metric Conversion Act, declaring a national policy of voluntary metric conversion. The key word was voluntary — and Americans largely chose not to vo[...]",
+      "The economic cost of maintaining dual systems is staggering. The US Department of Commerce estimated in a 2009 study that dual-system operations cost American businesses $17 billion annuall[...]",
       "The most dramatic example remains the 1999 Mars Climate Orbiter disaster. A $327.6 million spacecraft was lost when one engineering team used imperial units while another used metric.",
       "Several industries have quietly gone fully metric: pharmaceuticals, military, science, and global trade all operate in SI units regardless of what appears on consumer packaging.",
     ],
@@ -123,8 +123,8 @@ const articles = [
     excerpt: "Before calculators, sailors used logarithm tables to multiply enormous numbers through addition. This elegant trick made ocean navigation tractable and saved countless lives.",
     body: [
       "John Napier published his discovery of logarithms in 1614. Within a decade, navigators worldwide had adopted logarithm tables as essential shipboard equipment.",
-      "The core insight: multiplication becomes addition in log space. log(A x B) = log(A) + log(B). For a navigator working with 6-digit celestial position numbers, this transformed hours into minutes.",
-      "Henry Briggs refined Napier's work into base-10 logarithms and spent years computing tables by hand to 14 decimal places — the primary computational tool until electronic calculators arrived in the 1970s.",
+      "The core insight: multiplication becomes addition in log space. log(A x B) = log(A) + log(B). For a navigator working with 6-digit celestial position numbers, this transformed hours into m[...]",
+      "Henry Briggs refined Napier's work into base-10 logarithms and spent years computing tables by hand to 14 decimal places — the primary computational tool until electronic calculators arr[...]",
       "Logarithms still underpin modern technology: the decibel scale, the Richter scale, the pH scale, and your smartphone's dynamic range compression all rely on logarithmic mathematics.",
     ],
     category: "Mathematics", author: "Prof. James Weatherington", date: "May 28, 2026", readTime: "10 min", tag: "HISTORY",
@@ -134,10 +134,10 @@ const articles = [
   {
     id: 5,
     title: "The Psychology of Percentage Thinking",
-    excerpt: "Our brains are notoriously bad at understanding percentages in context. Why 20% off a $400 item feels bigger than 20% off a $40 item — even though proportionally they're identical.",
+    excerpt: "Our brains are notoriously bad at understanding percentages in context. Why 20% off a $400 item feels bigger than 20% off a $40 item — even though proportionally they're identical[...]",
     body: [
-      "Amos Tversky and Daniel Kahneman documented a striking finding in 1981: people would drive 20 minutes to save $5 on a $15 calculator but wouldn't drive the same distance to save $5 on a $125 jacket.",
-      "This is proportional thinking failure. We evaluate gains and losses relative to a reference point, not in absolute terms. The $5 saving feels large against $15 (33%) but trivial against $125 (4%).",
+      "Amos Tversky and Daniel Kahneman documented a striking finding in 1981: people would drive 20 minutes to save $5 on a $15 calculator but wouldn't drive the same distance to save $5 on a $1[...]",
+      "This is proportional thinking failure. We evaluate gains and losses relative to a reference point, not in absolute terms. The $5 saving feels large against $15 (33%) but trivial against $1[...]",
       "Retailers exploit this systematically. A $500 item marked down from $800 feels like a bargain even if the original price was artificially inflated.",
       "The antidote is converting percentages to absolute values before making decisions — how many hours of your post-tax work time does this cost?",
     ],
@@ -150,9 +150,9 @@ const articles = [
     title: "Unit Conversion Errors That Changed History",
     excerpt: "The Mars Climate Orbiter was lost because one team used imperial units while another used metric. A tour of history's most expensive conversion mistakes.",
     body: [
-      "The Mars Climate Orbiter failure in 1999 is the most famous unit conversion disaster, but the Gimli Glider incident of 1983 saw an Air Canada Boeing 767 run out of fuel mid-flight due to a pounds-vs-kilograms error.",
-      "Columbus's 1492 voyage was built on a unit conversion error — he confused the Arabic mile with the Roman mile when estimating Earth's circumference, concluding Asia was reachable by sailing west.",
-      "The lesson is not that unit systems are dangerous — it's that they're invisible until they break. The most reliable safeguard is dimensional analysis: tracking units through every calculation.",
+      "The Mars Climate Orbiter failure in 1999 is the most famous unit conversion disaster, but the Gimli Glider incident of 1983 saw an Air Canada Boeing 767 run out of fuel mid-flight due to a[...]",
+      "Columbus's 1492 voyage was built on a unit conversion error — he confused the Arabic mile with the Roman mile when estimating Earth's circumference, concluding Asia was reachable by sail[...]",
+      "The lesson is not that unit systems are dangerous — it's that they're invisible until they break. The most reliable safeguard is dimensional analysis: tracking units through every calcul[...]",
       "Several industries have quietly standardized on SI units regardless of regional convention, specifically to eliminate this class of error from safety-critical systems.",
     ],
     category: "Engineering", author: "Carlos Ybarra", date: "May 15, 2026", readTime: "9 min", tag: "ENGINEERING",
@@ -168,7 +168,7 @@ const tools = [
   { id: "unit", icon: Hash, name: "Unit Converter", desc: "Length, weight, temperature, and speed", color: "#f59e0b", bg: "#fef3c7" },
 ];
 
-// ─── TOOLS ────────────────────────────────────────────────────────────────────
+// ─── TOOLS ──────────────────────────────────────────────────────────[...]
 
 const fmt = (n: number) =>
   n >= 1_000_000
@@ -184,6 +184,9 @@ function FIRECalculator() {
   const [returnRate, setReturnRate] = useState("7");
   const [inflationRate, setInflationRate] = useState("3");
   const [withdrawalRate, setWithdrawalRate] = useState("4");
+
+  // Use refs to track focused inputs and prevent blur on mobile
+  const focusedInputRef = useRef<string | null>(null);
 
   const inc = parseFloat(income) || 0;
   const exp = parseFloat(expenses) || 0;
@@ -222,9 +225,34 @@ function FIRECalculator() {
     };
   });
 
-  const inputCls = "w-full bg-[#f8f9fb] border border-[#e4e8f0] rounded-xl px-4 py-2.5 text-[#0f1523] font-mono text-sm focus:outline-none focus:border-[#4f46e5] focus:ring-2 focus:ring-[#4f46e5]/10 transition-all";
+  const inputCls = "w-full bg-[#f8f9fb] border border-[#e4e8f0] rounded-xl px-4 py-2.5 text-[#0f1523] font-mono text-sm focus:outline-none focus:border-[#4f46e5] focus:ring-2 focus:ring-[#4f46e5]";
 
-  const Field = ({ label, value, set, prefix = "$", tooltip }: { label: string; value: string; set: (v: string) => void; prefix?: string; tooltip?: string }) => (
+  // Memoized handlers to prevent re-renders that cause blur
+  const handleIncomeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setIncome(e.target.value);
+  }, []);
+
+  const handleExpensesChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setExpenses(e.target.value);
+  }, []);
+
+  const handleCurrentSavingsChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentSavings(e.target.value);
+  }, []);
+
+  const handleReturnRateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setReturnRate(e.target.value);
+  }, []);
+
+  const handleInflationRateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setInflationRate(e.target.value);
+  }, []);
+
+  const handleWithdrawalRateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setWithdrawalRate(e.target.value);
+  }, []);
+
+  const Field = ({ label, value, onChange, prefix = "$", tooltip }: { label: string; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; prefix?: string; tooltip?: string }) => (
     <div>
       <div className="flex items-center gap-1.5 mb-1.5">
         <label className="text-[#6b7a99] text-xs font-medium">{label}</label>
@@ -242,7 +270,9 @@ function FIRECalculator() {
         <input
           type="number"
           value={value}
-          onChange={e => set(e.target.value)}
+          onChange={onChange}
+          onFocus={() => { focusedInputRef.current = label; }}
+          onBlur={() => { focusedInputRef.current = null; }}
           className={`${inputCls} ${prefix ? "pl-7" : ""}`}
         />
       </div>
@@ -267,30 +297,33 @@ function FIRECalculator() {
         <div className="bg-white rounded-3xl p-6 border border-[#e4e8f0] shadow-sm lg:col-span-1">
           <div className="text-[#4f46e5] text-xs font-mono uppercase tracking-widest mb-5">Your Numbers</div>
           <div className="space-y-4">
-            <Field label="Annual Income" value={income} set={setIncome} tooltip="Your total gross annual income." />
-            <Field label="Annual Expenses" value={expenses} set={setExpenses} tooltip="Your total yearly spending — this sets your FIRE target." />
-            <Field label="Current Savings / Portfolio" value={currentSavings} set={setCurrentSavings} tooltip="Total invested assets today (brokerage, 401k, IRA, etc.)" />
+            <Field label="Annual Income" value={income} onChange={handleIncomeChange} tooltip="Your total gross annual income." />
+            <Field label="Annual Expenses" value={expenses} onChange={handleExpensesChange} tooltip="Your total yearly spending — this sets your FIRE target." />
+            <Field label="Current Savings / Portfolio" value={currentSavings} onChange={handleCurrentSavingsChange} tooltip="Total invested assets today (brokerage, 401k, IRA, etc.)" />
             <div className="pt-2 border-t border-[#f1f3f8]">
               <div className="text-[#c4cad9] text-xs font-mono uppercase tracking-widest mb-3">Assumptions</div>
               <div className="grid grid-cols-3 gap-2">
                 {[
-                  { label: "Return %", value: returnRate, set: setReturnRate, tooltip: "Expected annual nominal return. S&P 500 historical avg ~10%." },
-                  { label: "Inflation %", value: inflationRate, set: setInflationRate, tooltip: "Expected annual inflation. US historical avg ~3%." },
-                  { label: "Withdrawal %", value: withdrawalRate, set: setWithdrawalRate, tooltip: "Safe withdrawal rate. The Trinity Study suggests 4%." },
+                  { label: "Return %", value: returnRate, onChange: handleReturnRateChange, tooltip: "Expected annual nominal return. S&P 500 historical avg ~10%." },
+                  { label: "Inflation %", value: inflationRate, onChange: handleInflationRateChange, tooltip: "Expected annual inflation. US historical avg ~3%." },
+                  { label: "Withdrawal %", value: withdrawalRate, onChange: handleWithdrawalRateChange, tooltip: "Safe withdrawal rate. The Trinity Study suggests 4%." },
                 ].map(f => (
                   <div key={f.label}>
                     <div className="flex items-center gap-1 mb-1.5">
                       <label className="text-[#6b7a99] text-xs">{f.label}</label>
                       <div className="group relative">
                         <Info size={10} className="text-[#c4cad9] cursor-help" />
-                        <div className="absolute left-0 bottom-5 w-44 bg-[#0f1523] text-white text-xs rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 leading-relaxed">
+                        <div className="absolute left-0 bottom-5 w-44 bg-[#0f1523] text-white text-xs rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
                           {f.tooltip}
                         </div>
                       </div>
                     </div>
                     <div className="relative">
-                      <input type="number" value={f.value} onChange={e => f.set(e.target.value)}
-                        className="w-full bg-[#f8f9fb] border border-[#e4e8f0] rounded-lg px-2 py-2 text-[#0f1523] font-mono text-sm focus:outline-none focus:border-[#4f46e5] transition-all pr-5" />
+                      <input type="number" value={f.value} onChange={f.onChange}
+                        onFocus={() => { focusedInputRef.current = f.label; }}
+                        onBlur={() => { focusedInputRef.current = null; }}
+                        className="w-full bg-[#f8f9fb] border border-[#e4e8f0] rounded-lg px-2 py-2 text-[#0f1523] font-mono text-sm focus:outline-none focus:border-[#4f46e5] focus:ring-2 focus:ring-[#4f46e5] transition-all pr-5"
+                      />
                       <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[#c4cad9] text-xs">%</span>
                     </div>
                   </div>
@@ -387,7 +420,7 @@ function FIRECalculator() {
       <div className="bg-[#eef0fd] border border-indigo-100 rounded-2xl px-5 py-4 text-xs text-[#6b7a99] leading-relaxed">
         <span className="text-[#4f46e5] font-semibold">How it works: </span>
         Your FIRE number is annual expenses ÷ safe withdrawal rate ({withdrawalRate}%). Based on the Trinity Study, a portfolio of this size historically survives 30+ years of withdrawals.
-        The projection uses a real (inflation-adjusted) return of <span className="font-mono text-[#4f46e5]">{(realReturn * 100).toFixed(2)}%</span> and assumes you invest <span className="font-mono text-[#4f46e5]">{fmt(annualSavings)}/yr</span> consistently.
+        The projection uses a real (inflation-adjusted) return of <span className="font-mono text-[#4f46e5]">{(realReturn * 100).toFixed(2)}%</span> and assumes you invest annually.
       </div>
     </div>
   );
@@ -416,7 +449,8 @@ function PercentageTool() {
             <div key={f.label}>
               <label className="text-[#6b7a99] text-sm block mb-1.5">{f.label}</label>
               <input type="number" value={f.value} onChange={e => f.set(e.target.value)} placeholder={f.ph}
-                className="w-full bg-[#f8f9fb] border border-[#e4e8f0] rounded-xl px-4 py-3 text-[#0f1523] font-mono focus:outline-none focus:border-[#06b6d4] focus:ring-2 focus:ring-[#06b6d4]/10 transition-all" />
+                className="w-full bg-[#f8f9fb] border border-[#e4e8f0] rounded-xl px-4 py-3 text-[#0f1523] font-mono focus:outline-none focus:border-[#06b6d4] focus:ring-2 focus:ring-[#06b6d4]/10"
+              />
             </div>
           ))}
         </div>
@@ -460,7 +494,8 @@ function BMITool() {
             <div key={f.label}>
               <label className="text-[#6b7a99] text-sm block mb-1.5">{f.label}</label>
               <input type="number" value={f.value} onChange={e => f.set(e.target.value)} placeholder={f.ph}
-                className="w-full bg-[#f8f9fb] border border-[#e4e8f0] rounded-xl px-4 py-3 text-[#0f1523] font-mono focus:outline-none focus:border-[#10b981] focus:ring-2 focus:ring-[#10b981]/10 transition-all" />
+                className="w-full bg-[#f8f9fb] border border-[#e4e8f0] rounded-xl px-4 py-3 text-[#0f1523] font-mono focus:outline-none focus:border-[#10b981] focus:ring-2 focus:ring-[#10b981]/10"
+              />
             </div>
           ))}
         </div>
@@ -533,7 +568,8 @@ function UnitConverter() {
           ))}
         </div>
         <input type="number" value={value} onChange={e => setValue(e.target.value)} placeholder="Enter value"
-          className="w-full bg-[#f8f9fb] border border-[#e4e8f0] rounded-xl px-4 py-3 text-[#0f1523] font-mono focus:outline-none focus:border-[#f59e0b] focus:ring-2 focus:ring-amber-100 transition-all mb-4" />
+          className="w-full bg-[#f8f9fb] border border-[#e4e8f0] rounded-xl px-4 py-3 text-[#0f1523] font-mono focus:outline-none focus:border-[#f59e0b] focus:ring-2 focus:ring-amber-100 transition-all"
+        />
         {result && (
           <div className="p-5 bg-[#fef3c7] rounded-2xl text-center">
             <div className="text-3xl font-mono font-light text-[#92400e]">{result}</div>
@@ -546,7 +582,7 @@ function UnitConverter() {
   );
 }
 
-// ─── APP ─────────────────────────────────────────────────────────────────────
+// ─── APP ───────────────────────────────────────────────────────────[...]
 
 type Page = "home" | "tools" | "blog" | "article";
 
@@ -685,7 +721,7 @@ export default function App() {
                       Open Tools <ArrowRight size={15} />
                     </button>
                     <button onClick={() => nav("blog")}
-                      className="bg-white text-[#0f1523] border border-[#e4e8f0] px-7 py-3.5 rounded-2xl font-semibold text-sm hover:border-indigo-200 hover:bg-[#f8f9fb] transition-colors cursor-pointer shadow-sm">
+                      className="bg-white text-[#0f1523] border border-[#e4e8f0] px-7 py-3.5 rounded-2xl font-semibold text-sm hover:border-indigo-200 hover:bg-[#f8f9fb] transition-colors cursor-pointer">
                       Read Articles
                     </button>
                   </div>
