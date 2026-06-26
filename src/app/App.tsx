@@ -171,12 +171,105 @@ const tools = [
 
 // ─── TOOLS ──────────────────────────────────────────────────────────[...]
 
-const fmt = (n: number) =>
-  n >= 1_000_000
-    ? `$${(n / 1_000_000).toFixed(2)}M`
-    : n >= 1_000
-    ? `$${(n / 1_000).toFixed(1)}K`
-    : `$${n.toFixed(0)}`;
+type CurrencyCode = "USD" | "EUR" | "GBP" | "CAD" | "AUD" | "JPY" | "INR";
+
+const CURRENCY_OPTIONS: Array<{ code: CurrencyCode; label: string; locale: string }> = [
+  { code: "USD", label: "US Dollar", locale: "en-US" },
+  { code: "EUR", label: "Euro", locale: "de-DE" },
+  { code: "GBP", label: "British Pound", locale: "en-GB" },
+  { code: "CAD", label: "Canadian Dollar", locale: "en-CA" },
+  { code: "AUD", label: "Australian Dollar", locale: "en-AU" },
+  { code: "JPY", label: "Japanese Yen", locale: "ja-JP" },
+  { code: "INR", label: "Indian Rupee", locale: "en-IN" },
+];
+
+const getCurrencyConfig = (currency: CurrencyCode) =>
+  CURRENCY_OPTIONS.find(c => c.code === currency) ?? CURRENCY_OPTIONS[0];
+
+const getCurrencySymbol = (currency: CurrencyCode): string => {
+  const { locale } = getCurrencyConfig(currency);
+  const parts = new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency,
+    currencyDisplay: "narrowSymbol",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).formatToParts(0);
+  return parts.find(p => p.type === "currency")?.value ?? "$";
+};
+
+const formatCurrencyCompact = (n: number, currency: CurrencyCode): string => {
+  const { locale } = getCurrencyConfig(currency);
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency,
+    currencyDisplay: "narrowSymbol",
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(n);
+};
+
+const formatCurrencyAxis = (n: number, currency: CurrencyCode): string => {
+  const { locale } = getCurrencyConfig(currency);
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency,
+    currencyDisplay: "narrowSymbol",
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(n);
+};
+
+// Static FX assumptions used for local, client-side currency switching.
+const USD_PER_CURRENCY: Record<CurrencyCode, number> = {
+  USD: 1,
+  EUR: 1.08,
+  GBP: 1.27,
+  CAD: 0.74,
+  AUD: 0.66,
+  JPY: 0.0068,
+  INR: 0.012,
+};
+
+const convertCurrencyAmount = (amount: number, from: CurrencyCode, to: CurrencyCode): number => {
+  if (!Number.isFinite(amount) || from === to) return amount;
+  const usdAmount = amount * USD_PER_CURRENCY[from];
+  return usdAmount / USD_PER_CURRENCY[to];
+};
+
+const toInputNumberString = (value: number): string => {
+  if (!Number.isFinite(value)) return "0";
+  return String(parseFloat(value.toFixed(2)));
+};
+
+const convertInputValue = (value: string, from: CurrencyCode, to: CurrencyCode): string => {
+  const n = parseFloat(value);
+  if (Number.isNaN(n)) return value;
+  return toInputNumberString(convertCurrencyAmount(n, from, to));
+};
+
+const CurrencySelector = ({
+  currency,
+  onChange,
+}: {
+  currency: CurrencyCode;
+  onChange: (currency: CurrencyCode) => void;
+}) => (
+  <div>
+    <label className="text-[#6b7a99] text-xs font-medium block mb-1.5">Currency</label>
+    <select
+      value={currency}
+      onChange={e => onChange(e.target.value as CurrencyCode)}
+      className="w-full bg-[#f8f9fb] border border-[#e4e8f0] rounded-xl px-3 py-2.5 text-[#0f1523] text-sm focus:outline-none focus:border-[#4f46e5] focus:ring-2 focus:ring-[#4f46e5] cursor-pointer"
+    >
+      {CURRENCY_OPTIONS.map(option => (
+        <option key={option.code} value={option.code}>
+          {option.code} - {option.label}
+        </option>
+      ))}
+    </select>
+  </div>
+);
 
 const inputCls = "w-full bg-[#f8f9fb] border border-[#e4e8f0] rounded-xl px-4 py-2.5 text-[#0f1523] font-mono text-sm focus:outline-none focus:border-[#4f46e5] focus:ring-2 focus:ring-[#4f46e5]";
 
@@ -206,13 +299,15 @@ const inputCls = "w-full bg-[#f8f9fb] border border-[#e4e8f0] rounded-xl px-4 py
     </div>
   );
 
-function FIRECalculator() {
+function FIRECalculator({ currency, setCurrency }: { currency: CurrencyCode; setCurrency: (currency: CurrencyCode) => void }) {
   const [income, setIncome] = useState("120000");
   const [expenses, setExpenses] = useState("48000");
   const [currentSavings, setCurrentSavings] = useState("50000");
   const [returnRate, setReturnRate] = useState("7");
   const [inflationRate, setInflationRate] = useState("3");
   const [withdrawalRate, setWithdrawalRate] = useState("4");
+  const currencySymbol = getCurrencySymbol(currency);
+  const previousCurrencyRef = useRef<CurrencyCode>(currency);
 
   // Use refs to track focused inputs and prevent blur on mobile
   const focusedInputRef = useRef<string | null>(null);
@@ -281,6 +376,17 @@ function FIRECalculator() {
     setWithdrawalRate(e.target.value);
   }, []);
 
+  useEffect(() => {
+    const prev = previousCurrencyRef.current;
+    if (prev === currency) return;
+
+    setIncome(v => convertInputValue(v, prev, currency));
+    setExpenses(v => convertInputValue(v, prev, currency));
+    setCurrentSavings(v => convertInputValue(v, prev, currency));
+
+    previousCurrencyRef.current = currency;
+  }, [currency]);
+
   // const Field = ({ label, value, onChange, prefix = "$", tooltip }: { label: string; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; prefix?: string; tooltip?: string }) => (
   //   <div>
   //     <div className="flex items-center gap-1.5 mb-1.5">
@@ -313,8 +419,8 @@ function FIRECalculator() {
     return (
       <div className="bg-white border border-[#e4e8f0] rounded-xl p-3 shadow-lg text-xs">
         <div className="text-[#6b7a99] mb-1 font-mono">{label}</div>
-        <div className="text-[#4f46e5] font-semibold font-mono">{fmt(payload[0]?.value ?? 0)}</div>
-        <div className="text-[#c4cad9] font-mono">Target: {fmt(fireNumber)}</div>
+        <div className="text-[#4f46e5] font-semibold font-mono">{formatCurrencyCompact(payload[0]?.value ?? 0, currency)}</div>
+        <div className="text-[#c4cad9] font-mono">Target: {formatCurrencyCompact(fireNumber, currency)}</div>
       </div>
     );
   };
@@ -326,9 +432,10 @@ function FIRECalculator() {
         <div className="bg-white rounded-3xl p-6 border border-[#e4e8f0] shadow-sm lg:col-span-1">
           <div className="text-[#4f46e5] text-xs font-mono uppercase tracking-widest mb-5">Your Numbers</div>
           <div className="space-y-4">
-            <Field label="Annual Income" value={income} onChange={handleIncomeChange} tooltip="Your total gross annual income." />
-            <Field label="Annual Expenses" value={expenses} onChange={handleExpensesChange} tooltip="Your total yearly spending — this sets your FIRE target." />
-            <Field label="Current Savings / Portfolio" value={currentSavings} onChange={handleCurrentSavingsChange} tooltip="Total invested assets today (brokerage, 401k, IRA, etc.)" />
+            <CurrencySelector currency={currency} onChange={setCurrency} />
+            <Field label="Annual Income" value={income} onChange={handleIncomeChange} prefix={currencySymbol} tooltip="Your total gross annual income." />
+            <Field label="Annual Expenses" value={expenses} onChange={handleExpensesChange} prefix={currencySymbol} tooltip="Your total yearly spending — this sets your FIRE target." />
+            <Field label="Current Savings / Portfolio" value={currentSavings} onChange={handleCurrentSavingsChange} prefix={currencySymbol} tooltip="Total invested assets today (brokerage, 401k, IRA, etc.)" />
             <div className="pt-2 border-t border-[#f1f3f8]">
               <div className="text-[#c4cad9] text-xs font-mono uppercase tracking-widest mb-3">Assumptions</div>
               <div className="grid grid-cols-3 gap-2">
@@ -367,8 +474,8 @@ function FIRECalculator() {
           {/* Key numbers */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { label: "FIRE Number", value: fmt(fireNumber), sub: `at ${withdrawalRate}% SWR`, accent: "#4f46e5", bg: "#eef0fd" },
-              { label: "Savings Rate", value: `${savingsRate.toFixed(1)}%`, sub: `${fmt(annualSavings)}/yr saved`, accent: "#10b981", bg: "#d1fae5" },
+              { label: "FIRE Number", value: formatCurrencyCompact(fireNumber, currency), sub: `at ${withdrawalRate}% SWR`, accent: "#4f46e5", bg: "#eef0fd" },
+              { label: "Savings Rate", value: `${savingsRate.toFixed(1)}%`, sub: `${formatCurrencyCompact(annualSavings, currency)}/yr saved`, accent: "#10b981", bg: "#d1fae5" },
               { label: "Years to FIRE", value: yearsToFire != null ? `${yearsToFire}` : "100+", sub: yearsToFire != null ? `Retire in ${retirementYear}` : "Increase savings", accent: "#f59e0b", bg: "#fef3c7" },
               { label: "Real Return", value: `${(realReturn * 100).toFixed(2)}%`, sub: "inflation-adjusted", accent: "#06b6d4", bg: "#ecfeff" },
             ].map(s => (
@@ -386,7 +493,7 @@ function FIRECalculator() {
               <div className="text-[#4f46e5] text-xs font-mono uppercase tracking-widest">Portfolio Growth</div>
               {yearsToFire != null && (
                 <div className="text-xs text-[#6b7a99] font-mono">
-                  FIRE target: <span className="text-[#4f46e5] font-semibold">{fmt(fireNumber)}</span>
+                  FIRE target: <span className="text-[#4f46e5] font-semibold">{formatCurrencyCompact(fireNumber, currency)}</span>
                 </div>
               )}
             </div>
@@ -402,7 +509,7 @@ function FIRECalculator() {
                 <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#c4cad9" }} tickLine={false} axisLine={false}
                   tickFormatter={v => `'${String(v).slice(2)}`} interval={Math.floor(chartData.length / 6)} />
                 <YAxis tick={{ fontSize: 11, fill: "#c4cad9" }} tickLine={false} axisLine={false}
-                  tickFormatter={v => v >= 1_000_000 ? `$${(v / 1_000_000).toFixed(1)}M` : v >= 1000 ? `$${(v / 1000).toFixed(0)}K` : `$${v}`} width={60} />
+                  tickFormatter={v => formatCurrencyAxis(v, currency)} width={60} />
                 <Tooltip content={<CustomTooltip />} />
                 <ReferenceLine y={fireNumber} stroke="#4f46e5" strokeDasharray="5 3" strokeOpacity={0.5}
                   label={{ value: "FIRE", position: "insideTopRight", fontSize: 10, fill: "#4f46e5" }} />
@@ -476,7 +583,7 @@ const GOAL_PRESETS = [
   { name: "Retirement",        emoji: "🌴", amount: "1000000", years: "25" },
 ];
 
-function GoalPlanningCalculator() {
+function GoalPlanningCalculator({ currency, setCurrency }: { currency: CurrencyCode; setCurrency: (currency: CurrencyCode) => void }) {
   const [monthlyIncome,   setMonthlyIncome]   = useState("8000");
   const [monthlyExpenses, setMonthlyExpenses] = useState("5000");
   const [returnRate,      setReturnRate]      = useState("7");
@@ -488,6 +595,30 @@ function GoalPlanningCalculator() {
   ]);
   const [showAddGoal, setShowAddGoal] = useState(false);
   const [newGoal, setNewGoal] = useState({ name: "", emoji: "🎯", targetAmount: "", targetYears: "", currentSaved: "0" });
+  const currencySymbol = getCurrencySymbol(currency);
+  const previousCurrencyRef = useRef<CurrencyCode>(currency);
+
+  useEffect(() => {
+    const prev = previousCurrencyRef.current;
+    if (prev === currency) return;
+
+    setMonthlyIncome(v => convertInputValue(v, prev, currency));
+    setMonthlyExpenses(v => convertInputValue(v, prev, currency));
+    setGoals(prevGoals =>
+      prevGoals.map(g => ({
+        ...g,
+        targetAmount: convertInputValue(g.targetAmount, prev, currency),
+        currentSaved: convertInputValue(g.currentSaved, prev, currency),
+      }))
+    );
+    setNewGoal(prevGoal => ({
+      ...prevGoal,
+      targetAmount: convertInputValue(prevGoal.targetAmount, prev, currency),
+      currentSaved: convertInputValue(prevGoal.currentSaved, prev, currency),
+    }));
+
+    previousCurrencyRef.current = currency;
+  }, [currency]);
 
   // ── Core numbers ─────────────────────────────────────────────────
   const inc  = parseFloat(monthlyIncome)   || 0;
@@ -606,7 +737,7 @@ function GoalPlanningCalculator() {
     return (
       <div className="bg-white border border-[#e4e8f0] rounded-xl p-3 shadow-lg text-xs">
         <div className="text-[#6b7a99] mb-1 font-mono">{label}</div>
-        <div className="text-[#8b5cf6] font-semibold font-mono">{fmt(payload[0]?.value ?? 0)}</div>
+        <div className="text-[#8b5cf6] font-semibold font-mono">{formatCurrencyCompact(payload[0]?.value ?? 0, currency)}</div>
       </div>
     );
   };
@@ -620,6 +751,7 @@ function GoalPlanningCalculator() {
         {/* LEFT: Finances */}
         <div className="bg-white rounded-3xl p-6 border border-[#e4e8f0] shadow-sm space-y-4 lg:col-span-1">
           <div className="text-[#8b5cf6] text-xs font-mono uppercase tracking-widest">Your Finances</div>
+          <CurrencySelector currency={currency} onChange={setCurrency} />
 
           {/* Available banner */}
           <div className={`rounded-2xl p-4 ${isFeasible ? "bg-[#d1fae5]" : "bg-[#fee2e2]"}`}>
@@ -627,15 +759,15 @@ function GoalPlanningCalculator() {
               Monthly Available to Save
             </div>
             <div className="text-2xl font-mono font-bold" style={{ color: isFeasible ? "#10b981" : "#ef4444" }}>
-              {fmt(availableMonthly)}
+              {formatCurrencyCompact(availableMonthly, currency)}
             </div>
             <div className="text-xs mt-0.5" style={{ color: isFeasible ? "#047857" : "#b91c1c" }}>
-              {isFeasible ? `${fmt(surplus)} surplus after goals` : `${fmt(shortfall)}/mo shortfall`}
+              {isFeasible ? `${formatCurrencyCompact(surplus, currency)} surplus after goals` : `${formatCurrencyCompact(shortfall, currency)}/mo shortfall`}
             </div>
           </div>
 
-          <Field label="Monthly Income"   value={monthlyIncome}   onChange={e => setMonthlyIncome(e.target.value)}   tooltip="Total take-home monthly income." />
-          <Field label="Monthly Expenses" value={monthlyExpenses} onChange={e => setMonthlyExpenses(e.target.value)} tooltip="All fixed + variable monthly spending (rent, food, transport, etc.)" />
+          <Field label="Monthly Income"   value={monthlyIncome}   onChange={e => setMonthlyIncome(e.target.value)} prefix={currencySymbol} tooltip="Total take-home monthly income." />
+          <Field label="Monthly Expenses" value={monthlyExpenses} onChange={e => setMonthlyExpenses(e.target.value)} prefix={currencySymbol} tooltip="All fixed + variable monthly spending (rent, food, transport, etc.)" />
 
           <div className="pt-2 border-t border-[#f1f3f8]">
             <div className="text-[#c4cad9] text-xs font-mono uppercase tracking-widest mb-3">Assumptions</div>
@@ -671,9 +803,9 @@ function GoalPlanningCalculator() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
               { label: "Goals Set",     value: `${goals.length}`,                                                    sub: "active goals",        accent: "#8b5cf6", bg: "#f3f0ff" },
-              { label: "Total Target",  value: fmt(goalData.reduce((s, g) => s + g.target, 0)),                      sub: "across all goals",    accent: "#8b5cf6", bg: "#f3f0ff" },
-              { label: "Needed/Month",  value: fmt(totalRequired),                                                   sub: "to hit all goals",    accent: isFeasible ? "#10b981" : "#ef4444", bg: isFeasible ? "#d1fae5" : "#fee2e2" },
-              { label: "Status",        value: isFeasible ? "On Track" : "Shortfall",                               sub: isFeasible ? `${fmt(surplus)} surplus` : `${fmt(shortfall)} short`, accent: isFeasible ? "#10b981" : "#ef4444", bg: isFeasible ? "#d1fae5" : "#fee2e2" },
+              { label: "Total Target",  value: formatCurrencyCompact(goalData.reduce((s, g) => s + g.target, 0), currency),                      sub: "across all goals",    accent: "#8b5cf6", bg: "#f3f0ff" },
+              { label: "Needed/Month",  value: formatCurrencyCompact(totalRequired, currency),                                                   sub: "to hit all goals",    accent: isFeasible ? "#10b981" : "#ef4444", bg: isFeasible ? "#d1fae5" : "#fee2e2" },
+              { label: "Status",        value: isFeasible ? "On Track" : "Shortfall",                               sub: isFeasible ? `${formatCurrencyCompact(surplus, currency)} surplus` : `${formatCurrencyCompact(shortfall, currency)} short`, accent: isFeasible ? "#10b981" : "#ef4444", bg: isFeasible ? "#d1fae5" : "#fee2e2" },
             ].map(s => (
               <div key={s.label} className="bg-white rounded-2xl p-4 border border-[#e4e8f0] shadow-sm">
                 <div className="text-xs text-[#6b7a99] mb-1">{s.label}</div>
@@ -719,7 +851,7 @@ function GoalPlanningCalculator() {
                       className="w-full bg-white border border-[#e4e8f0] rounded-xl px-3 py-2 text-center text-xl focus:outline-none focus:border-[#8b5cf6]" />
                   </div>
                   <div>
-                    <label className="text-[#6b7a99] text-xs block mb-1">Target Amount ($)</label>
+                    <label className="text-[#6b7a99] text-xs block mb-1">Target Amount ({currency})</label>
                     <input type="number" value={newGoal.targetAmount} onChange={e => setNewGoal({ ...newGoal, targetAmount: e.target.value })}
                       placeholder="100000"
                       className="w-full bg-white border border-[#e4e8f0] rounded-xl px-3 py-2 text-[#0f1523] font-mono text-sm focus:outline-none focus:border-[#8b5cf6]" />
@@ -731,7 +863,7 @@ function GoalPlanningCalculator() {
                       className="w-full bg-white border border-[#e4e8f0] rounded-xl px-3 py-2 text-[#0f1523] font-mono text-sm focus:outline-none focus:border-[#8b5cf6]" />
                   </div>
                   <div className="col-span-2">
-                    <label className="text-[#6b7a99] text-xs block mb-1">Already Saved ($)</label>
+                    <label className="text-[#6b7a99] text-xs block mb-1">Already Saved ({currency})</label>
                     <input type="number" value={newGoal.currentSaved} onChange={e => setNewGoal({ ...newGoal, currentSaved: e.target.value })}
                       placeholder="0"
                       className="w-full bg-white border border-[#e4e8f0] rounded-xl px-3 py-2 text-[#0f1523] font-mono text-sm focus:outline-none focus:border-[#8b5cf6]" />
@@ -769,9 +901,9 @@ function GoalPlanningCalculator() {
                         </div>
                         <div className="grid grid-cols-3 gap-2 mb-2">
                           {[
-                            { label: "Target $", field: "targetAmount" as keyof Goal, val: g.targetAmount, pre: "$" },
+                            { label: `Target (${currency})`, field: "targetAmount" as keyof Goal, val: g.targetAmount, pre: currencySymbol },
                             { label: "In (yrs)", field: "targetYears"   as keyof Goal, val: g.targetYears,  pre: ""  },
-                            { label: "Saved $",  field: "currentSaved"  as keyof Goal, val: g.currentSaved, pre: "$" },
+                            { label: `Saved (${currency})`,  field: "currentSaved"  as keyof Goal, val: g.currentSaved, pre: currencySymbol },
                           ].map(f => (
                             <div key={f.label}>
                               <div className="text-[#c4cad9] text-[10px] mb-0.5">{f.label}</div>
@@ -785,7 +917,7 @@ function GoalPlanningCalculator() {
                         </div>
                         <div className="flex items-center justify-between text-xs mb-1.5">
                           <span className="text-[#6b7a99]">
-                            Need <span className="font-mono text-[#8b5cf6] font-semibold">{fmt(g.required)}/mo</span>
+                            Need <span className="font-mono text-[#8b5cf6] font-semibold">{formatCurrencyCompact(g.required, currency)}/mo</span>
                             <span className="text-[#c4cad9] ml-2">→ {g.targetYear}</span>
                           </span>
                           <button onClick={() => removeGoal(g.id)}
@@ -828,7 +960,7 @@ function GoalPlanningCalculator() {
               <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#c4cad9" }} tickLine={false} axisLine={false}
                 tickFormatter={v => `'${String(v).slice(2)}`} interval={Math.floor(chartData.length / 6)} />
               <YAxis tick={{ fontSize: 11, fill: "#c4cad9" }} tickLine={false} axisLine={false}
-                tickFormatter={v => v >= 1_000_000 ? `$${(v / 1_000_000).toFixed(1)}M` : v >= 1000 ? `$${(v / 1000).toFixed(0)}K` : `$${v}`} width={60} />
+                tickFormatter={v => formatCurrencyAxis(v, currency)} width={60} />
               <Tooltip content={<GoalTooltip />} />
               <Area type="monotone" dataKey="portfolio" stroke="#8b5cf6" strokeWidth={2}
                 fill="url(#goalGrad)" dot={false}
@@ -855,14 +987,14 @@ function GoalPlanningCalculator() {
               <div className="p-4 bg-[#d1fae5] border border-emerald-100 rounded-2xl">
                 <div className="text-[#065f46] text-sm font-semibold mb-1">✓ All Goals Achievable!</div>
                 <p className="text-[#047857] text-xs leading-relaxed">
-                  Saving <span className="font-mono font-semibold">{fmt(totalRequired)}/mo</span> funds all {goals.length} goal{goals.length !== 1 ? "s" : ""}. You have <span className="font-mono font-semibold">{fmt(surplus)}/mo</span> to spare.
+                  Saving <span className="font-mono font-semibold">{formatCurrencyCompact(totalRequired, currency)}/mo</span> funds all {goals.length} goal{goals.length !== 1 ? "s" : ""}. You have <span className="font-mono font-semibold">{formatCurrencyCompact(surplus, currency)}/mo</span> to spare.
                 </p>
               </div>
               {surplus > 0 && (
                 <div className="border border-[#f1f3f8] rounded-2xl p-3">
                   <div className="text-[#0f1523] text-xs font-semibold mb-1">💡 Invest your surplus</div>
                   <p className="text-[#6b7a99] text-xs leading-relaxed">
-                    Put the <span className="font-mono text-[#8b5cf6] font-semibold">{fmt(surplus)}/mo</span> surplus into a 401k, IRA, or index fund to accelerate wealth building.
+                    Put the <span className="font-mono text-[#8b5cf6] font-semibold">{formatCurrencyCompact(surplus, currency)}/mo</span> surplus into a 401k, IRA, or index fund to accelerate wealth building.
                   </p>
                 </div>
               )}
@@ -870,9 +1002,9 @@ function GoalPlanningCalculator() {
           ) : (
             <div className="space-y-3">
               <div className="p-4 bg-[#fee2e2] border border-red-100 rounded-2xl">
-                <div className="text-[#991b1b] text-sm font-semibold mb-1">⚠ {fmt(shortfall)}/mo Shortfall</div>
+                <div className="text-[#991b1b] text-sm font-semibold mb-1">⚠ {formatCurrencyCompact(shortfall, currency)}/mo Shortfall</div>
                 <p className="text-[#b91c1c] text-xs leading-relaxed">
-                  You need <span className="font-mono font-semibold">{fmt(shortfall)}</span> more per month. Choose a path:
+                  You need <span className="font-mono font-semibold">{formatCurrencyCompact(shortfall, currency)}</span> more per month. Choose a path:
                 </p>
               </div>
               <div className="text-[#c4cad9] text-[10px] font-mono uppercase tracking-widest">Options to Get on Track</div>
@@ -895,7 +1027,7 @@ function GoalPlanningCalculator() {
                   <div className="text-[#0f1523] text-xs font-semibold">Reduce Monthly Expenses</div>
                 </div>
                 <p className="text-[#6b7a99] text-xs leading-relaxed pl-7">
-                  Cut spending by <span className="text-[#8b5cf6] font-semibold">{fmt(shortfall)}/mo</span> ({fmt(shortfall * 12)}/yr) to make all goals immediately feasible.
+                  Cut spending by <span className="text-[#8b5cf6] font-semibold">{formatCurrencyCompact(shortfall, currency)}/mo</span> ({formatCurrencyCompact(shortfall * 12, currency)}/yr) to make all goals immediately feasible.
                 </p>
               </div>
 
@@ -965,9 +1097,9 @@ function GoalPlanningCalculator() {
                       <span className="mr-1.5">{g.emoji}</span>
                       <span className="text-[#0f1523] font-medium">{g.name}</span>
                     </td>
-                    <td className="py-3 pr-4 font-mono text-[#0f1523]">{fmt(g.target)}</td>
-                    <td className="py-3 pr-4 font-mono text-[#6b7a99]">{fmt(g.saved)}</td>
-                    <td className="py-3 pr-4 font-mono text-[#8b5cf6] font-semibold">{fmt(g.required)}</td>
+                    <td className="py-3 pr-4 font-mono text-[#0f1523]">{formatCurrencyCompact(g.target, currency)}</td>
+                    <td className="py-3 pr-4 font-mono text-[#6b7a99]">{formatCurrencyCompact(g.saved, currency)}</td>
+                    <td className="py-3 pr-4 font-mono text-[#8b5cf6] font-semibold">{formatCurrencyCompact(g.required, currency)}</td>
                     <td className="py-3 pr-4 font-mono text-[#6b7a99]">{g.targetYear}</td>
                     <td className="py-3">
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${alloc.full ? "bg-[#d1fae5] text-[#065f46]" : "bg-[#fee2e2] text-[#991b1b]"}`}>
@@ -980,13 +1112,13 @@ function GoalPlanningCalculator() {
               {/* Totals row */}
               <tr className="border-t-2 border-[#e4e8f0]">
                 <td className="py-3 pr-4 font-bold text-[#0f1523]">Total</td>
-                <td className="py-3 pr-4 font-mono font-bold text-[#0f1523]">{fmt(goalData.reduce((s, g) => s + g.target, 0))}</td>
-                <td className="py-3 pr-4 font-mono text-[#6b7a99]">{fmt(goalData.reduce((s, g) => s + g.saved, 0))}</td>
-                <td className="py-3 pr-4 font-mono font-bold" style={{ color: isFeasible ? "#10b981" : "#ef4444" }}>{fmt(totalRequired)}</td>
+                <td className="py-3 pr-4 font-mono font-bold text-[#0f1523]">{formatCurrencyCompact(goalData.reduce((s, g) => s + g.target, 0), currency)}</td>
+                <td className="py-3 pr-4 font-mono text-[#6b7a99]">{formatCurrencyCompact(goalData.reduce((s, g) => s + g.saved, 0), currency)}</td>
+                <td className="py-3 pr-4 font-mono font-bold" style={{ color: isFeasible ? "#10b981" : "#ef4444" }}>{formatCurrencyCompact(totalRequired, currency)}</td>
                 <td className="py-3 pr-4" />
                 <td className="py-3">
                   <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${isFeasible ? "bg-[#d1fae5] text-[#065f46]" : "bg-[#fee2e2] text-[#991b1b]"}`}>
-                    {isFeasible ? "✓ Feasible" : `${fmt(shortfall)}/mo short`}
+                    {isFeasible ? "✓ Feasible" : `${formatCurrencyCompact(shortfall, currency)}/mo short`}
                   </span>
                 </td>
               </tr>
@@ -1129,6 +1261,7 @@ export default function App() {
   const [activeTool, setActiveTool] = useState("fire");
   const [activeArticleId, setActiveArticleId] = useState<number | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [currency, setCurrency] = useState<CurrencyCode>("USD");
 
   const nav = (p: Page) => { setPage(p); setMobileOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const openArticle = (id: number) => { setActiveArticleId(id); nav("article"); };
@@ -1382,8 +1515,8 @@ export default function App() {
                   </button>
                 ))}
               </div>
-              {activeTool === "fire" && <FIRECalculator />}
-              {activeTool === "goal" && <GoalPlanningCalculator />}
+              {activeTool === "fire" && <FIRECalculator currency={currency} setCurrency={setCurrency} />}
+              {activeTool === "goal" && <GoalPlanningCalculator currency={currency} setCurrency={setCurrency} />}
               {activeTool === "bmi" && <BMITool />}
               {activeTool === "unit" && <UnitConverter />}
             </div>
