@@ -183,6 +183,33 @@ const CURRENCY_OPTIONS: Array<{ code: CurrencyCode; label: string; locale: strin
   { code: "INR", label: "Indian Rupee", locale: "en-IN" },
 ];
 
+const getCurrencyFromBrowserLocale = (): CurrencyCode => {
+  if (typeof navigator === "undefined") return "USD";
+
+  const locales = navigator.languages?.length ? navigator.languages : [navigator.language];
+  const localeToCurrency: Record<string, CurrencyCode> = {
+    US: "USD",
+    GB: "GBP",
+    CA: "CAD",
+    AU: "AUD",
+    JP: "JPY",
+    IN: "INR",
+  };
+
+  for (const locale of locales) {
+    const region = locale.split("-")[1]?.toUpperCase();
+    if (region && localeToCurrency[region]) return localeToCurrency[region];
+  }
+
+  // Common language-only European browser locales.
+  for (const locale of locales) {
+    const language = locale.split("-")[0]?.toLowerCase();
+    if (["de", "fr", "es", "it", "nl", "pt", "el", "fi", "ga"].includes(language)) return "EUR";
+  }
+
+  return "USD";
+};
+
 const getCurrencyConfig = (currency: CurrencyCode) =>
   CURRENCY_OPTIONS.find(c => c.code === currency) ?? CURRENCY_OPTIONS[0];
 
@@ -1252,7 +1279,7 @@ function UnitConverter() {
   );
 }
 
-// ─── APP ───────────────────────────────────────────────────────────[...]
+// ─── APP ───────────────────────────────────────────────────────────
 
 type Page = "home" | "tools" | "blog" | "article";
 
@@ -1261,7 +1288,7 @@ export default function App() {
   const [activeTool, setActiveTool] = useState("fire");
   const [activeArticleId, setActiveArticleId] = useState<number | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [currency, setCurrency] = useState<CurrencyCode>("USD");
+  const [currency, setCurrency] = useState<CurrencyCode>(() => getCurrencyFromBrowserLocale());
 
   const nav = (p: Page) => { setPage(p); setMobileOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const openArticle = (id: number) => { setActiveArticleId(id); nav("article"); };
