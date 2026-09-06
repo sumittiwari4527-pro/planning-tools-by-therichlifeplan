@@ -57,19 +57,39 @@ export function ArticleView({ articleId, onNavigateToBlog, onNavigateToTools }: 
         <div className="text-[#374151] leading-relaxed space-y-5">
           <p className="text-xl text-[#0f1523] leading-relaxed font-medium">{article.excerpt}</p>
 
-          {article.body.map((para, i) => (
-            <div key={i}>
-              {i > 0 && (
-                <h2
-                  className="text-[#0f1523] text-xl font-bold mt-10 mb-4"
-                  style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
-                >
-                  {["The Core Principle", "Real-World Evidence", "Practical Takeaway"][i - 1]}
-                </h2>
-              )}
-              <p className="leading-relaxed">{para}</p>
+          {article.sections ? (
+            <div className="space-y-10">
+              {article.sections.map((section) => (
+                <section key={section.heading}>
+                  <h2
+                    className="text-[#0f1523] text-xl sm:text-2xl font-bold mb-4"
+                    style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
+                  >
+                    {section.heading}
+                  </h2>
+                  <div className="space-y-4">
+                    {section.paragraphs.map((paragraph) => (
+                      <p key={paragraph} className="leading-relaxed">{paragraph}</p>
+                    ))}
+                  </div>
+                </section>
+              ))}
             </div>
-          ))}
+          ) : (
+            article.body.map((para, i) => (
+              <div key={i}>
+                {i > 0 && (
+                  <h2
+                    className="text-[#0f1523] text-xl font-bold mt-10 mb-4"
+                    style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
+                  >
+                    {["The Core Principle", "Real-World Evidence", "Practical Takeaway"][i - 1]}
+                  </h2>
+                )}
+                <p className="leading-relaxed">{para}</p>
+              </div>
+            ))
+          )}
         </div>
 
         <div className="mt-12 p-6 bg-[#eef0fd] border border-indigo-100 rounded-3xl">
