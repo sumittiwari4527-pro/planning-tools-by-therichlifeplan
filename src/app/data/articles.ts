@@ -3,11 +3,19 @@
  * All article data in one place - easy to update or move to CMS later
  */
 
+import chatgptAutomationWorkflow from "../features/blog/assets/chatgpt-automation-workflow.svg";
+
+export interface ArticleSection {
+  heading: string;
+  paragraphs: string[];
+}
+
 export interface Article {
   id: number;
   title: string;
   excerpt: string;
   body: string[];
+  sections?: ArticleSection[];
   category: string;
   author: string;
   date: string;
@@ -130,6 +138,86 @@ export const articles: Article[] = [
     readTime: "9 min",
     tag: "ENGINEERING",
     image: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=900&h=500&fit=crop&auto=format",
+    tagColor: "#4f46e5",
+    tagBg: "#eef0fd",
+  },
+  {
+    id: 7,
+    title: "How to Use ChatGPT Plugins the Right Way to Automate Your Work",
+    excerpt: "A practical, beginner-friendly guide to using ChatGPT plugins, connected apps, and clear prompts to turn repetitive work into reliable workflows — while keeping important decisions under your control.",
+    body: [],
+    sections: [
+      {
+        heading: "1. Understand what you are connecting",
+        paragraphs: [
+          "The word plugin is easy to misunderstand because ChatGPT's product terminology has evolved. Today, the Plugin Directory is the main place to discover workflow capabilities. A plugin can package skills, connected apps, or app templates, while an app is the integration that connects ChatGPT to an external service, account, data source, or action.",
+          "Think of it this way: the plugin is the workflow package; the app is the bridge to a service. The exact options you see depend on your plan, account, workspace, region, and the capabilities available to you."
+        ]
+      },
+      {
+        heading: "2. Start with the task, not the tool",
+        paragraphs: [
+          "Before connecting anything, write down the repetitive task you want to remove. Good candidates are weekly summaries, finding information across documents, preparing drafts from existing material, turning notes into structured updates, or moving approved information between systems.",
+          "Describe the desired result in plain language. Instead of saying 'use a plugin to manage my work', say 'review the project documents, identify overdue items, group them by owner, and prepare a short action list'. A specific outcome gives ChatGPT a much better target."
+        ]
+      },
+      {
+        heading: "3. Choose and connect the right plugin or app",
+        paragraphs: [
+          "Open the Plugins area when it is available on your ChatGPT surface and review the plugin's description, included apps, required setup, and permissions. If an app requires authentication, connect the intended account and complete its authorization flow.",
+          "Do not connect everything just because it is available. Give a workflow only the access it actually needs. If the task only requires reading information, prefer a read-oriented capability instead of granting broader write access when your setup allows that choice."
+        ]
+      },
+      {
+        heading: "4. Write a prompt that defines the workflow",
+        paragraphs: [
+          "A reliable automation prompt usually has five parts: goal, source, instructions, constraints, and output format. This makes the workflow repeatable instead of turning every run into a new conversation.",
+          "Try this formula: 'Goal: [outcome]. Source: [connected app or data]. Instructions: [steps]. Constraints: [what must not happen]. Output: [format]. Ask for my approval before any external action.'"
+        ]
+      },
+      {
+        heading: "5. Let ChatGPT do the repetitive work",
+        paragraphs: [
+          "Once the workflow is connected, ChatGPT can use the capabilities exposed by the plugin and its apps. Depending on the setup, that can include searching connected information, retrieving relevant context, preparing content, or taking supported actions such as creating or updating information.",
+          "For example, a weekly project workflow could search connected documents, summarize what changed, identify blockers, and draft a status update. You spend your time reviewing the result rather than manually collecting the same information from several places."
+        ]
+      },
+      {
+        heading: "6. Keep important actions human-approved",
+        paragraphs: [
+          "Automation should reduce repetitive work, not remove judgment where the consequences matter. Keep approval in the loop for actions that send messages, modify important records, publish content, expose sensitive information, or are difficult to undo.",
+          "A useful rule is: automate preparation aggressively; automate irreversible execution cautiously. Review the permissions and action controls of connected apps, and test a new workflow with low-risk data before trusting it with important work."
+        ]
+      },
+      {
+        heading: "7. Turn a successful prompt into a reusable system",
+        paragraphs: [
+          "When a workflow works well, save the prompt as a template and document the expected input, output, permissions, and approval point. Give the workflow a simple name such as 'Monday Project Brief' or 'Content Research Pack'.",
+          "The goal is not to build a complicated automation maze. The best workflows are small, understandable, and easy to inspect. Start with one repetitive task, measure the time saved, then expand only when the result is consistently useful."
+        ]
+      },
+      {
+        heading: "Three workflows you can try today",
+        paragraphs: [
+          "Weekly project brief: 'Review the latest project information from my connected workspace. Summarize progress, list blockers, highlight overdue items, and draft a five-bullet update. Do not change any records or send messages.'",
+          "Content research pack: 'Find the most relevant information in my connected sources about [topic]. Group the findings into key facts, useful examples, open questions, and a short outline for an original article. Clearly separate source facts from suggestions.'",
+          "Inbox-to-action workflow: 'Review the messages available through my connected communication app. Identify items that require my response, group them by urgency, and draft replies. Do not send anything without my approval.'"
+        ]
+      },
+      {
+        heading: "The simple rule for getting better results",
+        paragraphs: [
+          "Give ChatGPT a clear goal, the right context, explicit constraints, and a defined output. Then give it only the permissions needed for the job and keep a human approval step wherever an action matters.",
+          "That is the difference between asking ChatGPT questions and building a useful workflow around it. Start small, test the result, refine the prompt, and only then add more connected tools."
+        ]
+      }
+    ],
+    category: "Productivity",
+    author: "RichLifeTools Editorial",
+    date: "September 6, 2026",
+    readTime: "9 min",
+    tag: "AUTOMATION",
+    image: chatgptAutomationWorkflow,
     tagColor: "#4f46e5",
     tagBg: "#eef0fd",
   },
