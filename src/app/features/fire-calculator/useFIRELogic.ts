@@ -123,5 +123,6 @@ export function useFIRELogic(currency: CurrencyCode) {
     yearsToFire,
     retirementYear,
     chartData,
+    cur,
   };
 }
