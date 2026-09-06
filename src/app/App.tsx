@@ -73,9 +73,9 @@ export default function App() {
       : null,
   };
 
-  const seoData = seConfig[page];
+  const seoData = seConfig[page as keyof typeof seConfig];
   if (seoData) {
-    useSEO(seoData);
+    useSEO(seoData as any);
   }
 
   const navLinks: [Page, string][] = [
@@ -85,68 +85,45 @@ export default function App() {
   ];
 
   return (
-    <div className="bg-white min-h-screen flex flex-col">
+    <div className="min-h-screen bg-[#f8f9fb] text-[#0f1523] flex flex-col" style={{ fontFamily: "'Inter', sans-serif" }}>
       {/* ─── NAV ─────────────────────────────────────────────────── */}
-      <nav className="fixed top-0 z-50 w-full bg-white/80 backdrop-blur border-b border-[#e4e8f0]">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-[#e4e8f0]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <button
-              onClick={() => navigate("home")}
-              className="flex items-center gap-2 hover:opacity-70 transition-opacity cursor-pointer"
-            >
-              <div className="text-2xl font-bold text-[#0f1523]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                {SITE_NAME}
+            <button onClick={() => navigate("home")} className="flex items-center gap-2.5 cursor-pointer group">
+              <div className="w-8 h-8 bg-[#4f46e5] rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-md shadow-indigo-200">
+                <span className="text-white font-mono font-bold text-xs">RL</span>
               </div>
+              <span className="text-[#0f1523] font-bold tracking-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                {SITE_NAME}
+              </span>
             </button>
-
-            {/* Desktop Nav */}
-            <div className="hidden md:flex items-center gap-8">
+            <div className="hidden md:flex items-center gap-1">
               {navLinks.map(([p, label]) => (
-                <button
-                  key={p}
-                  onClick={() => navigate(p)}
-                  className={`text-sm font-medium transition-colors cursor-pointer ${
-                    page === p ? "text-[#0f1523]" : "text-[#6b7a99] hover:text-[#0f1523]"
-                  }`}
-                >
-                  {label}
-                </button>
+                <button key={p} onClick={() => navigate(p)}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer ${
+                    page === p ? "bg-[#4f46e5] text-white shadow-md shadow-indigo-200" : "text-[#6b7a99] hover:text-[#0f1523] hover:bg-[#f1f3f8]"
+                  }`}>{label}</button>
               ))}
             </div>
-
-            {/* Mobile Menu Toggle */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden text-[#6b7a99] hover:text-[#0f1523] transition-colors cursor-pointer"
-            >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            <button className="md:hidden text-[#0f1523] p-1" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
-
-          {/* Mobile Nav */}
-          {mobileMenuOpen && (
-            <div className="md:hidden pb-4 space-y-2">
-              {navLinks.map(([p, label]) => (
-                <button
-                  key={p}
-                  onClick={() => navigate(p)}
-                  className={`block w-full text-left px-4 py-2 rounded-lg font-medium cursor-pointer ${
-                    page === p
-                      ? "bg-[#f1f3f8] text-[#0f1523]"
-                      : "text-[#6b7a99] hover:bg-[#f8f9fb]"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
+        {mobileMenuOpen && (
+          <div className="md:hidden bg-white border-t border-[#e4e8f0] px-4 py-3 space-y-1">
+            {navLinks.map(([p, label]) => (
+              <button key={p} onClick={() => navigate(p)}
+                className={`block w-full text-left px-4 py-2.5 rounded-xl text-sm transition-all cursor-pointer ${
+                  page === p ? "bg-[#4f46e5] text-white font-medium" : "text-[#6b7a99] hover:text-[#0f1523] hover:bg-[#f1f3f8]"
+                }`}>{label}</button>
+            ))}
+          </div>
+        )}
       </nav>
 
-      {/* ─── CONTENT ──────────────────────────────────────────────── */}
-      <main className="flex-1 pt-16">
+      <main className="flex-1">
         {/* HOME PAGE */}
         {page === "home" && (
           <div className="min-h-[calc(100vh-64px)] flex flex-col">
