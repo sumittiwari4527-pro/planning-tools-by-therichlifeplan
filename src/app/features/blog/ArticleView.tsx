@@ -6,9 +6,10 @@ interface ArticleViewProps {
   articleId: number;
   onNavigateToBlog: () => void;
   onNavigateToTools: () => void;
+  onSelectArticle: (articleId: number) => void;
 }
 
-export function ArticleView({ articleId, onNavigateToBlog, onNavigateToTools }: ArticleViewProps) {
+export function ArticleView({ articleId, onNavigateToBlog, onNavigateToTools, onSelectArticle }: ArticleViewProps) {
   const article = articles.find((a) => a.id === articleId);
   if (!article) return null;
 
@@ -108,7 +109,7 @@ export function ArticleView({ articleId, onNavigateToBlog, onNavigateToTools }: 
             {articles.filter((a) => a.id !== article.id).slice(0, 2).map((a) => (
               <button
                 key={a.id}
-                onClick={() => window.location.assign(`#article-${a.id}`)}
+                onClick={() => onSelectArticle(a.id)}
                 className="bg-white border border-[#e4e8f0] rounded-2xl p-4 text-left hover:shadow-md hover:border-indigo-100 transition-all group cursor-pointer shadow-sm"
               >
                 <div className="text-[#6b7a99] text-xs mb-1.5">{a.category} · {a.readTime}</div>
