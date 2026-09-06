@@ -133,4 +133,23 @@ export const articles: Article[] = [
     tagColor: "#4f46e5",
     tagBg: "#eef0fd",
   },
+  {
+    id: 7,
+    title: "How to Use ChatGPT Plugins the Right Way to Automate Your Work",
+    excerpt: "A practical step-by-step guide to using ChatGPT plugins and connected apps for repeatable work — with simple prompts, safe permission habits, and human approval checkpoints.",
+    body: [
+      "This guide focuses on the workflow behind good automation: start with one repeatable task, define the desired result, connect only the services you need, test on a small example, and keep important actions reviewable.",
+      "You can use the same pattern for daily briefs, meeting-note summaries, content drafts, recurring reports, and many other jobs that involve moving information between tools. The goal is not to make ChatGPT do everything; it is to remove the repetitive parts while keeping you in control.",
+      "When a task involves sensitive data or an action that is hard to undo, permissions and approval steps become part of the workflow itself. Check what an integration can access, use the smallest useful scope, and review consequential outputs before anything is sent, published, deleted, purchased, or changed.",
+      "Once a workflow works reliably, save the prompt pattern and turn changing details into placeholders. A small successful workflow can then become a reusable system instead of a one-off chat.",
+    ],
+    category: "AI & Productivity",
+    author: "RichLifeTools Editorial",
+    date: "September 6, 2026",
+    readTime: "10 min",
+    tag: "GUIDE",
+    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=900&h=500&fit=crop&auto=format",
+    tagColor: "#4f46e5",
+    tagBg: "#eef0fd",
+  },
 ];
