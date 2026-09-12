@@ -1,9 +1,11 @@
 import React, { useState, useCallback } from "react";
 import { Menu, X, Flame, Target, TrendingUp, Hash, ChevronRight, ArrowRight } from "lucide-react";
+import { useLocation, useNavigate as useRouterNavigate } from "react-router";
 
 // ─── Constants & Types ───────────────────────────────────────────
 import { SITE_NAME, CurrencyCode, CURRENCY_OPTIONS } from "./utils/constants";
 import { useSEO } from "./hooks/useSEO";
+import { articlePathById, pathForTool, toolIdByPath, ToolId } from "./utils/routes";
 
 // ─── Features ────────────────────────────────────────────────────
 import { FIRECalculator } from "./features/fire-calculator/FIRECalculator";
@@ -25,26 +27,40 @@ const tools = [
   { id: "goal", icon: Target, name: "Goal Planner", desc: "Multi-goal financial planning with actionable steps", color: "#8b5cf6", bg: "#f3f0ff" },
   { id: "bmi", icon: TrendingUp, name: "BMI Calculator", desc: "Body mass index with health context", color: "#10b981", bg: "#d1fae5" },
   { id: "unit", icon: Hash, name: "Unit Converter", desc: "Convert between length, weight, and temperature", color: "#f59e0b", bg: "#fef3c7" },
-];
+] satisfies Array<{ id: ToolId; icon: typeof Flame; name: string; desc: string; color: string; bg: string }>;
+
+const pageFromPath = (path: string): Page => {
+  if (path === "/") return "home";
+  if (path === "/blog") return "blog";
+  if (path.startsWith("/blog/")) return "article";
+  return "tools";
+};
 
 // ─── App Component ──────────────────────────────────────────────
 export default function App() {
-  const [page, setPage] = useState<Page>("home");
-  const [activeTool, setActiveTool] = useState<string>("fire");
-  const [activeArticleId, setActiveArticleId] = useState<number | null>(null);
+  const location = useLocation();
+  const routerNavigate = useRouterNavigate();
+  const path = location.pathname.replace(/\/+$/, "") || "/";
+  const page = pageFromPath(path);
+  const routeArticle = articles.find((article) => articlePathById.get(article.id) === path);
   const [currency, setCurrency] = useState<CurrencyCode>("USD");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [selectedTool, setSelectedTool] = useState<string>(() => toolIdByPath.get(path) || "fire");
 
-  const navigate = (newPage: Page, tool?: string) => {
-    setPage(newPage);
-    if (tool) setActiveTool(tool);
+  const navigate = (newPage: Page, tool?: ToolId) => {
+    const route = newPage === "home" ? "/" : newPage === "tools" ? (tool ? pathForTool(tool) : "/tools") : "/blog";
+    routerNavigate(route);
+    setSelectedTool(tool || (newPage === "tools" ? selectedTool : "fire"));
     setMobileMenuOpen(false);
   };
 
   const openArticle = useCallback((id: number) => {
-    setActiveArticleId(id);
-    setPage("article");
-  }, []);
+    const route = articlePathById.get(id);
+    if (route) routerNavigate(route);
+  }, [routerNavigate]);
+
+  const activeTool = page === "tools" ? (toolIdByPath.get(path) || selectedTool) : selectedTool;
+  const activeArticleId = page === "article" ? routeArticle?.id ?? null : null;
 
   // ─── SEO Setup ──────────────────────────────────────────────────
   const seConfig = {
@@ -56,27 +72,25 @@ export default function App() {
     tools: {
       title: "Tools",
       description: "Precision calculators for financial planning, goal tracking, health metrics, and unit conversions.",
-      url: "/tools",
+      url: path === "/tools" ? "/tools" : path,
     },
     blog: {
       title: "Articles",
       description: "In-depth pieces on mathematics, science, finance, and beyond.",
       url: "/blog",
     },
-    article: activeArticleId
+    article: routeArticle
       ? {
-          title: articles.find((a) => a.id === activeArticleId)?.title || "Article",
-          description: articles.find((a) => a.id === activeArticleId)?.excerpt || "",
-          url: `/blog/${activeArticleId}`,
+          title: routeArticle.title,
+          description: routeArticle.excerpt,
+          url: articlePathById.get(routeArticle.id),
           type: "article" as const,
         }
       : null,
   };
 
-  const seoData = seConfig[page as keyof typeof seConfig];
-  if (seoData) {
-    useSEO(seoData as any);
-  }
+  const seoData = seConfig[page] || seConfig.tools;
+  useSEO(seoData);
 
   const navLinks: [Page, string][] = [
     ["home", "Home"],
@@ -271,7 +285,7 @@ export default function App() {
                   {tools.map((t) => (
                     <button
                       key={t.id}
-                      onClick={() => setActiveTool(t.id)}
+                      onClick={() => { setSelectedTool(t.id); routerNavigate(pathForTool(t.id)); }}
                       className={`px-5 py-2.5 rounded-2xl text-sm font-medium transition-all cursor-pointer ${
                         activeTool === t.id ? "text-white shadow-lg" : "bg-white text-[#6b7a99] border border-[#e4e8f0] hover:border-indigo-200 hover:text-[#0f1523] shadow-sm"
                       }`}

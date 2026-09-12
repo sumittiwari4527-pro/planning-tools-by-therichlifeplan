@@ -6,7 +6,7 @@
 import { useEffect } from 'react';
 import { SITE_NAME, SITE_URL, SITE_DEFAULT_IMAGE } from '../utils/constants';
 
-interface SEOMeta {
+export interface SEOMeta {
   title: string;
   description: string;
   image?: string;
