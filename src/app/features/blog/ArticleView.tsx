@@ -1,10 +1,33 @@
 import { User, Clock, ArrowRight } from "lucide-react";
 import { articles } from "../../data/articles";
+import skillsMcpRagMemoryInfographic from "./assets/skills-mcp-rag-memory-infographic.svg";
+import error500Workflow from "./assets/500-error-ai-workflow.svg";
 
 interface ArticleViewProps {
   articleId: number;
   onNavigateToBlog: () => void;
   onNavigateToTools: () => void;
+}
+
+const articleEightId = 8;
+
+function ArticleEightVisual({
+  src,
+  alt,
+}: {
+  src: string;
+  alt: string;
+}) {
+  return (
+    <figure className="my-8 overflow-hidden rounded-3xl border border-[#e4e8f0] bg-white shadow-sm">
+      <img
+        src={src}
+        alt={alt}
+        loading="lazy"
+        className="block w-full h-auto"
+      />
+    </figure>
+  );
 }
 
 export function ArticleView({ articleId, onNavigateToBlog, onNavigateToTools }: ArticleViewProps) {
@@ -57,23 +80,50 @@ export function ArticleView({ articleId, onNavigateToBlog, onNavigateToTools }: 
         <div className="text-[#374151] leading-relaxed space-y-5">
           <p className="text-xl text-[#0f1523] leading-relaxed font-medium">{article.excerpt}</p>
 
+          {article.id === articleEightId && (
+            <ArticleEightVisual
+              src={skillsMcpRagMemoryInfographic}
+              alt="Infographic explaining the roles of AI Skills, MCP, RAG, and Memory"
+            />
+          )}
+
           {article.sections ? (
             <div className="space-y-10">
-              {article.sections.map((section) => (
-                <section key={section.heading}>
-                  <h2
-                    className="text-[#0f1523] text-xl sm:text-2xl font-bold mb-4"
-                    style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
-                  >
-                    {section.heading}
-                  </h2>
-                  <div className="space-y-4">
-                    {section.paragraphs.map((paragraph) => (
-                      <p key={paragraph} className="leading-relaxed">{paragraph}</p>
-                    ))}
-                  </div>
-                </section>
-              ))}
+              {article.sections.map((section, index) => {
+                const isArticleEightTogetherSection =
+                  article.id === articleEightId &&
+                  section.heading.toLowerCase().includes("together");
+
+                // Article 8 should always show the workflow even if the editorial
+                // heading is later renamed and no longer contains "together".
+                const isArticleEightWorkflowFallback =
+                  article.id === articleEightId &&
+                  !article.sections!.some((item) => item.heading.toLowerCase().includes("together")) &&
+                  index === 2;
+
+                return (
+                  <section key={section.heading}>
+                    <h2
+                      className="text-[#0f1523] text-xl sm:text-2xl font-bold mb-4"
+                      style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
+                    >
+                      {section.heading}
+                    </h2>
+                    <div className="space-y-4">
+                      {section.paragraphs.map((paragraph) => (
+                        <p key={paragraph} className="leading-relaxed">{paragraph}</p>
+                      ))}
+                    </div>
+
+                    {(isArticleEightTogetherSection || isArticleEightWorkflowFallback) && (
+                      <ArticleEightVisual
+                        src={error500Workflow}
+                        alt="Workflow showing how Skills, MCP, RAG, and Memory help an AI troubleshoot a 500 Internal Server Error"
+                      />
+                    )}
+                  </section>
+                );
+              })}
             </div>
           ) : (
             article.body.map((para, i) => (
@@ -81,7 +131,7 @@ export function ArticleView({ articleId, onNavigateToBlog, onNavigateToTools }: 
                 {i > 0 && (
                   <h2
                     className="text-[#0f1523] text-xl font-bold mt-10 mb-4"
-                    style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
+                    style={{ fontFamily: "'Bricolage Grotesque', sans-serif'" }}
                   >
                     {["The Core Principle", "Real-World Evidence", "Practical Takeaway"][i - 1]}
                   </h2>
