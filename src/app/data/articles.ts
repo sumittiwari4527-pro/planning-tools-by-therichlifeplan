@@ -223,7 +223,7 @@ export const articles: Article[] = [
   },
   {
     id: 8,
-    title: "Skills vs MCP vs RAG vs Memory: What Does an AI Actually Need to Fix a 500 Error?",
+    title: "Skills vs MCP vs RAG vs Memory: What Does AI Actually Need?",
     excerpt: "Skills, MCP, RAG, and memory are often discussed together, but they solve very different problems. One simple 500 Internal Server Error shows exactly how each piece fits into an AI workflow.",
     body: [],
     sections: [
@@ -268,47 +268,42 @@ export const articles: Article[] = [
           "Now imagine the assistant already knows that your production environment uses a particular hosting provider, that you prefer changes to be proposed before they are applied, and that the website's staging and production environments are intentionally configured differently.",
           "That persistent context is the role of memory. Memory is about carrying useful information from previous interactions into future conversations or tasks, subject to the product and system that implements it.",
           "Memory is different from RAG. RAG usually retrieves relevant information from an external knowledge base for the current task. Memory keeps selected information as ongoing context about the user, project, preferences, or prior interactions. You can think of RAG as 'look it up' and memory as 'remember this.'",
-          "Easy mental model: Memory = the notebook about you."
+          "Easy mental model: Memory = the notebook."
         ]
       },
       {
         heading: "See all four working together on the 500 error",
         paragraphs: [
-          "Here is the full flow. You tell the AI: 'My website is returning a 500 error. Find the problem and help me fix it.'",
-          "Skill: the AI follows a structured debugging process instead of randomly guessing. MCP: it connects to the tools that expose deployment status, logs, repository files, and other authorized diagnostics. RAG: it retrieves the relevant runbooks, architecture notes, and previous incident documentation. Memory: it remembers your project preferences, important environment facts, and how you prefer changes to be handled.",
-          "The result is much more useful than a generic AI answer. The AI has a method, access to the right systems, relevant project knowledge, and continuity from previous work."
+          "Here is the complete flow: the skill provides the troubleshooting procedure, MCP provides access to the systems and tools, RAG retrieves the relevant technical knowledge, and memory supplies useful context from previous work.",
+          "None of the four is a replacement for the others. A capable AI workflow can combine them so the assistant knows how to act, can access the right systems, can find the right information, and can remember the context that should carry forward."
         ]
       },
       {
         heading: "A simple restaurant analogy",
         paragraphs: [
-          "Imagine a restaurant kitchen. The skill is the chef's recipe for preparing the dish. MCP is the waiter or kitchen interface that can retrieve ingredients or interact with the systems that provide them. RAG is the cookbook and searchable ingredient reference that helps the chef find the right information. Memory is the chef remembering that a regular customer prefers less salt.",
-          "A recipe without ingredients cannot make dinner. Ingredients without a recipe do not guarantee a good meal. A giant cookbook does not automatically mean the chef knows which page matters. And memory of one customer's preference does not replace the recipe. Each part has a different job."
+          "Think of an AI workflow like a restaurant. The skill is the recipe that tells the chef what to do. MCP is the kitchen equipment and ingredients the chef can actually access. RAG is the cookbook or ingredient reference the chef can search when a specific detail is needed. Memory is the chef's notebook containing useful preferences and lessons from previous meals.",
+          "A restaurant can have a great recipe without the right equipment. It can have equipment without knowing which recipe to follow. It can have both and still need a reference for an unfamiliar ingredient. And a returning customer benefits when the chef remembers important preferences. Each layer has a distinct job."
         ]
       },
       {
         heading: "What each one does NOT do",
         paragraphs: [
-          "A skill does not automatically provide access to your systems. It explains how to carry out a task.",
-          "MCP does not automatically make the AI knowledgeable about your business. It provides a standardized interface to tools and data exposed through the MCP setup.",
-          "RAG does not automatically give the AI long-term personal memory. It retrieves external information relevant to the current task.",
-          "Memory does not replace live system access or a searchable knowledge base. Remembering that your app runs in production on a certain platform is not the same as checking today's deployment logs."
+          "Skills do not automatically provide external access. MCP does not decide the troubleshooting strategy by itself. RAG does not permanently remember everything it retrieves. Memory does not replace a searchable knowledge base. Keeping these boundaries clear makes AI architecture much easier to reason about."
         ]
       },
       {
         heading: "The cheat sheet",
         paragraphs: [
-          "Ask 'How should the AI do this job?' → think Skill.",
-          "Ask 'How can the AI interact with this external system?' → think MCP.",
-          "Ask 'Where can the AI find the relevant project information?' → think RAG.",
-          "Ask 'What should the AI remember about me or this project across interactions?' → think Memory."
+          "Skill → tells the AI how to perform a repeatable job.",
+          "MCP → gives the AI a standardized interface to tools and external data.",
+          "RAG → retrieves relevant information from a knowledge source.",
+          "Memory → carries selected context forward across interactions."
         ]
       },
       {
         heading: "The 500-error example in one sentence",
         paragraphs: [
-          "When a website returns a 500 error, the skill tells the AI how to investigate, MCP lets it inspect the systems, RAG gives it the right documentation, and memory gives it useful continuity about the project and your preferences.",
-          "Once you see the four as separate layers, the terminology becomes much less confusing. You are not choosing between four competing technologies. You are deciding which combination of method, access, knowledge retrieval, and persistent context your AI workflow needs."
+          "When a website returns a 500 error, a well-designed AI workflow can use a skill to follow the debugging process, MCP to inspect the real systems, RAG to retrieve the right documentation, and memory to apply useful context from earlier work."
         ]
       }
     ],
@@ -318,7 +313,7 @@ export const articles: Article[] = [
     readTime: "8 min",
     tag: "AI CONCEPTS",
     image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&h=500&fit=crop&auto=format",
-    tagColor: "#4f46e5",
-    tagBg: "#eef0fd",
+    tagColor: "#10b981",
+    tagBg: "#d1fae5",
   },
 ];
