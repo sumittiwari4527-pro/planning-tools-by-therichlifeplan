@@ -90,7 +90,7 @@ export default function App() {
   };
 
   const seoData = seConfig[page] || seConfig.tools;
-  useSEO(seoData as any);
+  useSEO(seoData);
 
   const navLinks: [Page, string][] = [
     ["home", "Home"],
