@@ -5,7 +5,7 @@ import { useLocation, useNavigate as useRouterNavigate } from "react-router";
 // ─── Constants & Types ───────────────────────────────────────────
 import { SITE_NAME, CurrencyCode, CURRENCY_OPTIONS } from "./utils/constants";
 import { useSEO } from "./hooks/useSEO";
-import { articlePathById, pathForTool, toolIdByPath } from "./utils/routes";
+import { articlePathById, pathForTool, toolIdByPath, ToolId } from "./utils/routes";
 
 // ─── Features ────────────────────────────────────────────────────
 import { FIRECalculator } from "./features/fire-calculator/FIRECalculator";
@@ -27,7 +27,7 @@ const tools = [
   { id: "goal", icon: Target, name: "Goal Planner", desc: "Multi-goal financial planning with actionable steps", color: "#8b5cf6", bg: "#f3f0ff" },
   { id: "bmi", icon: TrendingUp, name: "BMI Calculator", desc: "Body mass index with health context", color: "#10b981", bg: "#d1fae5" },
   { id: "unit", icon: Hash, name: "Unit Converter", desc: "Convert between length, weight, and temperature", color: "#f59e0b", bg: "#fef3c7" },
-];
+] satisfies Array<{ id: ToolId; icon: typeof Flame; name: string; desc: string; color: string; bg: string }>;
 
 const pageFromPath = (path: string): Page => {
   if (path === "/") return "home";
@@ -47,7 +47,7 @@ export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedTool, setSelectedTool] = useState<string>(() => toolIdByPath.get(path) || "fire");
 
-  const navigate = (newPage: Page, tool?: string) => {
+  const navigate = (newPage: Page, tool?: ToolId) => {
     const route = newPage === "home" ? "/" : newPage === "tools" ? (tool ? pathForTool(tool) : "/tools") : "/blog";
     routerNavigate(route);
     setSelectedTool(tool || (newPage === "tools" ? selectedTool : "fire"));
