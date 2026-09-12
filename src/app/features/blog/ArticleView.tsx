@@ -131,7 +131,7 @@ export function ArticleView({ articleId, onNavigateToBlog, onNavigateToTools }: 
                 {i > 0 && (
                   <h2
                     className="text-[#0f1523] text-xl font-bold mt-10 mb-4"
-                    style={{ fontFamily: "'Bricolage Grotesque', sans-serif'" }}
+                    style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
                   >
                     {["The Core Principle", "Real-World Evidence", "Practical Takeaway"][i - 1]}
                   </h2>
