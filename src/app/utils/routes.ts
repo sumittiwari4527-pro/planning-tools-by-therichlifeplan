@@ -25,5 +25,4 @@ export const toolIdByPath = new Map(
   Object.entries(TOOL_ROUTES).map(([id, path]) => [path, id as ToolId])
 );
 
-export const pathForTool = (tool: string) =>
-  tool in TOOL_ROUTES ? TOOL_ROUTES[tool as ToolId] : "/tools";
+export const pathForTool = (tool: ToolId) => TOOL_ROUTES[tool];
