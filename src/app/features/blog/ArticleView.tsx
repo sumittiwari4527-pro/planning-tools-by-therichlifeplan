@@ -1,5 +1,6 @@
 import { User, Clock, ArrowRight } from "lucide-react";
 import { articles } from "../../data/articles";
+import skillsMcpRagMemoryHero from "./assets/skills-mcp-rag-memory-hero.svg";
 import skillsMcpRagMemoryInfographic from "./assets/skills-mcp-rag-memory-infographic.svg";
 import error500Workflow from "./assets/500-error-ai-workflow.svg";
 
@@ -33,6 +34,8 @@ function ArticleEightVisual({
 export function ArticleView({ articleId, onNavigateToBlog, onNavigateToTools }: ArticleViewProps) {
   const article = articles.find((a) => a.id === articleId);
   if (!article) return null;
+
+  const articleImage = article.id === articleEightId ? skillsMcpRagMemoryHero : article.image;
 
   return (
     <div className="pt-16 min-h-screen bg-[#f8f9fb]">
@@ -74,7 +77,7 @@ export function ArticleView({ articleId, onNavigateToBlog, onNavigateToTools }: 
         </div>
 
         <div className="aspect-video rounded-3xl overflow-hidden mb-12 bg-slate-100 shadow-lg shadow-slate-100">
-          <img src={article.image} alt={article.title} className="w-full h-full object-cover" />
+          <img src={articleImage} alt={article.title} className="w-full h-full object-cover" />
         </div>
 
         <div className="text-[#374151] leading-relaxed space-y-5">
@@ -94,8 +97,6 @@ export function ArticleView({ articleId, onNavigateToBlog, onNavigateToTools }: 
                   article.id === articleEightId &&
                   section.heading.toLowerCase().includes("together");
 
-                // Article 8 should always show the workflow even if the editorial
-                // heading is later renamed and no longer contains "together".
                 const isArticleEightWorkflowFallback =
                   article.id === articleEightId &&
                   !article.sections!.some((item) => item.heading.toLowerCase().includes("together")) &&
