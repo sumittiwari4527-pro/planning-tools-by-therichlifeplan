@@ -26,12 +26,13 @@ const routeFromLocation = () => {
 
 const buttons = () => Array.from(document.querySelectorAll<HTMLButtonElement>("button"));
 const clickText = (text: string) => buttons().find((b) => b.textContent?.replace(/\s+/g, " ").trim() === text)?.click();
+const clickContains = (text: string) => buttons().find((b) => b.textContent?.includes(text))?.click();
 
 const clickForRoute = (route: string) => {
   if (route === "/") return clickText("Home");
   const tool = Object.entries(toolRoutes).find(([, value]) => value === route)?.[0];
   const names: Record<string, string> = { fire: "FIRE Calculator", goal: "Goal Planner", bmi: "BMI Calculator", unit: "Unit Converter" };
-  if (tool) return clickText(names[tool]);
+  if (tool) return clickContains(names[tool]);
   const article = articles.find((item) => articleRoutes.get(item.id) === route);
   if (article) {
     clickText("Blog");
