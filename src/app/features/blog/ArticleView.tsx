@@ -1,5 +1,8 @@
 import { User, Clock, ArrowRight } from "lucide-react";
 import { articles } from "../../data/articles";
+import skillsMcpRagMemoryHero from "./assets/skills-mcp-rag-memory-hero.svg";
+import skillsMcpRagMemoryInfographic from "./assets/skills-mcp-rag-memory-infographic.svg";
+import error500Workflow from "./assets/500-error-ai-workflow.svg";
 
 interface ArticleViewProps {
   articleId: number;
@@ -7,9 +10,32 @@ interface ArticleViewProps {
   onNavigateToTools: () => void;
 }
 
+const articleEightId = 8;
+
+function ArticleEightVisual({
+  src,
+  alt,
+}: {
+  src: string;
+  alt: string;
+}) {
+  return (
+    <figure className="my-8 overflow-hidden rounded-3xl border border-[#e4e8f0] bg-white shadow-sm">
+      <img
+        src={src}
+        alt={alt}
+        loading="lazy"
+        className="block w-full h-auto"
+      />
+    </figure>
+  );
+}
+
 export function ArticleView({ articleId, onNavigateToBlog, onNavigateToTools }: ArticleViewProps) {
   const article = articles.find((a) => a.id === articleId);
   if (!article) return null;
+
+  const articleImage = article.id === articleEightId ? skillsMcpRagMemoryHero : article.image;
 
   return (
     <div className="pt-16 min-h-screen bg-[#f8f9fb]">
@@ -51,29 +77,54 @@ export function ArticleView({ articleId, onNavigateToBlog, onNavigateToTools }: 
         </div>
 
         <div className="aspect-video rounded-3xl overflow-hidden mb-12 bg-slate-100 shadow-lg shadow-slate-100">
-          <img src={article.image} alt={article.title} className="w-full h-full object-cover" />
+          <img src={articleImage} alt={article.title} className="w-full h-full object-cover" />
         </div>
 
         <div className="text-[#374151] leading-relaxed space-y-5">
           <p className="text-xl text-[#0f1523] leading-relaxed font-medium">{article.excerpt}</p>
 
+          {article.id === articleEightId && (
+            <ArticleEightVisual
+              src={skillsMcpRagMemoryInfographic}
+              alt="Infographic explaining the roles of AI Skills, MCP, RAG, and Memory"
+            />
+          )}
+
           {article.sections ? (
             <div className="space-y-10">
-              {article.sections.map((section) => (
-                <section key={section.heading}>
-                  <h2
-                    className="text-[#0f1523] text-xl sm:text-2xl font-bold mb-4"
-                    style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
-                  >
-                    {section.heading}
-                  </h2>
-                  <div className="space-y-4">
-                    {section.paragraphs.map((paragraph) => (
-                      <p key={paragraph} className="leading-relaxed">{paragraph}</p>
-                    ))}
-                  </div>
-                </section>
-              ))}
+              {article.sections.map((section, index) => {
+                const isArticleEightTogetherSection =
+                  article.id === articleEightId &&
+                  section.heading.toLowerCase().includes("together");
+
+                const isArticleEightWorkflowFallback =
+                  article.id === articleEightId &&
+                  !article.sections!.some((item) => item.heading.toLowerCase().includes("together")) &&
+                  index === 2;
+
+                return (
+                  <section key={section.heading}>
+                    <h2
+                      className="text-[#0f1523] text-xl sm:text-2xl font-bold mb-4"
+                      style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
+                    >
+                      {section.heading}
+                    </h2>
+                    <div className="space-y-4">
+                      {section.paragraphs.map((paragraph) => (
+                        <p key={paragraph} className="leading-relaxed">{paragraph}</p>
+                      ))}
+                    </div>
+
+                    {(isArticleEightTogetherSection || isArticleEightWorkflowFallback) && (
+                      <ArticleEightVisual
+                        src={error500Workflow}
+                        alt="Workflow showing how Skills, MCP, RAG, and Memory help an AI troubleshoot a 500 Internal Server Error"
+                      />
+                    )}
+                  </section>
+                );
+              })}
             </div>
           ) : (
             article.body.map((para, i) => (
