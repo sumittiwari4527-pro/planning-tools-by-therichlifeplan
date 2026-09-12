@@ -5,6 +5,7 @@ import { useLocation, useNavigate as useRouterNavigate } from "react-router";
 // ─── Constants & Types ───────────────────────────────────────────
 import { SITE_NAME, CurrencyCode } from "./utils/constants";
 import { useSEO } from "./hooks/useSEO";
+import { articlePathById, pathForTool, toolIdByPath } from "./utils/routes";
 
 // ─── Features ────────────────────────────────────────────────────
 import { FIRECalculator } from "./features/fire-calculator/FIRECalculator";
@@ -28,28 +29,11 @@ const tools = [
   { id: "unit", icon: Hash, name: "Unit Converter", desc: "Convert between length, weight, and temperature", color: "#f59e0b", bg: "#fef3c7" },
 ];
 
-const articleSlug = (title: string) =>
-  title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-
-const articleRoutes = new Map(
-  articles.map((article) => [article.id, `/blog/${articleSlug(article.title)}`])
-);
-
 const pageFromPath = (path: string): Page => {
   if (path === "/") return "home";
   if (path === "/blog") return "blog";
   if (path.startsWith("/blog/")) return "article";
   return "tools";
-};
-
-const toolFromPath = (path: string): string => {
-  const entry = Object.entries({
-    fire: "/tools/fire-calculator",
-    goal: "/tools/goal-planner",
-    bmi: "/tools/bmi-calculator",
-    unit: "/tools/unit-converter",
-  }).find(([, route]) => route === path);
-  return entry?.[0] || "fire";
 };
 
 // ─── App Component ──────────────────────────────────────────────
@@ -58,24 +42,28 @@ export default function App() {
   const routerNavigate = useRouterNavigate();
   const path = location.pathname.replace(/\/+$/, "") || "/";
   const page = pageFromPath(path);
-  const routeArticle = articles.find((article) => articleRoutes.get(article.id) === path);
+  const routeArticle = articles.find((article) => articlePathById.get(article.id) === path);
   const [currency, setCurrency] = useState<CurrencyCode>("USD");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [selectedTool, setSelectedTool] = useState<string>(() => toolFromPath(path));
+  const [selectedTool, setSelectedTool] = useState<string>(() => toolIdByPath.get(path) || "fire");
 
   const navigate = (newPage: Page, tool?: string) => {
-    const route = newPage === "home" ? "/" : newPage === "tools" ? (tool ? `/tools/${tool === "fire" ? "fire-calculator" : tool === "goal" ? "goal-planner" : tool === "bmi" ? "bmi-calculator" : "unit-converter"}` : "/tools") : "/blog";
+    const route = newPage === "home"
+      ? "/"
+      : newPage === "tools"
+        ? (tool ? pathForTool(tool) : "/tools")
+        : "/blog";
     routerNavigate(route);
     setSelectedTool(tool || (newPage === "tools" ? selectedTool : "fire"));
     setMobileMenuOpen(false);
   };
 
   const openArticle = useCallback((id: number) => {
-    const route = articleRoutes.get(id);
+    const route = articlePathById.get(id);
     if (route) routerNavigate(route);
   }, [routerNavigate]);
 
-  const activeTool = page === "tools" ? (toolFromPath(path) || selectedTool) : selectedTool;
+  const activeTool = page === "tools" ? (toolIdByPath.get(path) || selectedTool) : selectedTool;
   const activeArticleId = page === "article" ? routeArticle?.id ?? null : null;
 
   // ─── SEO Setup ──────────────────────────────────────────────────
@@ -99,7 +87,7 @@ export default function App() {
       ? {
           title: routeArticle.title,
           description: routeArticle.excerpt,
-          url: articleRoutes.get(routeArticle.id),
+          url: articlePathById.get(routeArticle.id),
           type: "article" as const,
         }
       : null,
@@ -168,7 +156,7 @@ export default function App() {
 
         {/* TOOLS PAGE */}
         {page === "tools" && (
-          <div className="pt-16 min-h-screen bg-[#f8f9fb]"><div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16"><div className="mb-12"><div className="text-[#0f1523] text-xs font-mono uppercase tracking-widest mb-4">Calculators</div><h2 className="text-3xl font-bold text-[#0f1523] mb-4" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Precision instruments</h2><p className="text-[#6b7a99] mb-8 text-sm">Precision instruments for everyday calculations.</p><div className="flex flex-wrap gap-2 mb-8">{tools.map((t) => <button key={t.id} onClick={() => { setSelectedTool(t.id); routerNavigate(`/tools/${t.id === "fire" ? "fire-calculator" : t.id === "goal" ? "goal-planner" : t.id === "bmi" ? "bmi-calculator" : "unit-converter"}`); }} className={`px-5 py-2.5 rounded-2xl text-sm font-medium transition-all cursor-pointer ${activeTool === t.id ? "text-white shadow-lg" : "bg-white text-[#6b7a99] border border-[#e4e8f0] hover:border-indigo-200 hover:text-[#0f1523] shadow-sm"}`} style={activeTool === t.id ? { backgroundColor: t.color, boxShadow: `0 8px 20px ${t.color}30` } : {}}>{t.name}</button>)}</div></div><div className="bg-white rounded-3xl p-8 border border-[#e4e8f0] shadow-sm">{activeTool === "fire" && <FIRECalculator currency={currency} setCurrency={setCurrency} />}{activeTool === "goal" && <GoalPlanner currency={currency} setCurrency={setCurrency} />}{activeTool === "bmi" && <BMICalculator />}{activeTool === "unit" && <UnitConverter />}</div></div></div>
+          <div className="pt-16 min-h-screen bg-[#f8f9fb]"><div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16"><div className="mb-12"><div className="text-[#0f1523] text-xs font-mono uppercase tracking-widest mb-4">Calculators</div><h2 className="text-3xl font-bold text-[#0f1523] mb-4" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Precision instruments</h2><p className="text-[#6b7a99] mb-8 text-sm">Precision instruments for everyday calculations.</p><div className="flex flex-wrap gap-2 mb-8">{tools.map((t) => <button key={t.id} onClick={() => { setSelectedTool(t.id); routerNavigate(pathForTool(t.id)); }} className={`px-5 py-2.5 rounded-2xl text-sm font-medium transition-all cursor-pointer ${activeTool === t.id ? "text-white shadow-lg" : "bg-white text-[#6b7a99] border border-[#e4e8f0] hover:border-indigo-200 hover:text-[#0f1523] shadow-sm"}`} style={activeTool === t.id ? { backgroundColor: t.color, boxShadow: `0 8px 20px ${t.color}30` } : {}}>{t.name}</button>)}</div></div><div className="bg-white rounded-3xl p-8 border border-[#e4e8f0] shadow-sm">{activeTool === "fire" && <FIRECalculator currency={currency} setCurrency={setCurrency} />}{activeTool === "goal" && <GoalPlanner currency={currency} setCurrency={setCurrency} />}{activeTool === "bmi" && <BMICalculator />}{activeTool === "unit" && <UnitConverter />}</div></div></div>
         )}
 
         {page === "blog" && <Blog onSelectArticle={openArticle} />}
