@@ -1,1 +1,46 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520"><rect width="1200" height="520" rx="32" fill="#0f1523"/><g font-family="Arial,sans-serif"><text x="70" y="80" font-size="38" font-weight="700" fill="#fff">Website returns 500. What does the AI need?</text><rect x="70" y="145" width="220" height="230" rx="22" fill="#fff"/><text x="105" y="195" font-size="28" font-weight="700" fill="#dc2626">500</text><text x="105" y="235" font-size="20" font-weight="700" fill="#0f1523">Internal Server</text><text x="105" y="263" font-size="20" font-weight="700" fill="#0f1523">Error</text><text x="105" y="315" font-size="16" fill="#6b7a99">The symptom</text><path d="M310 260 H385" stroke="#94a3b8" stroke-width="5"/><path d="M375 248 L390 260 L375 272" fill="#94a3b8"/><rect x="410" y="145" width="170" height="230" rx="22" fill="#eef0fd"/><text x="445" y="195" font-size="24" font-weight="700" fill="#4f46e5">SKILL</text><text x="445" y="235" font-size="17" fill="#0f1523">Follow the</text><text x="445" y="260" font-size="17" fill="#0f1523">diagnosis steps</text><path d="M600 260 H675" stroke="#94a3b8" stroke-width="5"/><path d="M665 248 L680 260 L665 272" fill="#94a3b8"/><rect x="700" y="145" width="170" height="230" rx="22" fill="#ecfeff"/><text x="735" y="195" font-size="24" font-weight="700" fill="#0891b2">MCP</text><text x="735" y="235" font-size="17" fill="#0f1523">Access logs,</text><text x="735" y="260" font-size="17" fill="#0f1523">metrics, tools</text><path d="M890 260 H965" stroke="#94a3b8" stroke-width="5"/><path d="M955 248 L970 260 L955 272" fill="#94a3b8"/><rect x="990" y="145" width="140" height="230" rx="22" fill="#ecfdf5"/><text x="1020" y="195" font-size="24" font-weight="700" fill="#059669">RAG</text><text x="1020" y="235" font-size="16" fill="#0f1523">Find the</text><text x="1020" y="260" font-size="16" fill="#0f1523">right runbook</text><text x="70" y="440" font-size="19" fill="#cbd5e1">Memory can add the final context: “This service was migrated last week.”</text><text x="70" y="475" font-size="18" fill="#94a3b8">Together, they turn a vague error into a structured troubleshooting workflow.</text></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">How four AI capabilities help troubleshoot a 500 error</title>
+  <desc id="desc">A troubleshooting flow from a 500 error through Skill, MCP, RAG and Memory to a structured diagnosis.</desc>
+  <rect width="1200" height="720" rx="32" fill="#0f1523"/>
+  <text x="70" y="72" font-family="Arial,sans-serif" font-size="38" font-weight="700" fill="#fff">Website returns 500. What does the AI need?</text>
+  <rect x="70" y="120" width="1060" height="88" rx="20" fill="#1e293b"/>
+  <text x="100" y="157" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#94a3b8">START WITH THE SYMPTOM</text>
+  <text x="100" y="187" font-family="Arial,sans-serif" font-size="22" fill="#fff">500 Internal Server Error — the system needs a structured investigation.</text>
+  <g font-family="Arial,sans-serif">
+    <rect x="70" y="250" width="235" height="300" rx="24" fill="#eef0fd"/>
+    <text x="100" y="302" font-size="28" font-weight="700" fill="#4f46e5">1 · SKILL</text>
+    <text x="100" y="350" font-size="23" font-weight="700" fill="#0f1523">The recipe</text>
+    <text x="100" y="395" font-size="17" fill="#48536b">Follow the diagnosis</text>
+    <text x="100" y="420" font-size="17" fill="#48536b">steps instead of</text>
+    <text x="100" y="445" font-size="17" fill="#48536b">random guessing.</text>
+    <text x="100" y="500" font-size="16" font-weight="600" fill="#0f1523">Method</text>
+
+    <rect x="325" y="250" width="235" height="300" rx="24" fill="#ecfeff"/>
+    <text x="355" y="302" font-size="28" font-weight="700" fill="#0891b2">2 · MCP</text>
+    <text x="355" y="350" font-size="23" font-weight="700" fill="#0f1523">The hands</text>
+    <text x="355" y="395" font-size="17" fill="#48536b">Access authorized</text>
+    <text x="355" y="420" font-size="17" fill="#48536b">logs, metrics, repos</text>
+    <text x="355" y="445" font-size="17" fill="#48536b">and diagnostic tools.</text>
+    <text x="355" y="500" font-size="16" font-weight="600" fill="#0f1523">Access</text>
+
+    <rect x="580" y="250" width="235" height="300" rx="24" fill="#ecfdf5"/>
+    <text x="610" y="302" font-size="28" font-weight="700" fill="#059669">3 · RAG</text>
+    <text x="610" y="350" font-size="23" font-weight="700" fill="#0f1523">The library</text>
+    <text x="610" y="395" font-size="17" fill="#48536b">Retrieve the right</text>
+    <text x="610" y="420" font-size="17" fill="#48536b">runbook, architecture</text>
+    <text x="610" y="445" font-size="17" fill="#48536b">notes and incidents.</text>
+    <text x="610" y="500" font-size="16" font-weight="600" fill="#0f1523">Knowledge</text>
+
+    <rect x="835" y="250" width="295" height="300" rx="24" fill="#fff7ed"/>
+    <text x="865" y="302" font-size="28" font-weight="700" fill="#ea580c">4 · MEMORY</text>
+    <text x="865" y="350" font-size="23" font-weight="700" fill="#0f1523">The notebook</text>
+    <text x="865" y="395" font-size="17" fill="#48536b">Carry useful project</text>
+    <text x="865" y="420" font-size="17" fill="#48536b">context, preferences</text>
+    <text x="865" y="445" font-size="17" fill="#48536b">and prior facts forward.</text>
+    <text x="865" y="500" font-size="16" font-weight="600" fill="#0f1523">Continuity</text>
+  </g>
+  <path d="M305 400 H325 M560 400 H580 M815 400 H835" stroke="#94a3b8" stroke-width="5"/>
+  <path d="M316 388 L331 400 L316 412 M571 388 L586 400 L571 412 M826 388 L841 400 L826 412" fill="#94a3b8"/>
+  <rect x="70" y="590" width="1060" height="72" rx="18" fill="#172033"/>
+  <text x="100" y="635" font-family="Arial,sans-serif" font-size="19" font-weight="600" fill="#e2e8f0">Together: method + access + relevant knowledge + continuity → a structured troubleshooting workflow.</text>
+</svg>
