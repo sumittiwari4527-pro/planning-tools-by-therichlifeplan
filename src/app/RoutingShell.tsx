@@ -30,9 +30,13 @@ const clickContains = (text: string) => buttons().find((b) => b.textContent?.inc
 
 const clickForRoute = (route: string) => {
   if (route === "/") return clickText("Home");
+  if (route === "/tools") return clickText("Tools");
+  if (route === "/blog") return clickText("Blog");
+
   const tool = Object.entries(toolRoutes).find(([, value]) => value === route)?.[0];
   const names: Record<string, string> = { fire: "FIRE Calculator", goal: "Goal Planner", bmi: "BMI Calculator", unit: "Unit Converter" };
   if (tool) return clickContains(names[tool]);
+
   const article = articles.find((item) => articleRoutes.get(item.id) === route);
   if (article) {
     clickText("Blog");
