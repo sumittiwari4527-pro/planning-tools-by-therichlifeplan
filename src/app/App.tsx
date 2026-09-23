@@ -91,6 +91,17 @@ export default function App() {
       description: "Practical digital guides, templates, printables, and tools for a richer life.",
       url: "/products",
     },
+    product: routeProduct
+      ? {
+          title: routeProduct.name,
+          description: routeProduct.shortDescription,
+          url: productPath(routeProduct.slug),
+        }
+      : {
+          title: "Product Not Found",
+          description: "The requested digital product could not be found.",
+          url: path,
+        },
     article: routeArticle
       ? {
           title: routeArticle.title,
