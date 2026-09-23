@@ -16,4 +16,6 @@ export interface Product {
   badge?: "NEW" | "POPULAR" | "FREE";
   isFree: boolean;
   href: string;
+  /** Optional future checkout destination; intentionally unused until commerce integration. */
+  purchaseUrl?: string;
 }
