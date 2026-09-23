@@ -1,7 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import type { Product } from "../types";
 import { ProductBadge } from "./ProductBadge";
-import { productPath } from "../../../utils/routes";
 
 const typeLabels: Record<Product["type"], string> = {
   ebook: "Ebook",
@@ -13,8 +12,7 @@ const typeLabels: Record<Product["type"], string> = {
 export function ProductCard({ product, onOpen }: { product: Product; onOpen: (product: Product) => void }) {
   return (
     <article className="group overflow-hidden rounded-3xl border border-[#e4e8f0] bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-50">
-      <button onClick={() => onOpen(product)} className="block w-full text-left cursor-pointer" aria-label={`View ${product.name}`}
-        data-product-path={productPath(product.slug)}>
+      <button onClick={() => onOpen(product)} className="block w-full text-left cursor-pointer" aria-label={`View ${product.name}`}>
         <div className="relative aspect-[4/3] overflow-hidden bg-[#f3f5f9] p-5">
           <div
             className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-2xl px-8 text-center shadow-lg transition-transform duration-500 group-hover:scale-[1.02]"
