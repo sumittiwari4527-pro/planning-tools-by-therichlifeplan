@@ -333,7 +333,18 @@ export default function App() {
         )}
 
         {/* PRODUCTS PAGE */}
-        {page === "products" && <ProductsPage onOpenProduct={() => routerNavigate(PRODUCTS_ROUTE)} />}
+        {page === "products" && <ProductsPage onOpenProduct={(product) => routerNavigate(productPath(product.slug))} />}
+
+        {page === "product" && routeProduct && (
+          <ProductDetailPage product={routeProduct} onBack={() => routerNavigate(PRODUCTS_ROUTE)} />
+        )}
+
+        {page === "product" && !routeProduct && (
+          <div className="min-h-screen bg-[#f8f9fb] pt-16 px-4 py-24 text-center">
+            <h1 className="text-3xl font-bold text-[#0f1523]">Product not found</h1>
+            <button onClick={() => routerNavigate(PRODUCTS_ROUTE)} className="mt-6 rounded-2xl bg-[#4f46e5] px-5 py-3 text-sm font-semibold text-white cursor-pointer">Back to products</button>
+          </div>
+        )}
 
         {/* BLOG PAGE */}
         {page === "blog" && <Blog onSelectArticle={openArticle} />}
