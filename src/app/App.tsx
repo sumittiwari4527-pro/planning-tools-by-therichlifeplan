@@ -81,6 +81,11 @@ export default function App() {
       description: "In-depth pieces on mathematics, science, finance, and beyond.",
       url: "/blog",
     },
+    products: {
+      title: "Digital Products",
+      description: "Practical digital guides, templates, printables, and tools for a richer life.",
+      url: "/products",
+    },
     article: routeArticle
       ? {
           title: routeArticle.title,
