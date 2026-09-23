@@ -1,0 +1,75 @@
+import type { Product } from "../../features/products/types";
+
+export const products: Product[] = [
+  {
+    id: "ai-life-upgrade",
+    slug: "ai-life-upgrade",
+    name: "AI Life Upgrade",
+    shortDescription: "Practical AI workflows, prompts and examples for everyday life.",
+    category: "AI",
+    type: "ebook",
+    price: 499,
+    currency: "INR",
+    coverLabel: "AI\nLIFE UPGRADE",
+    coverAccent: "#4f46e5",
+    featured: true,
+    badge: "NEW",
+    isFree: false,
+    href: "/products/ai-life-upgrade",
+  },
+  {
+    id: "smart-goal-planner",
+    slug: "smart-goal-planner",
+    name: "Smart Goal Planner",
+    shortDescription: "A practical system for planning, funding and tracking meaningful goals.",
+    category: "Money",
+    type: "tool",
+    price: 699,
+    currency: "INR",
+    coverLabel: "SMART\nGOAL PLANNER",
+    coverAccent: "#059669",
+    featured: true,
+    badge: "POPULAR",
+    isFree: false,
+    href: "/products/smart-goal-planner",
+  },
+  {
+    id: "mermaid-coloring-book",
+    slug: "mermaid-coloring-book",
+    name: "Mermaid Coloring Book",
+    shortDescription: "A fun printable coloring adventure designed for young kids.",
+    category: "Family & Kids",
+    type: "printable",
+    price: 199,
+    currency: "INR",
+    coverLabel: "MERMAID\nCOLORING BOOK",
+    coverAccent: "#0891b2",
+    featured: true,
+    badge: "NEW",
+    isFree: false,
+    href: "/products/mermaid-coloring-book",
+  },
+  {
+    id: "everyday-ai-prompt-pack",
+    slug: "everyday-ai-prompt-pack",
+    name: "Everyday AI Prompt Pack",
+    shortDescription: "Ready-to-use prompts for work, planning, research and everyday tasks.",
+    category: "AI",
+    type: "template",
+    price: 299,
+    currency: "INR",
+    coverLabel: "EVERYDAY AI\nPROMPT PACK",
+    coverAccent: "#7c3aed",
+    featured: false,
+    isFree: false,
+    href: "/products/everyday-ai-prompt-pack",
+  },
+];
+
+export const getFeaturedProducts = () => products.filter((product) => product.featured);
+
+export const getProductsByCategory = (category: "all" | Product["category"]) =>
+  category === "all" ? products : products.filter((product) => product.category === category);
+
+export const getProductBySlug = (slug: string) =>
+  products.find((product) => product.slug === slug);
