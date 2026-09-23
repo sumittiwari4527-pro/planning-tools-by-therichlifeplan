@@ -10,6 +10,8 @@ export const TOOL_ROUTES = {
 export type ToolId = keyof typeof TOOL_ROUTES;
 
 export const PRODUCTS_ROUTE = "/products";
+export const productPath = (slug: string) => `${PRODUCTS_ROUTE}/${slug}`;
+export const productSlugFromPath = (path: string) => path.startsWith(`${PRODUCTS_ROUTE}/`) ? path.slice(`${PRODUCTS_ROUTE}/`.length).replace(/\/+$/, "") : null;
 
 const slugify = (value: string) =>
   value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
