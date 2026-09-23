@@ -11,6 +11,8 @@ export type ToolId = keyof typeof TOOL_ROUTES;
 
 export const PRODUCTS_ROUTE = "/products";
 
+export const PRODUCTS_ROUTE = "/products";
+
 const slugify = (value: string) =>
   value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
