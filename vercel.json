@@ -3,6 +3,8 @@
     { "source": "/tools", "destination": "/index.html" },
     { "source": "/tools/:path*", "destination": "/index.html" },
     { "source": "/blog", "destination": "/index.html" },
-    { "source": "/blog/:path*", "destination": "/index.html" }
+    { "source": "/blog/:path*", "destination": "/index.html" },
+    { "source": "/products", "destination": "/index.html" },
+    { "source": "/products/:path*", "destination": "/index.html" }
   ]
 }
