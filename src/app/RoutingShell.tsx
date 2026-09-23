@@ -12,6 +12,7 @@ export default function RoutingShell() {
           <Route key={path} path={path} element={<App />} />
         ))}
         <Route path="/products" element={<App />} />
+        <Route path="/products/:slug" element={<App />} />
         <Route path="/blog" element={<App />} />
         {ARTICLE_ROUTES.map((article) => (
           <Route key={article.id} path={article.path} element={<App />} />
