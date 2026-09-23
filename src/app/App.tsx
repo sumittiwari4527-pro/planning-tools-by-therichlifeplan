@@ -5,7 +5,7 @@ import { useLocation, useNavigate as useRouterNavigate } from "react-router";
 // ─── Constants & Types ───────────────────────────────────────────
 import { SITE_NAME, CurrencyCode, CURRENCY_OPTIONS } from "./utils/constants";
 import { useSEO } from "./hooks/useSEO";
-import { articlePathById, pathForTool, toolIdByPath, ToolId } from "./utils/routes";
+import { articlePathById, pathForTool, toolIdByPath, ToolId, PRODUCTS_ROUTE } from "./utils/routes";
 
 // ─── Features ────────────────────────────────────────────────────
 import { FIRECalculator } from "./features/fire-calculator/FIRECalculator";
@@ -14,12 +14,13 @@ import { BMICalculator } from "./features/bmi-calculator/BMICalculator";
 import { UnitConverter } from "./features/unit-converter/UnitConverter";
 import { Blog } from "./features/blog/Blog";
 import { ArticleView } from "./features/blog/ArticleView";
+import { ProductsPage } from "./features/products/ProductsPage";
 
 // ─── Data ───────────────────────────────────────────────────────
 import { articles } from "./data/articles";
 
 // ─── Types ──────────────────────────────────────────────────────
-type Page = "home" | "tools" | "blog" | "article";
+type Page = "home" | "tools" | "blog" | "article" | "products";
 
 // ─── Tool Definitions ───────────────────────────────────────────
 const tools = [
@@ -33,6 +34,7 @@ const pageFromPath = (path: string): Page => {
   if (path === "/") return "home";
   if (path === "/blog") return "blog";
   if (path.startsWith("/blog/")) return "article";
+  if (path === PRODUCTS_ROUTE) return "products";
   return "tools";
 };
 
@@ -48,7 +50,7 @@ export default function App() {
   const [selectedTool, setSelectedTool] = useState<string>(() => toolIdByPath.get(path) || "fire");
 
   const navigate = (newPage: Page, tool?: ToolId) => {
-    const route = newPage === "home" ? "/" : newPage === "tools" ? (tool ? pathForTool(tool) : "/tools") : "/blog";
+    const route = newPage === "home" ? "/" : newPage === "tools" ? (tool ? pathForTool(tool) : "/tools") : newPage === "products" ? PRODUCTS_ROUTE : "/blog";
     routerNavigate(route);
     setSelectedTool(tool || (newPage === "tools" ? selectedTool : "fire"));
     setMobileMenuOpen(false);
@@ -95,6 +97,7 @@ export default function App() {
   const navLinks: [Page, string][] = [
     ["home", "Home"],
     ["tools", "Tools"],
+    ["products", "Products"],
     ["blog", "Blog"],
   ];
 
@@ -307,6 +310,9 @@ export default function App() {
             </div>
           </div>
         )}
+
+        {/* PRODUCTS PAGE */}
+        {page === "products" && <ProductsPage onOpenProduct={() => routerNavigate(PRODUCTS_ROUTE)} />}
 
         {/* BLOG PAGE */}
         {page === "blog" && <Blog onSelectArticle={openArticle} />}
