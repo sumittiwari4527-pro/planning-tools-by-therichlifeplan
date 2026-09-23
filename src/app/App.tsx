@@ -5,7 +5,7 @@ import { useLocation, useNavigate as useRouterNavigate } from "react-router";
 // ─── Constants & Types ───────────────────────────────────────────
 import { SITE_NAME, CurrencyCode, CURRENCY_OPTIONS } from "./utils/constants";
 import { useSEO } from "./hooks/useSEO";
-import { articlePathById, pathForTool, toolIdByPath, ToolId, PRODUCTS_ROUTE } from "./utils/routes";
+import { articlePathById, pathForTool, toolIdByPath, ToolId, PRODUCTS_ROUTE, productPath, productSlugFromPath } from "./utils/routes";
 
 // ─── Features ────────────────────────────────────────────────────
 import { FIRECalculator } from "./features/fire-calculator/FIRECalculator";
@@ -15,12 +15,14 @@ import { UnitConverter } from "./features/unit-converter/UnitConverter";
 import { Blog } from "./features/blog/Blog";
 import { ArticleView } from "./features/blog/ArticleView";
 import { ProductsPage } from "./features/products/ProductsPage";
+import { ProductDetailPage } from "./features/products/ProductDetailPage";
+import { getProductBySlug } from "./data/products/products";
 
 // ─── Data ───────────────────────────────────────────────────────
 import { articles } from "./data/articles";
 
 // ─── Types ──────────────────────────────────────────────────────
-type Page = "home" | "tools" | "blog" | "article" | "products";
+type Page = "home" | "tools" | "blog" | "article" | "products" | "product";
 
 // ─── Tool Definitions ───────────────────────────────────────────
 const tools = [
@@ -35,6 +37,7 @@ const pageFromPath = (path: string): Page => {
   if (path === "/blog") return "blog";
   if (path.startsWith("/blog/")) return "article";
   if (path === PRODUCTS_ROUTE) return "products";
+  if (path.startsWith(`${PRODUCTS_ROUTE}/`)) return "product";
   return "tools";
 };
 
@@ -45,6 +48,8 @@ export default function App() {
   const path = location.pathname.replace(/\/+$/, "") || "/";
   const page = pageFromPath(path);
   const routeArticle = articles.find((article) => articlePathById.get(article.id) === path);
+  const productSlug = productSlugFromPath(path);
+  const routeProduct = productSlug ? getProductBySlug(productSlug) : undefined;
   const [currency, setCurrency] = useState<CurrencyCode>("USD");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedTool, setSelectedTool] = useState<string>(() => toolIdByPath.get(path) || "fire");
@@ -86,6 +91,17 @@ export default function App() {
       description: "Practical digital guides, templates, printables, and tools for a richer life.",
       url: "/products",
     },
+    product: routeProduct
+      ? {
+          title: routeProduct.name,
+          description: routeProduct.shortDescription,
+          url: productPath(routeProduct.slug),
+        }
+      : {
+          title: "Product Not Found",
+          description: "The requested digital product could not be found.",
+          url: path,
+        },
     article: routeArticle
       ? {
           title: routeArticle.title,
@@ -317,7 +333,18 @@ export default function App() {
         )}
 
         {/* PRODUCTS PAGE */}
-        {page === "products" && <ProductsPage onOpenProduct={() => routerNavigate(PRODUCTS_ROUTE)} />}
+        {page === "products" && <ProductsPage onOpenProduct={(product) => routerNavigate(productPath(product.slug))} />}
+
+        {page === "product" && routeProduct && (
+          <ProductDetailPage product={routeProduct} onBack={() => routerNavigate(PRODUCTS_ROUTE)} />
+        )}
+
+        {page === "product" && !routeProduct && (
+          <div className="min-h-screen bg-[#f8f9fb] pt-16 px-4 py-24 text-center">
+            <h1 className="text-3xl font-bold text-[#0f1523]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Product not found</h1>
+            <button onClick={() => routerNavigate(PRODUCTS_ROUTE)} className="mt-6 rounded-2xl bg-[#4f46e5] px-5 py-3 text-sm font-semibold text-white cursor-pointer">Back to products</button>
+          </div>
+        )}
 
         {/* BLOG PAGE */}
         {page === "blog" && <Blog onSelectArticle={openArticle} />}
