@@ -39,6 +39,7 @@ declare global {
 const checkoutUrl = import.meta.env.VITE_LEMON_SQUEEZY_PARKING_CHECKOUT_URL as string | undefined;
 
 const isValidPhone = (value: string) => value.replace(/\D/g, "").length >= 10;
+const isValidEmail = (value: string) => /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(value.trim());
 
 export function ParkingStickerBuilder() {
   const [form, setForm] = useState<FormState>(initialForm);
@@ -52,6 +53,7 @@ export function ParkingStickerBuilder() {
   const canPreview =
     form.name.trim().length >= 2 &&
     isValidPhone(form.phone) &&
+    isValidEmail(form.email) &&
     form.vehicle.trim().length >= 2;
 
   const update = (field: keyof FormState, value: string) => {
@@ -249,7 +251,7 @@ export function ParkingStickerBuilder() {
               </label>
 
               <label className="block">
-                <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Mail size={15} /> Email <span className="font-normal text-[#8b95aa]">(optional for preview)</span></span>
+                <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Mail size={15} /> Email *</span>
                 <input
                   value={form.email}
                   onChange={(event) => update("email", event.target.value)}
