@@ -28,7 +28,7 @@ const initialForm: FormState = {
 declare global {
   interface Window {
     LemonSqueezy?: {
-      Setup: (options: { eventHandler: (event: { event: string; data?: { id?: string | number; identifier?: string } }) => void }) => void;
+      Setup: (options: { eventHandler: (event: { event: string; data?: { id?: string | number; identifier?: string; attributes?: { identifier?: string } } }) => void }) => void;
       Url: { Open: (url: string) => void };
       Refresh: () => void;
     };
@@ -144,16 +144,37 @@ export function ParkingStickerBuilder() {
   }, [finalPayload]);
 
   useEffect(() => {
-    if (!window.LemonSqueezy || !checkoutUrl) return;
+    if (!checkoutUrl) return;
 
-    window.LemonSqueezy.Setup({
-      eventHandler: (event) => {
-        if (event.event !== "Checkout.Success") return;
-        const orderId = event.data?.id ?? event.data?.identifier ?? "paid";
-        setFinalOrderId(String(orderId));
-        setPaymentComplete(true);
-      },
-    });
+    const setup = () => {
+      if (!window.LemonSqueezy) return false;
+      window.LemonSqueezy.Setup({
+        eventHandler: (event) => {
+          if (event.event !== "Checkout.Success") return;
+          const orderId =
+            event.data?.attributes?.identifier ??
+            event.data?.identifier ??
+            event.data?.id ??
+            "paid";
+          setFinalOrderId(String(orderId));
+          setPaymentComplete(true);
+        },
+      });
+      return true;
+    };
+
+    if (setup()) return;
+
+    const retry = window.setInterval(() => {
+      if (setup()) window.clearInterval(retry);
+    }, 250);
+
+    const timeout = window.setTimeout(() => window.clearInterval(retry), 5000);
+
+    return () => {
+      window.clearInterval(retry);
+      window.clearTimeout(timeout);
+    };
   }, []);
 
   const startCheckout = () => {
