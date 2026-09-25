@@ -64,6 +64,22 @@ export const products: Product[] = [
     isFree: false,
     href: "/products/everyday-ai-prompt-pack",
   },
+  {
+    id: "smart-parking-sticker",
+    slug: "smart-parking-sticker",
+    name: "Smart Parking Sticker",
+    shortDescription: "A personalized QR sticker that lets people contact you when your car needs attention.",
+    category: "Productivity",
+    type: "printable",
+    price: 199,
+    currency: "INR",
+    coverLabel: "SMART\nPARKING STICKER",
+    coverAccent: "#00b968",
+    featured: false,
+    badge: "NEW",
+    isFree: false,
+    href: "/products/smart-parking-sticker",
+  },
 ];
 
 export const getFeaturedProducts = () => products.filter((product) => product.featured);
