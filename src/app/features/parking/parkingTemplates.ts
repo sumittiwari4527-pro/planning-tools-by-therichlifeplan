@@ -88,6 +88,12 @@ export const buildParkingTemplateSvg = ({ theme, qrDataUrl, vehicle }: TemplateO
     <rect x="760" y="70" width="676" height="590" rx="36" fill="#ffffff" filter="url(#shadow)"/>
     <rect x="774" y="84" width="648" height="562" rx="28" fill="#ffffff" stroke="${green}" stroke-width="10"/>
     <image href="${qrDataUrl}" x="806" y="100" width="584" height="530" preserveAspectRatio="none"/>
+    <g transform="translate(1048 320) scale(.96)">
+      <rect width="104" height="104" rx="24" fill="${dark ? "#071421" : "#0b1722"}" stroke="#ffffff" stroke-width="3"/>
+      <circle cx="52" cy="52" r="36" fill="none" stroke="#ffffff" stroke-width="2"/>
+      <path d="M42 69 L72 30 L63 54 L82 49 L49 80 L57 59 Z" fill="#00e87f"/>
+      <path d="M23 52 H36 M68 52 H81 M52 23 V36 M52 68 V81" stroke="#ffffff" stroke-width="2"/>
+    </g>
 
     <rect x="772" y="671" width="650" height="92" rx="46" fill="url(#green)"/>
     <rect x="835" y="692" width="47" height="47" rx="12" fill="#ffffff" opacity=".98"/>
