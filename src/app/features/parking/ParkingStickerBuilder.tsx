@@ -233,7 +233,7 @@ export function ParkingStickerBuilder() {
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-7 text-[#6b7a99]">
             Add your contact details, choose a sticker style and see a live QR preview before you buy.
-            The preview QR works for 24 hours.
+            Your preview QR is temporary; the purchased sticker gets a permanent QR.
           </p>
         </div>
 
@@ -316,7 +316,7 @@ export function ParkingStickerBuilder() {
                 disabled={!canPreview}
                 className="w-full rounded-2xl bg-[#071421] px-5 py-3.5 text-sm font-bold text-white transition hover:bg-[#102331] disabled:cursor-not-allowed disabled:bg-[#d9dfea]"
               >
-                <span className="inline-flex items-center gap-2"><QrCode size={16} /> Generate 24-hour preview</span>
+                <span className="inline-flex items-center gap-2"><QrCode size={16} /> Preview your sticker</span>
               </button>
 
               {error && <p className="rounded-2xl bg-red-50 p-3 text-sm text-red-700">{error}</p>}
@@ -331,7 +331,7 @@ export function ParkingStickerBuilder() {
               </div>
               {previewPayload && (
                 <span className="rounded-full bg-[#eefaf3] px-3 py-1 text-xs font-semibold text-[#008d50]">
-                  Valid for 24 hours
+                  Preview QR
                 </span>
               )}
             </div>
@@ -343,8 +343,8 @@ export function ParkingStickerBuilder() {
                 <div className="flex min-h-[420px] items-center justify-center rounded-xl bg-[#f6f8fb] text-center">
                   <div className="max-w-sm px-6">
                     <QrCode className="mx-auto text-[#b5becd]" size={48} />
-                    <p className="mt-4 text-sm font-semibold text-[#45516a]">Enter your details to generate the live sticker preview.</p>
-                    <p className="mt-2 text-xs leading-5 text-[#8b95aa]">The QR is generated in your browser and points to your RichLifeTools parking page.</p>
+                    <p className="mt-4 text-sm font-semibold text-[#45516a]">Enter your details to preview the live sticker.</p>
+                    <p className="mt-2 text-xs leading-5 text-[#8b95aa]">The QR is generated in your browser and points to your RichLifeTools parking page. Your purchased sticker gets a permanent QR.</p>
                   </div>
                 </div>
               )}
