@@ -16,13 +16,15 @@ import { Blog } from "./features/blog/Blog";
 import { ArticleView } from "./features/blog/ArticleView";
 import { ProductsPage } from "./features/products/ProductsPage";
 import { ProductDetailPage } from "./features/products/ProductDetailPage";
+import { ParkingStickerBuilder } from "./features/parking/ParkingStickerBuilder";
+import { ParkingScanPage } from "./features/parking/ParkingScanPage";
 import { getProductBySlug } from "./data/products/products";
 
 // ─── Data ───────────────────────────────────────────────────────
 import { articles } from "./data/articles";
 
 // ─── Types ──────────────────────────────────────────────────────
-type Page = "home" | "tools" | "blog" | "article" | "products" | "product";
+type Page = "home" | "tools" | "blog" | "article" | "products" | "product" | "parking";
 
 // ─── Tool Definitions ───────────────────────────────────────────
 const tools = [
@@ -36,6 +38,7 @@ const pageFromPath = (path: string): Page => {
   if (path === "/") return "home";
   if (path === "/blog") return "blog";
   if (path.startsWith("/blog/")) return "article";
+  if (path === "/parking") return "parking";
   if (path === PRODUCTS_ROUTE) return "products";
   if (path.startsWith(`${PRODUCTS_ROUTE}/`)) return "product";
   return "tools";
@@ -50,6 +53,7 @@ export default function App() {
   const routeArticle = articles.find((article) => articlePathById.get(article.id) === path);
   const productSlug = productSlugFromPath(path);
   const routeProduct = productSlug ? getProductBySlug(productSlug) : undefined;
+  const parkingEncryptedPayload = new URLSearchParams(location.search).get("data");
   const [currency, setCurrency] = useState<CurrencyCode>("USD");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedTool, setSelectedTool] = useState<string>(() => toolIdByPath.get(path) || "fire");
@@ -90,6 +94,11 @@ export default function App() {
       title: "Digital Products",
       description: "Practical digital guides, templates, printables, and tools for a richer life.",
       url: "/products",
+    },
+    parking: {
+      title: "Smart Parking",
+      description: "Smart Parking Sticker contact page.",
+      url: "/parking",
     },
     product: routeProduct
       ? {
@@ -333,9 +342,13 @@ export default function App() {
         )}
 
         {/* PRODUCTS PAGE */}
+        {page === "parking" && <ParkingScanPage encryptedPayload={parkingEncryptedPayload} />}
+
         {page === "products" && <ProductsPage onOpenProduct={(product) => routerNavigate(productPath(product.slug))} />}
 
-        {page === "product" && routeProduct && (
+        {page === "product" && routeProduct?.slug === "smart-parking-sticker" && <ParkingStickerBuilder />}
+
+        {page === "product" && routeProduct && routeProduct.slug !== "smart-parking-sticker" && (
           <ProductDetailPage product={routeProduct} onBack={() => routerNavigate(PRODUCTS_ROUTE)} />
         )}
 
