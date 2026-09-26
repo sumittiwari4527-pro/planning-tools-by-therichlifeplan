@@ -14,9 +14,13 @@ export type ParkingPayload = {
   orderId?: string;
 };
 
-const DEFAULT_KEY_MATERIAL = "richlifetools-smart-parking-mvp-v1";
-const PARKING_KEY_MATERIAL =
-  import.meta.env.VITE_PARKING_QR_KEY?.trim() || DEFAULT_KEY_MATERIAL;
+const PARKING_KEY_MATERIAL = import.meta.env.VITE_PARKING_QR_KEY?.trim();
+
+if (!PARKING_KEY_MATERIAL) {
+  throw new Error(
+    "VITE_PARKING_QR_KEY is not configured. Add it as a Vercel Environment Variable before building."
+  );
+}
 
 const bytesToBase64Url = (bytes: Uint8Array) =>
   btoa(String.fromCharCode(...bytes))
