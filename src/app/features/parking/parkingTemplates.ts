@@ -106,7 +106,7 @@ export const buildParkingTemplateSvg = ({ theme, qrDataUrl }: TemplateOptions) =
 
     <rect x="765" y="82" width="650" height="574" rx="35" fill="#ffffff" stroke="${green}" stroke-width="12" filter="url(#softShadow)"/>
     <rect x="790" y="106" width="600" height="526" rx="4" fill="#ffffff"/>
-    <image href="${qrDataUrl}" x="796" y="106" width="588" height="526" preserveAspectRatio="none"/>
+    <image href="${qrDataUrl}" x="827" y="106" width="526" height="526" preserveAspectRatio="xMidYMid meet"/>
 
     <g transform="translate(996 284) scale(1.74)">
       <rect width="100" height="100" rx="20" fill="#071421"/>
