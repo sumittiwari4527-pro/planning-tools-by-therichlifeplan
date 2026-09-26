@@ -5,14 +5,7 @@ type TemplateOptions = {
   qrDataUrl: string;
 };
 
-const escapeXml = (value: string) =>
-  value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-
-const brandMark = (x: number, y: number, size: number, dark: boolean) => `
+const brandMark = (x: number, y: number, size: number) => `
   <g transform="translate(${x} ${y}) scale(${size / 100})">
     <rect width="100" height="100" rx="20" fill="#071421"/>
     <circle cx="50" cy="50" r="35" fill="none" stroke="#ffffff" stroke-width="2"/>
@@ -96,7 +89,7 @@ export const buildParkingTemplateSvg = ({ theme, qrDataUrl }: TemplateOptions) =
       fill="#7dffb6" opacity=".5"
     />
 
-    ${brandMark(96, 68, 92, dark)}
+    ${brandMark(96, 68, 92)}
     <text x="215" y="117" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="700" fill="${text}">
       The<tspan fill="${green}">Rich</tspan>LifePlan
     </text>
