@@ -39,7 +39,7 @@ declare global {
 const checkoutUrl = import.meta.env.VITE_LEMON_SQUEEZY_PARKING_CHECKOUT_URL as string | undefined;
 
 const isValidPhone = (value: string) => value.replace(/\D/g, "").length >= 10;
-const isValidEmail = (value: string) => /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(value.trim());
+const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 
 export function ParkingStickerBuilder() {
   const [form, setForm] = useState<FormState>(initialForm);
