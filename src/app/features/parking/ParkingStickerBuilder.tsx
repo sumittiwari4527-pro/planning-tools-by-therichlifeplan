@@ -38,6 +38,14 @@ declare global {
 
 const checkoutUrl = import.meta.env.VITE_LEMON_SQUEEZY_PARKING_CHECKOUT_URL as string | undefined;
 
+const createStickerDataUrl = async (theme: ParkingTheme, qr: string) =>
+  svgToDataUrl(
+    await buildParkingTemplateSvg({
+      theme,
+      qrDataUrl: qr,
+    })
+  );
+
 const isValidPhone = (value: string) => value.replace(/\D/g, "").length >= 10;
 const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 
@@ -96,14 +104,7 @@ export function ParkingStickerBuilder() {
 
       setPreviewPayload(payload);
       setQrDataUrl(qr);
-      setStickerDataUrl(
-        svgToDataUrl(
-          buildParkingTemplateSvg({
-            theme: payload.theme,
-            qrDataUrl: qr,
-          })
-        )
-      );
+      setStickerDataUrl(await createStickerDataUrl(payload.theme, qr));
     } catch {
       setError("We couldn't generate the preview. Please try again.");
     }
@@ -138,17 +139,10 @@ export function ParkingStickerBuilder() {
           },
         });
       })
-      .then((qr) => {
+      .then(async (qr) => {
         if (!active) return;
         setQrDataUrl(qr);
-        setStickerDataUrl(
-          svgToDataUrl(
-            buildParkingTemplateSvg({
-              theme: finalPayload.theme,
-              qrDataUrl: qr,
-            })
-          )
-        );
+        setStickerDataUrl(await createStickerDataUrl(finalPayload.theme, qr));
       })
       .catch(() => {
         if (active) setError("Payment completed, but we couldn't prepare the final sticker. Please retry.");
