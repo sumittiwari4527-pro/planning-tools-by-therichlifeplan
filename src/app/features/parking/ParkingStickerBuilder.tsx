@@ -101,7 +101,6 @@ export function ParkingStickerBuilder() {
           buildParkingTemplateSvg({
             theme: payload.theme,
             qrDataUrl: qr,
-            vehicle: payload.vehicle,
           })
         )
       );
@@ -147,7 +146,6 @@ export function ParkingStickerBuilder() {
             buildParkingTemplateSvg({
               theme: finalPayload.theme,
               qrDataUrl: qr,
-              vehicle: finalPayload.vehicle,
             })
           )
         );
