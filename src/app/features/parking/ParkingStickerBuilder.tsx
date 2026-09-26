@@ -297,11 +297,21 @@ export function ParkingStickerBuilder() {
                       onClick={() => update("theme", theme)}
                       className={`rounded-2xl border p-3 text-left transition ${form.theme === theme ? "border-[#00b968] ring-4 ring-emerald-50" : "border-[#dbe2ec]"}`}
                     >
-                      <div className={`h-20 overflow-hidden rounded-xl ${theme === "dark" ? "bg-[#071421]" : "bg-white border border-slate-200"}`}>
-                        <div className="flex h-full flex-col items-center justify-center">
-                          <div className={`text-sm font-black ${theme === "dark" ? "text-white" : "text-[#071421]"}`}>SCAN TO</div>
-                          <div className="text-sm font-black text-[#00d978]">CONTACT OWNER</div>
-                          <div className={`mt-1 h-5 w-12 rounded ${theme === "dark" ? "bg-white" : "bg-[#071421]"}`} />
+                      <div className={`relative h-20 overflow-hidden rounded-xl ${theme === "dark" ? "bg-[#03121d]" : "bg-white border border-slate-200"}`}>
+                        <div className={`absolute inset-0 ${theme === "dark" ? "bg-[radial-gradient(circle_at_85%_10%,rgba(0,217,120,.35),transparent_40%)]" : "bg-[radial-gradient(circle_at_90%_5%,rgba(0,217,120,.18),transparent_42%)]"}`} />
+                        <div className="relative flex h-full items-center gap-2 px-2">
+                          <div className="min-w-0 flex-1">
+                            <div className={`text-[10px] font-black leading-none ${theme === "dark" ? "text-white" : "text-[#071421]"}`}>SCAN TO</div>
+                            <div className="text-[10px] font-black leading-none text-[#00d978]">CONTACT</div>
+                            <div className={`text-[10px] font-black leading-none ${theme === "dark" ? "text-white" : "text-[#071421]"}`}>OWNER</div>
+                          </div>
+                          <div className="h-14 w-14 shrink-0 rounded-md border-[3px] border-[#00d978] bg-white p-1">
+                            <div className="grid h-full w-full grid-cols-4 gap-0.5 bg-[#071421] opacity-90">
+                              {Array.from({ length: 16 }).map((_, index) => (
+                                <span key={index} className={index % 3 === 0 || index % 5 === 0 ? "bg-white" : "bg-[#071421]"} />
+                              ))}
+                            </div>
+                          </div>
                         </div>
                       </div>
                       <div className="mt-2 text-sm font-semibold capitalize text-[#0f1523]">{theme}</div>
