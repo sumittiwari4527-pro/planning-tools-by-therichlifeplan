@@ -2,12 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import { Download, Mail, Palette, Phone, QrCode, ShoppingCart, Sparkles } from "lucide-react";
 import QRCode from "qrcode";
 import {
-  buildParkingStickerSvg,
   encryptParkingPayload,
   svgToDataUrl,
   type ParkingPayload,
   type ParkingTheme,
 } from "./parking";
+import { buildParkingTemplateSvg } from "./parkingTemplates";
 
 type FormState = {
   name: string;
@@ -96,7 +96,15 @@ export function ParkingStickerBuilder() {
 
       setPreviewPayload(payload);
       setQrDataUrl(qr);
-      setStickerDataUrl(svgToDataUrl(buildParkingStickerSvg({ payload, qrDataUrl: qr })));
+      setStickerDataUrl(
+        svgToDataUrl(
+          buildParkingTemplateSvg({
+            theme: payload.theme,
+            qrDataUrl: qr,
+            vehicle: payload.vehicle,
+          })
+        )
+      );
     } catch {
       setError("We couldn't generate the preview. Please try again.");
     }
@@ -134,7 +142,15 @@ export function ParkingStickerBuilder() {
       .then((qr) => {
         if (!active) return;
         setQrDataUrl(qr);
-        setStickerDataUrl(svgToDataUrl(buildParkingStickerSvg({ payload: finalPayload, qrDataUrl: qr })));
+        setStickerDataUrl(
+          svgToDataUrl(
+            buildParkingTemplateSvg({
+              theme: finalPayload.theme,
+              qrDataUrl: qr,
+              vehicle: finalPayload.vehicle,
+            })
+          )
+        );
       })
       .catch(() => {
         if (active) setError("Payment completed, but we couldn't prepare the final sticker. Please retry.");
@@ -281,10 +297,11 @@ export function ParkingStickerBuilder() {
                       onClick={() => update("theme", theme)}
                       className={`rounded-2xl border p-3 text-left transition ${form.theme === theme ? "border-[#00b968] ring-4 ring-emerald-50" : "border-[#dbe2ec]"}`}
                     >
-                      <div className={`h-20 rounded-xl ${theme === "dark" ? "bg-[#071421]" : "bg-white border border-slate-200"}`}>
-                        <div className="flex h-full items-center justify-center gap-1">
-                          <span className={`text-lg font-black ${theme === "dark" ? "text-white" : "text-[#071421]"}`}>SCAN</span>
-                          <span className="text-lg font-black text-[#00d978]">QR</span>
+                      <div className={`h-20 overflow-hidden rounded-xl ${theme === "dark" ? "bg-[#071421]" : "bg-white border border-slate-200"}`}>
+                        <div className="flex h-full flex-col items-center justify-center">
+                          <div className={`text-sm font-black ${theme === "dark" ? "text-white" : "text-[#071421]"}`}>SCAN TO</div>
+                          <div className="text-sm font-black text-[#00d978]">CONTACT OWNER</div>
+                          <div className={`mt-1 h-5 w-12 rounded ${theme === "dark" ? "bg-white" : "bg-[#071421]"}`} />
                         </div>
                       </div>
                       <div className="mt-2 text-sm font-semibold capitalize text-[#0f1523]">{theme}</div>
