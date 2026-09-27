@@ -112,7 +112,7 @@ export function ProductDetailPage({
                         <Icon size={21} />
                       </div>
                       <div className="mt-3 text-sm font-bold text-white sm:text-base">{title}</div>
-                      <div className="mt-1 max-w-[135px] text-[10px] leading-4 text-slate-200 sm:text-xs sm:leading-5">{text}</div>
+
                     </div>
                   ))}
                 </div>
