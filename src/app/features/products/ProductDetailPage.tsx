@@ -94,13 +94,7 @@ export function ProductDetailPage({
                   <span className="block">to reach you?</span>
                 </h1>
 
-                <p className="mt-6 max-w-[470px] text-[1.02rem] leading-7 text-slate-100 sm:text-lg">
-                  <span className="block">Scan the sticker to contact</span>
-                  <span className="block">the owner — without</span>
-                  <span className="block">exposing your phone number.</span>
-                </p>
-
-                <div className="mt-8 grid w-full max-w-[390px] grid-cols-3 gap-0 sm:max-w-[520px]">
+                <div className="mt-5 grid w-full max-w-[390px] grid-cols-3 gap-0 sm:mt-6 sm:max-w-[520px]">
                   {[
                     { icon: QrCode, title: "Scan", text: "They scan your sticker." },
                     { icon: MessageCircle, title: "Contact", text: "The contact page opens." },
