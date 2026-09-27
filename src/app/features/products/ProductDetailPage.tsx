@@ -1,4 +1,4 @@
-import { ArrowLeft, Check, FileText, ShieldCheck, Sparkles, ArrowRight, Phone, QrCode, MessageCircle, CarFront, Clock3 } from "lucide-react";
+import { ArrowLeft, Check, FileText, ShieldCheck, Sparkles, ArrowRight, Phone, QrCode, MessageCircle, CarFront, Clock3, Eye } from "lucide-react";
 import type { Product } from "./types";
 import lightTemplateUrl from "../parking/assets/parking-template-light.svg?url";
 import darkTemplateUrl from "../parking/assets/parking-template-dark.svg?url";
@@ -132,7 +132,7 @@ export function ProductDetailPage({
                 </div>
 
                 <p className="mt-5 flex items-start gap-2 text-xs leading-5 text-slate-200 sm:text-sm">
-                  <span className="mt-0.5 text-lg leading-4 text-emerald-200">◉</span>
+                  <Eye size={21} className="mt-0.5 flex-shrink-0 text-emerald-200" />
                   Preview your personalized sticker before you buy.
                 </p>
               </div>
