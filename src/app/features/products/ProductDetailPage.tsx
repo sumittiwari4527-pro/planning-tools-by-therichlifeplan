@@ -167,9 +167,9 @@ export function ProductDetailPage({
           <section className="grid grid-cols-2 overflow-hidden rounded-[1.75rem] bg-white shadow-sm lg:grid-cols-4">
             {[
               { icon: ShieldCheck, title: "Keep your number off the sticker", text: "Your phone number is not printed on the sticker." },
-              { icon: QrCode, title: "No app required", text: "Works from a normal phone camera." },
-              { icon: CarFront, title: "Made for parked cars", text: "Useful for tight parking and blocked cars." },
-              { icon: Clock3, title: "Quick & easy setup", text: "Create, preview and order in minutes." },
+              { icon: Clock3, title: "Quick & easy to use", text: "Create, preview and order in minutes." },
+              { icon: CarFront, title: "Perfect for parked cars", text: "Useful when your parked car needs attention." },
+              { icon: ShieldCheck, title: "Simple, useful & safe", text: "No app is required to contact you." },
             ].map(({ icon: Icon, title, text }, index) => (
               <div
                 key={title}
