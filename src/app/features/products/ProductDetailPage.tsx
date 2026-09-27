@@ -2,7 +2,8 @@ import { ArrowLeft, Check, FileText, ShieldCheck, Sparkles, ArrowRight, Phone, Q
 import type { Product } from "./types";
 import lightTemplateUrl from "../parking/assets/parking-template-light.svg?url";
 import darkTemplateUrl from "../parking/assets/parking-template-dark.svg?url";
-import option2CarUrl from "./assets/option2-car.jpg?url";
+
+const option2CarUrl = "https://raw.githubusercontent.com/sumittiwari4527-pro/planning-tools-by-therichlifeplan/95f5eeba6fc27370d69e0de54c55ead24682d813/src/app/features/products/assets/option2-car.jpg";
 
 const typeLabels: Record<Product["type"], string> = {
   ebook: "Ebook",
