@@ -94,8 +94,10 @@ export function ProductDetailPage({
                   <span className="block">to reach you?</span>
                 </h1>
 
-                <p className="mt-6 max-w-[590px] text-[1.02rem] leading-7 text-slate-100 sm:text-lg">
-                  Scan the sticker to contact the owner — without printing your phone number on the sticker.
+                <p className="mt-6 max-w-[470px] text-[1.02rem] leading-7 text-slate-100 sm:text-lg">
+                  <span className="block">Scan the sticker to contact</span>
+                  <span className="block">the owner — without</span>
+                  <span className="block">exposing your phone number.</span>
                 </p>
 
                 <div className="mt-8 grid max-w-[610px] grid-cols-3 gap-2 sm:gap-5">
