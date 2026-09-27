@@ -73,14 +73,14 @@ export function ProductDetailPage({
     return (
       <div className="min-h-screen bg-[#f4f8f7]">
         <main className="mx-auto max-w-7xl">
-          <section className="relative isolate min-h-[820px] overflow-hidden bg-[#03151c] text-white sm:min-h-[860px] lg:min-h-[680px]">
+          <section className="relative isolate min-h-[700px] overflow-hidden bg-[#03151c] text-white sm:min-h-[760px] lg:min-h-[680px]">
             <div
               className="absolute inset-0 bg-[#03151c] bg-no-repeat lg:left-[42%]"
               style={{ backgroundImage: `url(${option2CarUrl})`, backgroundSize: "cover", backgroundPosition: "center center" }}
             />
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,21,28,0.88)_0%,rgba(3,21,28,0.48)_48%,rgba(3,21,28,0.7)_100%)] lg:bg-[linear-gradient(90deg,rgba(3,21,28,0.99)_0%,rgba(3,21,28,0.94)_35%,rgba(3,21,28,0.52)_60%,rgba(3,21,28,0.12)_100%)]" />
 
-            <div className="relative z-10 flex min-h-[820px] flex-col justify-center px-6 pb-12 pt-20 sm:min-h-[860px] sm:px-10 sm:pb-14 sm:pt-20 lg:min-h-[680px] lg:px-14 lg:py-14">
+            <div className="relative z-10 flex min-h-[700px] flex-col justify-center px-6 pb-10 pt-16 sm:min-h-[760px] sm:px-10 sm:pb-14 sm:pt-20 lg:min-h-[680px] lg:px-14 lg:py-14">
               <div className="max-w-[650px]">
                 <div className="inline-flex items-center gap-2 rounded-full border border-emerald-300/70 bg-emerald-300/5 px-4 py-2 text-[11px] font-mono uppercase tracking-[0.22em] text-emerald-200">
                   <Sparkles size={13} /> Smart parking
