@@ -1,4 +1,4 @@
-import { ArrowLeft, Check, FileText, ShieldCheck, Sparkles, ArrowRight, Phone, QrCode, Eye } from "lucide-react";
+import { ArrowLeft, Check, FileText, ShieldCheck, Sparkles, ArrowRight, Phone, QrCode, MessageCircle, UserRound, CarFront, Clock3 } from "lucide-react";
 import type { Product } from "./types";
 import lightTemplateUrl from "../parking/assets/parking-template-light.svg?url";
 import darkTemplateUrl from "../parking/assets/parking-template-dark.svg?url";
@@ -69,113 +69,213 @@ export function ProductDetailPage({
 
   if (isParking) {
     return (
-      <div className="min-h-screen bg-[#f8f9fb] pt-16">
-        <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
-          <button onClick={onBack} className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-[#6b7a99] hover:text-[#0f1523] cursor-pointer">
+      <div className="min-h-screen bg-[#f4f8f7] pt-16">
+        <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
+          <button
+            onClick={onBack}
+            className="mb-5 inline-flex items-center gap-2 text-sm font-medium text-[#6b7a99] hover:text-[#0f1523] cursor-pointer"
+          >
             <ArrowLeft size={15} /> Back to products
           </button>
 
-          <section className="overflow-hidden rounded-[2rem] border border-[#dce8e2] bg-white shadow-sm">
-            <div className="grid lg:grid-cols-[1fr_0.95fr]">
-              <div className="relative overflow-hidden bg-[#06131e] px-6 py-10 sm:px-10 lg:px-12 lg:py-14">
-                <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-emerald-400/15 blur-3xl" />
-                <div className="absolute -bottom-24 -left-20 h-72 w-72 rounded-full bg-emerald-500/10 blur-3xl" />
-                <div className="relative">
-                  <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-4 py-1.5 text-xs font-mono uppercase tracking-widest text-emerald-300">
-                    <Sparkles size={12} /> Smart parking
-                  </div>
-                  <h1 className="max-w-xl text-4xl font-bold leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-6xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                    Smart Parking Sticker
-                  </h1>
-                  <p className="mt-6 max-w-xl text-lg leading-8 text-slate-300">{detail.headline}</p>
-                  <p className="mt-4 max-w-xl text-sm leading-7 text-slate-400">{detail.description}</p>
+          <section className="relative overflow-hidden rounded-[2rem] bg-[#04131c] text-white shadow-2xl shadow-slate-900/10">
+            <div className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-emerald-400/15 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-40 -left-32 h-96 w-96 rounded-full bg-cyan-400/10 blur-3xl" />
 
-                  <div className="mt-8 flex flex-wrap items-center gap-4">
-                    <button
-                      type="button"
-                      onClick={onPrimaryAction}
-                      className="inline-flex items-center gap-2 rounded-2xl bg-[#00c878] px-6 py-3.5 text-sm font-bold text-[#03121d] shadow-lg shadow-emerald-950/30 transition hover:bg-[#18d688] cursor-pointer"
-                    >
-                      Create My Sticker <ArrowRight size={16} />
-                    </button>
-                    <div className="text-sm text-slate-400">
-                      <span className="font-bold text-white">₹199</span> · one-time
-                    </div>
-                  </div>
-                  <p className="mt-4 text-xs text-slate-500">Preview your personalized sticker before you buy.</p>
+            <div className="relative grid lg:grid-cols-[0.95fr_1.05fr]">
+              <div className="flex flex-col justify-center px-6 py-8 sm:px-10 sm:py-12 lg:px-12 lg:py-14">
+                <div className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-4 py-1.5 text-xs font-mono uppercase tracking-[0.2em] text-emerald-300">
+                  <Sparkles size={12} /> Smart parking
                 </div>
-              </div>
 
-              <div className="bg-[#f5f8f7] p-5 sm:p-8 lg:p-10">
-                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-1">
+                <h1
+                  className="mt-5 max-w-xl text-4xl font-bold leading-[1.02] tracking-tight sm:text-5xl lg:text-6xl"
+                  style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
+                >
+                  Someone needs
+                  <br />
+                  <span className="text-[#00e890]">to reach you?</span>
+                </h1>
+
+                <p className="mt-5 max-w-xl text-base leading-7 text-slate-200 sm:text-lg">
+                  A personalized QR parking sticker that lets people contact you without exposing your phone number.
+                </p>
+
+                <div className="mt-7 grid grid-cols-3 gap-2 sm:gap-4">
                   {[
-                    { src: darkTemplateUrl, label: "Dark design" },
-                    { src: lightTemplateUrl, label: "Light design" },
-                  ].map((item) => (
-                    <div key={item.label} className="overflow-hidden rounded-3xl border border-[#dfe7e3] bg-white p-3 shadow-sm">
-                      <div className="overflow-hidden rounded-2xl bg-slate-100">
-                        <img src={item.src} alt={`Smart Parking Sticker — ${item.label}`} className="block aspect-[3/2] w-full object-cover" />
+                    { icon: QrCode, number: "1", title: "Scan", text: "They scan your sticker." },
+                    { icon: MessageCircle, number: "2", title: "Send Message", text: "They contact you." },
+                    { icon: UserRound, number: "3", title: "You Respond", text: "You reply at your convenience." },
+                  ].map(({ icon: Icon, number, title, text }) => (
+                    <div key={number} className="min-w-0">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full border border-emerald-400/50 bg-emerald-400/5 text-[#00e890] sm:h-12 sm:w-12">
+                        <Icon size={19} />
                       </div>
-                      <div className="px-2 pb-1 pt-3 text-sm font-semibold text-[#33405a]">{item.label}</div>
+                      <div className="mt-3 text-xs font-bold text-white sm:text-sm">{number}. {title}</div>
+                      <div className="mt-1 text-[10px] leading-4 text-slate-400 sm:text-xs sm:leading-5">{text}</div>
                     </div>
                   ))}
+                </div>
+
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
+                  <button
+                    type="button"
+                    onClick={onPrimaryAction}
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#00d980] px-6 py-3.5 text-sm font-bold text-[#03121d] shadow-xl shadow-emerald-950/30 transition hover:bg-[#18e895] cursor-pointer sm:w-auto"
+                  >
+                    Create My Sticker <ArrowRight size={17} />
+                  </button>
+                  <div className="text-center text-sm text-slate-400 sm:text-left">
+                    <span className="text-lg font-bold text-white">₹199</span> · one-time
+                  </div>
+                </div>
+
+                <p className="mt-3 text-xs text-slate-500">
+                  Preview your personalized sticker before you buy.
+                </p>
+              </div>
+
+              <div className="relative min-h-[300px] overflow-hidden border-t border-white/5 bg-[#071b25] sm:min-h-[390px] lg:min-h-[520px] lg:border-l lg:border-t-0">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(16,185,129,0.18),transparent_38%),linear-gradient(135deg,#0b2830,#031018)]" />
+                <div className="absolute -left-10 top-16 h-[420px] w-[110%] rotate-[-12deg] rounded-[40%] border border-white/10 bg-white/[0.025] shadow-[inset_0_0_80px_rgba(0,0,0,0.45)]" />
+                <div className="absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-slate-900/70 to-transparent" />
+                <div className="absolute bottom-0 left-0 h-1/3 w-full bg-gradient-to-t from-black/60 to-transparent" />
+
+                <div className="absolute left-[8%] top-[13%] h-1 w-[82%] rotate-[-7deg] bg-white/10" />
+                <div className="absolute left-[12%] top-[21%] h-px w-[72%] rotate-[-7deg] bg-white/10" />
+                <div className="absolute left-[18%] top-[29%] h-px w-[64%] rotate-[-7deg] bg-white/10" />
+
+                <div className="absolute bottom-[8%] left-0 right-0 h-24 bg-gradient-to-r from-slate-800/70 via-slate-700/30 to-slate-900/70" />
+                <div className="absolute bottom-[9%] left-[10%] right-[12%] h-2 rounded-full bg-black/50 blur-sm" />
+
+                <div className="absolute right-[8%] top-[18%] w-[58%] rotate-[4deg] rounded-[18px] bg-white p-2 shadow-2xl shadow-black/50 sm:right-[10%] sm:top-[17%] sm:w-[55%] sm:p-3">
+                  <div className="overflow-hidden rounded-[12px] bg-slate-100">
+                    <img
+                      src={darkTemplateUrl}
+                      alt="Smart Parking Sticker dark design"
+                      className="block w-full"
+                    />
+                  </div>
+                </div>
+
+                <div className="absolute bottom-5 left-5 flex items-center gap-2 rounded-full border border-white/10 bg-black/30 px-3 py-1.5 text-[10px] text-slate-300 backdrop-blur-sm sm:left-8 sm:text-xs">
+                  <CarFront size={13} className="text-emerald-300" />
+                  Place it on your parked car
                 </div>
               </div>
             </div>
           </section>
 
-          <section className="py-16 sm:py-20">
+          <section className="grid grid-cols-2 overflow-hidden rounded-[1.75rem] bg-white shadow-sm lg:grid-cols-4">
+            {[
+              { icon: ShieldCheck, title: "Keep your number private", text: "Your phone number stays off the sticker." },
+              { icon: QrCode, title: "No app required", text: "Works from a normal phone camera." },
+              { icon: CarFront, title: "Made for parked cars", text: "Useful for tight parking and blocked cars." },
+              { icon: Clock3, title: "Quick & easy setup", text: "Create, preview and order in minutes." },
+            ].map(({ icon: Icon, title, text }, index) => (
+              <div
+                key={title}
+                className={
+                  "flex flex-col items-center px-4 py-7 text-center sm:px-6 " +
+                  (index < 2 ? "border-b border-[#e6eee9] lg:border-b-0 " : "") +
+                  (index % 2 === 0 ? "border-r border-[#e6eee9] lg:border-r-0 " : "") +
+                  (index > 0 ? "lg:border-l lg:border-[#e6eee9]" : "")
+                }
+              >
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#e7faf1] text-[#00a961]">
+                  <Icon size={21} />
+                </div>
+                <div className="mt-4 text-sm font-bold leading-5 text-[#0f1523]">{title}</div>
+                <div className="mt-1.5 max-w-[180px] text-xs leading-5 text-[#6b7a99]">{text}</div>
+              </div>
+            ))}
+          </section>
+
+          <section className="py-14 sm:py-18">
+            <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+              <div>
+                <div className="text-xs font-mono uppercase tracking-widest text-[#008d50]">Choose your design</div>
+                <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#0f1523] sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                  Stylish. Clear. Effective.
+                </h2>
+                <p className="mt-3 max-w-md text-sm leading-6 text-[#6b7a99]">
+                  Pick a design that matches your style. Both designs use the same personalized QR experience.
+                </p>
+                <button
+                  type="button"
+                  onClick={onPrimaryAction}
+                  className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-[#008d50] hover:text-[#006e3e] cursor-pointer"
+                >
+                  Create my sticker <ArrowRight size={15} />
+                </button>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                {[
+                  { src: darkTemplateUrl, label: "Dark Design" },
+                  { src: lightTemplateUrl, label: "Light Design" },
+                ].map((item) => (
+                  <div key={item.label} className="overflow-hidden rounded-3xl border border-[#dfe7e3] bg-white p-3 shadow-sm">
+                    <div className="overflow-hidden rounded-2xl bg-slate-100">
+                      <img src={item.src} alt={"Smart Parking Sticker — " + item.label} className="block aspect-[3/2] w-full object-cover" />
+                    </div>
+                    <div className="px-2 pb-1 pt-3 text-sm font-semibold text-[#33405a]">{item.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <section className="rounded-[2rem] bg-white p-7 shadow-sm sm:p-10">
             <div className="mx-auto max-w-3xl text-center">
-              <div className="text-xs font-mono uppercase tracking-widest text-[#00a961]">How it works</div>
-              <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#0f1523] sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Park. Scan. Contact.</h2>
-              <p className="mt-4 text-sm leading-7 text-[#6b7a99]">A simple experience for you and the person who needs to reach you.</p>
+              <div className="text-xs font-mono uppercase tracking-widest text-[#008d50]">How it works</div>
+              <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#0f1523] sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                Scan. Contact. Respond.
+              </h2>
+              <p className="mt-3 text-sm leading-6 text-[#6b7a99]">A simple experience for you and the person who needs to reach you.</p>
             </div>
 
-            <div className="mx-auto mt-10 grid max-w-5xl gap-4 md:grid-cols-3">
+            <div className="mx-auto mt-9 grid max-w-5xl gap-4 md:grid-cols-3">
               {[
-                { icon: QrCode, number: "01", title: "Scan", text: "Someone scans the QR code on your parked-car sticker." },
-                { icon: Eye, number: "02", title: "View", text: "Your contact page opens instantly in their browser." },
-                { icon: Phone, number: "03", title: "Contact", text: "They can call or email you with one tap." },
-              ].map(({ icon: Icon, number, title, text }) => (
-                <div key={number} className="rounded-3xl border border-[#e4e8f0] bg-white p-6 shadow-sm">
-                  <div className="flex items-center justify-between">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#eefaf3] text-[#00a961]"><Icon size={20} /></div>
-                    <span className="text-xs font-mono text-[#b0b8c8]">{number}</span>
-                  </div>
-                  <h3 className="mt-6 text-lg font-bold text-[#0f1523]">{title}</h3>
+                { icon: QrCode, title: "Scan", text: "Someone scans the QR code on your parked-car sticker." },
+                { icon: MessageCircle, title: "Contact", text: "The contact page opens in their browser, with no app required." },
+                { icon: Phone, title: "Reach you", text: "They can call or email you with one tap." },
+              ].map(({ icon: Icon, title, text }) => (
+                <div key={title} className="rounded-3xl border border-[#e4e8f0] bg-[#f9fbfa] p-6">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#e7faf1] text-[#00a961]"><Icon size={20} /></div>
+                  <h3 className="mt-5 text-lg font-bold text-[#0f1523]">{title}</h3>
                   <p className="mt-2 text-sm leading-6 text-[#6b7a99]">{text}</p>
                 </div>
               ))}
             </div>
           </section>
 
-          <section className="rounded-[2rem] bg-white py-2">
-            <div className="grid gap-8 lg:grid-cols-2">
-              <div className="rounded-3xl bg-[#eefaf3] p-7 sm:p-9">
-                <div className="text-xs font-mono uppercase tracking-widest text-[#008d50]">Why you'll use it</div>
-                <h2 className="mt-2 text-2xl font-bold text-[#0f1523]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Built for everyday parking situations.</h2>
-                <div className="mt-7 space-y-4">
-                  {detail.highlights.map((item) => (
-                    <div key={item} className="flex gap-3">
-                      <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-white text-[#00a961] shadow-sm"><Check size={14} /></span>
-                      <span className="text-sm leading-6 text-[#33405a]">{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+          <section className="mt-8 grid gap-8 lg:grid-cols-2">
+            <div className="rounded-3xl bg-[#eefaf3] p-7 sm:p-9">
+              <div className="text-xs font-mono uppercase tracking-widest text-[#008d50]">Before you buy</div>
+              <h2 className="mt-2 text-2xl font-bold text-[#0f1523]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                See your personalized sticker first.
+              </h2>
+              <p className="mt-4 text-sm leading-7 text-[#6b7a99]">
+                Enter your details, choose Light or Dark, and generate a live preview before you pay. Your preview QR is temporary and expires after 24 hours.
+              </p>
+              <button type="button" onClick={onPrimaryAction} className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-[#008d50] hover:text-[#006e3e] cursor-pointer">
+                Create my preview <ArrowRight size={15} />
+              </button>
+            </div>
 
-              <div className="rounded-3xl border border-[#e4e8f0] bg-white p-7 shadow-sm sm:p-9">
-                <div className="text-xs font-mono uppercase tracking-widest text-[#4f46e5]">Before you buy</div>
-                <h2 className="mt-2 text-2xl font-bold text-[#0f1523]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>See your personalized sticker first.</h2>
-                <p className="mt-4 text-sm leading-7 text-[#6b7a99]">Enter your name, phone, email and vehicle number, choose Light or Dark, and generate a live preview. The preview QR is temporary and expires after 24 hours.</p>
-                <button type="button" onClick={onPrimaryAction} className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-[#008d50] hover:text-[#006e3e] cursor-pointer">
-                  Create my preview <ArrowRight size={15} />
-                </button>
-              </div>
+            <div className="rounded-3xl border border-[#e4e8f0] bg-white p-7 shadow-sm sm:p-9">
+              <div className="flex items-center gap-3 text-[#008d50]"><ShieldCheck size={19} /><span className="text-xs font-mono uppercase tracking-widest">Privacy</span></div>
+              <h2 className="mt-3 text-2xl font-bold text-[#0f1523]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                Your number isn't printed on the sticker.
+              </h2>
+              <p className="mt-4 text-sm leading-7 text-[#6b7a99]">
+                The sticker contains a QR code. When someone scans it, the contact page gives them one-tap options to call or email you.
+              </p>
             </div>
           </section>
 
-          <section className="py-16 sm:py-20">
+          <section className="py-14 sm:py-18">
             <div className="grid gap-8 lg:grid-cols-2">
               <div>
                 <div className="text-xs font-mono uppercase tracking-widest text-[#4f46e5]">What's included</div>
@@ -191,9 +291,12 @@ export function ProductDetailPage({
               </div>
 
               <div className="rounded-3xl border border-[#e4e8f0] bg-white p-7 shadow-sm sm:p-9">
-                <div className="flex items-center gap-3 text-[#008d50]"><ShieldCheck size={19} /><span className="text-xs font-mono uppercase tracking-widest">Privacy</span></div>
-                <h2 className="mt-3 text-2xl font-bold text-[#0f1523]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Your number isn't printed on the sticker.</h2>
-                <p className="mt-4 text-sm leading-7 text-[#6b7a99]">The sticker contains a QR code. When someone scans it, the contact page gives them one-tap options to call or email you.</p>
+                <div className="text-xs font-mono uppercase tracking-widest text-[#4f46e5]">Simple purchase</div>
+                <h2 className="mt-2 text-2xl font-bold text-[#0f1523]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Personalize. Preview. Buy.</h2>
+                <p className="mt-4 text-sm leading-7 text-[#6b7a99]">Create your sticker first. You will see the personalized preview before the payment step.</p>
+                <button type="button" onClick={onPrimaryAction} className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-[#00c878] px-5 py-3 text-sm font-bold text-[#03121d] hover:bg-[#18d688] cursor-pointer">
+                  Create My Sticker · ₹199 <ArrowRight size={16} />
+                </button>
               </div>
             </div>
           </section>
@@ -215,7 +318,7 @@ export function ProductDetailPage({
             </div>
           </section>
 
-          <section className="mt-10 rounded-[2rem] bg-[#06131e] px-6 py-9 text-center sm:px-10 sm:py-12">
+          <section className="mt-8 rounded-[2rem] bg-[#06131e] px-6 py-9 text-center sm:px-10 sm:py-12">
             <div className="mx-auto max-w-2xl">
               <div className="text-3xl font-bold text-white sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Ready to create yours?</div>
               <p className="mt-3 text-sm leading-6 text-slate-400">Personalize it, preview it, then decide.</p>
