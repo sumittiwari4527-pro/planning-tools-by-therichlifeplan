@@ -70,26 +70,33 @@ export function ProductDetailPage({
   if (isParking) {
     return (
       <div className="min-h-screen bg-[#f4f8f7] pt-24 sm:pt-20">
-        <main className="mx-auto max-w-7xl px-4 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-10">
-          <button
-            onClick={onBack}
-            className="mb-5 inline-flex items-center gap-2 text-sm font-medium text-[#6b7a99] hover:text-[#0f1523] cursor-pointer"
-          >
-            <ArrowLeft size={15} /> Back to products
-          </button>
+        <main className="mx-auto max-w-7xl px-0 sm:px-6 lg:px-8 lg:py-10">
+          <div className="px-4 sm:px-0">
+            <button
+              onClick={onBack}
+              className="mb-5 inline-flex items-center gap-2 text-sm font-medium text-[#6b7a99] hover:text-[#0f1523] cursor-pointer"
+            >
+              <ArrowLeft size={15} /> Back to products
+            </button>
+          </div>
 
-          <section className="relative overflow-hidden rounded-[2rem] bg-[#04131c] text-white shadow-2xl shadow-slate-900/10">
-            <div className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-emerald-400/15 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-40 -left-32 h-96 w-96 rounded-full bg-cyan-400/10 blur-3xl" />
+          <section className="relative overflow-hidden bg-[#03131b] text-white shadow-2xl shadow-slate-900/10 sm:rounded-[2rem]">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_75%_20%,rgba(16,185,129,0.18),transparent_32%),linear-gradient(110deg,#03131b_0%,#06252a_48%,#07151e_100%)]" />
+            <div className="pointer-events-none absolute -right-20 top-0 h-full w-[62%] opacity-80">
+              <div className="absolute right-[-18%] top-[-8%] h-[120%] w-[88%] rotate-[10deg] rounded-[44%_18%_20%_36%] border border-white/10 bg-[linear-gradient(135deg,rgba(113,163,174,0.26),rgba(9,32,43,0.72)_42%,rgba(1,13,20,0.95)_78%)] shadow-[-30px_0_90px_rgba(0,0,0,0.45)]" />
+              <div className="absolute right-[12%] top-[9%] h-[78%] w-[4px] rotate-[10deg] bg-white/10" />
+              <div className="absolute right-[2%] top-[15%] h-[55%] w-[45%] rotate-[10deg] rounded-[40%] bg-[radial-gradient(circle_at_40%_30%,rgba(130,211,224,0.18),transparent_48%),linear-gradient(135deg,rgba(20,64,78,0.3),rgba(2,14,21,0.7))]" />
+              <div className="absolute bottom-[2%] right-[7%] h-1/4 w-[55%] rounded-[50%] bg-black/35 blur-xl" />
+            </div>
 
-            <div className="relative grid lg:grid-cols-[0.95fr_1.05fr]">
-              <div className="flex flex-col px-6 py-7 sm:px-10 sm:py-10 lg:justify-center lg:px-12 lg:py-14">
-                <div className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-4 py-1.5 text-xs font-mono uppercase tracking-[0.2em] text-emerald-300">
-                  <Sparkles size={12} /> Smart parking
+            <div className="relative grid min-h-[650px] lg:grid-cols-[1.08fr_0.92fr]">
+              <div className="relative z-20 flex flex-col px-6 pb-8 pt-9 sm:px-10 sm:pb-10 sm:pt-12 lg:justify-center lg:px-14 lg:py-16">
+                <div className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-400/60 bg-emerald-400/5 px-4 py-1.5 text-xs font-mono uppercase tracking-[0.2em] text-emerald-300">
+                  <Sparkles size={13} /> Smart parking
                 </div>
 
                 <h1
-                  className="mt-5 max-w-xl text-4xl font-bold leading-[1.02] tracking-tight sm:text-5xl lg:text-6xl"
+                  className="mt-6 max-w-3xl text-[2.75rem] font-bold leading-[0.98] tracking-[-0.045em] sm:text-5xl lg:text-[4.25rem]"
                   style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
                 >
                   Someone needs
@@ -97,71 +104,64 @@ export function ProductDetailPage({
                   <span className="text-[#00e890]">to reach you?</span>
                 </h1>
 
-                <p className="mt-5 max-w-xl text-base leading-7 text-slate-200 sm:text-lg">
+                <p className="mt-6 max-w-2xl text-base leading-7 text-slate-100 sm:text-lg lg:max-w-xl">
                   A personalized QR parking sticker that lets people contact you without printing your phone number on the sticker.
                 </p>
 
-                <div className="relative mt-6 flex min-h-[225px] items-center justify-center overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#071b25] px-3 py-4 lg:hidden">
-                  <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(16,185,129,0.18),transparent_38%),linear-gradient(135deg,#0b2830,#031018)]" />
-                  <div className="pointer-events-none absolute -left-8 top-20 h-px w-[115%] rotate-[-7deg] bg-white/10" />
-                  <div className="pointer-events-none absolute left-0 right-0 bottom-0 h-20 bg-gradient-to-t from-black/40 to-transparent" />
-                  <img
-                    src={darkTemplateUrl}
-                    alt="Smart Parking Sticker dark design"
-                    className="relative z-10 block w-[76%] max-w-[320px] rotate-[2deg] rounded-[14px] bg-white p-2 shadow-2xl shadow-black/50"
-                  />
-                  <div className="absolute bottom-3 left-3 z-20 flex items-center gap-2 rounded-full border border-white/10 bg-black/30 px-3 py-1.5 text-[10px] text-slate-300 backdrop-blur-sm">
-                    <CarFront size={13} className="text-emerald-300" />
-                    Place it on your parked car
+                <div className="relative mt-7 h-[205px] sm:hidden">
+                  <div className="absolute right-[-7%] top-0 h-[190px] w-[72%] rotate-[5deg] rounded-[34%_8%_12%_40%] border border-white/10 bg-white/[0.03] shadow-[-20px_10px_60px_rgba(0,0,0,0.45)]" />
+                  <div className="absolute right-[8%] top-7 z-10 w-[42%] rotate-[7deg] rounded-xl bg-white p-1.5 shadow-2xl shadow-black/60">
+                    <img src={darkTemplateUrl} alt="Smart Parking Sticker dark design" className="block w-full rounded-lg" />
+                  </div>
+                  <div className="absolute bottom-2 left-0 rounded-full border border-white/10 bg-black/35 px-3 py-1.5 text-[10px] text-slate-300 backdrop-blur-sm">
+                    <CarFront size={12} className="mr-1 inline text-emerald-300" /> Place it on your parked car
                   </div>
                 </div>
 
-                <div className="mt-6 grid grid-cols-3 gap-2 sm:mt-7 sm:gap-4">
+                <div className="mt-2 grid grid-cols-3 gap-1 sm:mt-8 sm:gap-5 lg:max-w-2xl">
                   {[
                     { icon: QrCode, number: "1", title: "Scan", text: "They scan your sticker." },
                     { icon: MessageCircle, number: "2", title: "Contact", text: "The contact page opens instantly." },
                     { icon: Phone, number: "3", title: "Reach You", text: "You get the call or email." },
                   ].map(({ icon: Icon, number, title, text }) => (
-                    <div key={number} className="min-w-0">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full border border-emerald-400/50 bg-emerald-400/5 text-[#00e890] sm:h-12 sm:w-12">
-                        <Icon size={19} />
+                    <div key={number} className="relative min-w-0">
+                      {number !== "1" && <div className="absolute -left-2 top-5 hidden w-4 border-t border-dashed border-emerald-400/50 sm:block" />}
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full border border-emerald-400/60 bg-emerald-400/5 text-[#00e890] sm:h-14 sm:w-14">
+                        <Icon size={21} />
                       </div>
                       <div className="mt-3 text-xs font-bold text-white sm:text-sm">{number}. {title}</div>
-                      <div className="mt-1 text-[10px] leading-4 text-slate-400 sm:text-xs sm:leading-5">{text}</div>
+                      <div className="mt-1 max-w-[125px] text-[10px] leading-4 text-slate-400 sm:text-xs sm:leading-5">{text}</div>
                     </div>
                   ))}
                 </div>
 
-                <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
+                <div className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-7">
                   <button
                     type="button"
                     onClick={onPrimaryAction}
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#00d980] px-6 py-3.5 text-sm font-bold text-[#03121d] shadow-xl shadow-emerald-950/30 transition hover:bg-[#18e895] cursor-pointer sm:w-auto"
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#00d980] px-6 py-4 text-base font-bold text-[#03121d] shadow-xl shadow-emerald-950/30 transition hover:bg-[#18e895] cursor-pointer sm:w-auto sm:min-w-[270px]"
                   >
-                    Create My Sticker <ArrowRight size={17} />
+                    Create My Sticker <ArrowRight size={19} />
                   </button>
-                  <div className="text-center text-sm text-slate-400 sm:text-left">
-                    <span className="text-lg font-bold text-white">₹199</span> · one-time
+                  <div className="text-center sm:text-left">
+                    <div className="text-2xl font-bold text-white">₹199</div>
+                    <div className="text-sm text-slate-400">one-time</div>
                   </div>
                 </div>
 
-                <p className="mt-3 text-xs text-slate-500">
+                <p className="mt-4 flex items-center gap-2 text-xs text-slate-400">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-300/10 text-emerald-300">◉</span>
                   Preview your personalized sticker before you buy.
                 </p>
               </div>
 
-              <div className="relative hidden min-h-[520px] overflow-hidden border-l border-white/5 bg-[#071b25] lg:flex lg:items-center lg:justify-center">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(16,185,129,0.18),transparent_38%),linear-gradient(135deg,#0b2830,#031018)]" />
-                <div className="absolute -left-10 top-16 h-[420px] w-[110%] rotate-[-12deg] rounded-[40%] border border-white/10 bg-white/[0.025] shadow-[inset_0_0_80px_rgba(0,0,0,0.45)]" />
-                <div className="absolute bottom-0 left-0 h-1/3 w-full bg-gradient-to-t from-black/60 to-transparent" />
-                <img
-                  src={darkTemplateUrl}
-                  alt="Smart Parking Sticker dark design"
-                  className="relative z-10 block w-[72%] max-w-[430px] rotate-[3deg] rounded-[18px] bg-white p-3 shadow-2xl shadow-black/50"
-                />
-                <div className="absolute bottom-6 left-8 z-20 flex items-center gap-2 rounded-full border border-white/10 bg-black/30 px-3 py-1.5 text-xs text-slate-300 backdrop-blur-sm">
-                  <CarFront size={13} className="text-emerald-300" />
-                  Place it on your parked car
+              <div className="relative hidden min-h-[650px] lg:block">
+                <div className="absolute inset-0 bg-[linear-gradient(90deg,#03131b_0%,transparent_38%)]" />
+                <div className="absolute right-[8%] top-[22%] z-10 w-[62%] rotate-[5deg] rounded-2xl bg-white p-3 shadow-2xl shadow-black/60">
+                  <img src={darkTemplateUrl} alt="Smart Parking Sticker dark design" className="block w-full rounded-xl" />
+                </div>
+                <div className="absolute bottom-12 right-8 rounded-full border border-white/10 bg-black/35 px-4 py-2 text-xs text-slate-300 backdrop-blur-sm">
+                  <CarFront size={14} className="mr-1.5 inline text-emerald-300" /> Place it on your parked car
                 </div>
               </div>
             </div>
