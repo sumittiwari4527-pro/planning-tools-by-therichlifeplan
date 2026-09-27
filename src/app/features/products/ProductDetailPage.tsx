@@ -104,7 +104,7 @@ export function ProductDetailPage({
                 <div className="mt-7 grid grid-cols-3 gap-2 sm:gap-4">
                   {[
                     { icon: QrCode, number: "1", title: "Scan", text: "They scan your sticker." },
-                    { icon: MessageCircle, number: "2", title: "Send Message", text: "They contact you." },
+                    { icon: Phone, number: "2", title: "Contact", text: "They can call or email you." },
                     { icon: UserRound, number: "3", title: "You Respond", text: "You reply at your convenience." },
                   ].map(({ icon: Icon, number, title, text }) => (
                     <div key={number} className="min-w-0">
@@ -191,7 +191,7 @@ export function ProductDetailPage({
             ))}
           </section>
 
-          <section className="py-14 sm:py-18">
+          <section className="py-14 sm:py-20">
             <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
               <div>
                 <div className="text-xs font-mono uppercase tracking-widest text-[#008d50]">Choose your design</div>
@@ -275,7 +275,7 @@ export function ProductDetailPage({
             </div>
           </section>
 
-          <section className="py-14 sm:py-18">
+          <section className="py-14 sm:py-20">
             <div className="grid gap-8 lg:grid-cols-2">
               <div>
                 <div className="text-xs font-mono uppercase tracking-widest text-[#4f46e5]">What's included</div>
