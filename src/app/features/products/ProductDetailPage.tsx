@@ -100,14 +100,14 @@ export function ProductDetailPage({
                   <span className="block">exposing your phone number.</span>
                 </p>
 
-                <div className="mt-8 grid w-full max-w-[390px] grid-cols-3 gap-0 sm:max-w-[610px]">
+                <div className="mt-8 grid w-full max-w-[390px] grid-cols-3 gap-0 sm:max-w-[520px]">
                   {[
                     { icon: QrCode, title: "Scan", text: "They scan your sticker." },
                     { icon: MessageCircle, title: "Contact", text: "The contact page opens." },
                     { icon: Phone, title: "Reach You", text: "You get the call or email." },
                   ].map(({ icon: Icon, title, text }, index) => (
                     <div key={title} className="relative flex min-w-0 flex-col items-start text-left">
-                      {index > 0 && <ArrowRight className="absolute -left-3 top-5 text-white/80 sm:-left-4 sm:top-6" size={17} />}
+                      {index > 0 && <span className="absolute -left-2 top-5 text-xl font-medium text-white/80 sm:-left-3 sm:top-6">&gt;</span>}
                       <div className="flex h-14 w-14 items-center justify-center rounded-full border border-emerald-400/80 bg-[#06262a]/55 text-[#00e890] sm:h-16 sm:w-16">
                         <Icon size={21} />
                       </div>
