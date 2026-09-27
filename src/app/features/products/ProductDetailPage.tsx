@@ -72,33 +72,32 @@ export function ProductDetailPage({
     return (
       <div className="min-h-screen bg-[#f4f8f7]">
         <main className="mx-auto max-w-7xl">
-          <section className="relative min-h-[820px] overflow-hidden bg-[#03151c] text-white shadow-2xl shadow-slate-900/10 sm:min-h-[760px] lg:min-h-[700px]">
+          <section className="relative min-h-[700px] overflow-hidden bg-[#03151c] text-white shadow-2xl shadow-slate-900/10 sm:min-h-[720px] lg:min-h-[700px]">
             <div
-              className="absolute inset-y-0 right-0 w-[58%] overflow-hidden bg-[#03151c] bg-right bg-no-repeat"
-              style={{ backgroundImage: `url(${option2CarUrl})`, backgroundSize: "200% auto" }}
+              className="absolute inset-0 overflow-hidden bg-[#03151c] bg-right-top bg-no-repeat lg:inset-y-0 lg:left-auto lg:right-0 lg:w-[58%]"
+              style={{ backgroundImage: `url(${option2CarUrl})`, backgroundSize: "180% auto" }}
             />
-            <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,21,28,0.98)_0%,rgba(3,21,28,0.9)_40%,rgba(3,21,28,0.28)_70%,rgba(3,21,28,0.12)_100%)]" />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,21,28,0.98)_0%,rgba(3,21,28,0.9)_42%,rgba(3,21,28,0.55)_72%,rgba(3,21,28,0.78)_100%)] lg:bg-[linear-gradient(90deg,rgba(3,21,28,0.98)_0%,rgba(3,21,28,0.9)_40%,rgba(3,21,28,0.28)_70%,rgba(3,21,28,0.12)_100%)]" />
 
-
-            <div className="relative z-20 flex min-h-[820px] flex-col px-7 pb-8 pt-9 sm:min-h-[760px] sm:px-10 sm:pb-10 sm:pt-12 lg:min-h-[700px] lg:px-14 lg:py-14">
+            <div className="relative z-20 flex min-h-[700px] flex-col px-5 pb-7 pt-8 sm:min-h-[720px] sm:px-8 sm:pb-9 sm:pt-10 lg:min-h-[700px] lg:px-14 lg:py-14">
               <div className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-400/70 bg-emerald-400/5 px-4 py-2 text-xs font-mono uppercase tracking-[0.2em] text-emerald-300">
                 <Sparkles size={13} /> Smart parking
               </div>
 
               <h1
-                className="mt-7 max-w-[96%] text-[3.05rem] font-bold leading-[0.96] tracking-[-0.05em] sm:max-w-xl sm:text-5xl lg:max-w-2xl lg:text-[4.4rem]"
+                className="mt-7 max-w-full text-[2.45rem] font-bold leading-[0.96] tracking-[-0.05em] sm:max-w-xl sm:text-5xl lg:max-w-2xl lg:text-[4.4rem]"
                 style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
               >
-                <span className="whitespace-nowrap">Someone needs</span>
+                <span className="block">Someone needs</span>
                 <br />
-                <span className="whitespace-nowrap text-[#00e890]">to reach you?</span>
+                <span className="block text-[#00e890]">to reach you?</span>
               </h1>
 
-              <p className="mt-6 max-w-[86%] text-[1.04rem] leading-7 text-slate-100 sm:max-w-xl sm:text-lg">
+              <p className="mt-6 max-w-full text-[0.98rem] leading-6 text-slate-100 sm:max-w-xl sm:text-lg sm:leading-7">
                 A personalized QR parking sticker that lets people contact you without printing your phone number on the sticker.
               </p>
 
-              <div className="mt-7 grid max-w-[92%] grid-cols-3 gap-1 sm:max-w-xl sm:gap-5 lg:max-w-2xl">
+              <div className="mt-7 grid max-w-full grid-cols-3 gap-2 sm:max-w-xl sm:gap-5 lg:max-w-2xl">
                 {[
                   { icon: QrCode, number: "1", title: "Scan", text: "They scan your sticker." },
                   { icon: MessageCircle, number: "2", title: "Contact", text: "The contact page opens instantly." },
@@ -115,21 +114,21 @@ export function ProductDetailPage({
                 ))}
               </div>
 
-              <div className="mt-7 flex items-center gap-4 sm:gap-7">
+              <div className="mt-7 flex w-full items-center gap-3 sm:gap-7">
                 <button
                   type="button"
                   onClick={onPrimaryAction}
-                  className="inline-flex min-h-[62px] flex-1 items-center justify-center gap-2 rounded-2xl bg-[#00d980] px-5 text-base font-bold text-[#03121d] shadow-xl shadow-emerald-950/30 transition hover:bg-[#18e895] cursor-pointer sm:flex-none sm:min-w-[300px]"
+                  className="inline-flex min-h-[58px] min-w-0 flex-1 items-center justify-center gap-2 rounded-2xl bg-[#00d980] px-3 text-sm font-bold sm:min-h-[62px] sm:px-5 sm:text-base text-[#03121d] shadow-xl shadow-emerald-950/30 transition hover:bg-[#18e895] cursor-pointer sm:flex-none sm:min-w-[300px]"
                 >
                   Create My Sticker <ArrowRight size={19} />
                 </button>
-                <div className="shrink-0 border-l border-white/40 pl-4 sm:pl-6">
-                  <div className="text-2xl font-bold text-white sm:text-3xl">₹199</div>
-                  <div className="mt-1 text-sm text-slate-300">one-time</div>
+                <div className="shrink-0 border-l border-white/40 pl-3 sm:pl-6">
+                  <div className="text-xl font-bold text-white sm:text-3xl">₹199</div>
+                  <div className="mt-1 text-xs text-slate-300 sm:text-sm">one-time</div>
                 </div>
               </div>
 
-              <p className="mt-5 flex items-center gap-2 text-xs text-slate-200 sm:text-sm">
+              <p className="mt-5 flex items-start gap-2 text-xs leading-5 text-slate-200 sm:items-center sm:text-sm">
                 <span className="text-lg text-emerald-200">◉</span>
                 Preview your personalized sticker before you buy.
               </p>
