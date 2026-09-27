@@ -131,8 +131,8 @@ export function ProductDetailPage({
                   </div>
                 </div>
 
-                <p className="mt-5 flex items-start gap-2 text-xs leading-5 text-slate-200 sm:text-sm">
-                  <Eye size={21} className="mt-0.5 flex-shrink-0 text-emerald-200" />
+                <p className="mt-5 flex items-center gap-2 text-xs leading-5 text-slate-200 sm:text-sm">
+                  <Eye size={21} className="flex-shrink-0 text-emerald-200" />
                   Preview your personalized sticker before you buy.
                 </p>
               </div>
