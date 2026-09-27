@@ -80,13 +80,13 @@ export function ProductDetailPage({
             <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,21,28,0.98)_0%,rgba(3,21,28,0.9)_40%,rgba(3,21,28,0.28)_70%,rgba(3,21,28,0.12)_100%)]" />
 
 
-            <div className="relative z-20 flex min-h-[940px] flex-col px-7 pb-10 pt-10 sm:min-h-[760px] sm:px-10 sm:pb-10 sm:pt-12 lg:min-h-[700px] lg:px-14 lg:py-14">
+            <div className="relative z-20 flex min-h-[820px] flex-col px-7 pb-8 pt-9 sm:min-h-[760px] sm:px-10 sm:pb-10 sm:pt-12 lg:min-h-[700px] lg:px-14 lg:py-14">
               <div className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-400/70 bg-emerald-400/5 px-4 py-2 text-xs font-mono uppercase tracking-[0.2em] text-emerald-300">
                 <Sparkles size={13} /> Smart parking
               </div>
 
               <h1
-                className="mt-8 max-w-[96%] text-[3.05rem] font-bold leading-[0.96] tracking-[-0.05em] sm:max-w-xl sm:text-5xl lg:max-w-2xl lg:text-[4.4rem]"
+                className="mt-7 max-w-[96%] text-[3.05rem] font-bold leading-[0.96] tracking-[-0.05em] sm:max-w-xl sm:text-5xl lg:max-w-2xl lg:text-[4.4rem]"
                 style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
               >
                 <span className="whitespace-nowrap">Someone needs</span>
@@ -94,11 +94,11 @@ export function ProductDetailPage({
                 <span className="whitespace-nowrap text-[#00e890]">to reach you?</span>
               </h1>
 
-              <p className="mt-7 max-w-[88%] text-[1.08rem] leading-8 text-slate-100 sm:max-w-xl sm:text-lg">
+              <p className="mt-6 max-w-[86%] text-[1.04rem] leading-7 text-slate-100 sm:max-w-xl sm:text-lg">
                 A personalized QR parking sticker that lets people contact you without printing your phone number on the sticker.
               </p>
 
-              <div className="mt-8 grid max-w-[92%] grid-cols-3 gap-1 sm:max-w-xl sm:gap-5 lg:max-w-2xl">
+              <div className="mt-7 grid max-w-[92%] grid-cols-3 gap-1 sm:max-w-xl sm:gap-5 lg:max-w-2xl">
                 {[
                   { icon: QrCode, number: "1", title: "Scan", text: "They scan your sticker." },
                   { icon: MessageCircle, number: "2", title: "Contact", text: "The contact page opens instantly." },
@@ -115,7 +115,7 @@ export function ProductDetailPage({
                 ))}
               </div>
 
-              <div className="mt-8 flex items-center gap-4 sm:gap-7">
+              <div className="mt-7 flex items-center gap-4 sm:gap-7">
                 <button
                   type="button"
                   onClick={onPrimaryAction}
@@ -129,7 +129,7 @@ export function ProductDetailPage({
                 </div>
               </div>
 
-              <p className="mt-6 flex items-center gap-2 text-xs text-slate-200 sm:text-sm">
+              <p className="mt-5 flex items-center gap-2 text-xs text-slate-200 sm:text-sm">
                 <span className="text-lg text-emerald-200">◉</span>
                 Preview your personalized sticker before you buy.
               </p>
