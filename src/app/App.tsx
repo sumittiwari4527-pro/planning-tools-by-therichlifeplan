@@ -53,6 +53,7 @@ export default function App() {
   const routeArticle = articles.find((article) => articlePathById.get(article.id) === path);
   const productSlug = productSlugFromPath(path);
   const routeProduct = productSlug ? getProductBySlug(productSlug) : undefined;
+  const parkingBuilderMode = routeProduct?.slug === "smart-parking-sticker" && new URLSearchParams(location.search).get("mode") === "builder";
   const parkingEncryptedPayload = new URLSearchParams(location.search).get("data");
   const [currency, setCurrency] = useState<CurrencyCode>("USD");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -346,10 +347,10 @@ export default function App() {
 
         {page === "products" && <ProductsPage onOpenProduct={(product) => routerNavigate(productPath(product.slug))} />}
 
-        {page === "product" && routeProduct?.slug === "smart-parking-sticker" && <ParkingStickerBuilder />}
+        {page === "product" && parkingBuilderMode && <ParkingStickerBuilder />}
 
-        {page === "product" && routeProduct && routeProduct.slug !== "smart-parking-sticker" && (
-          <ProductDetailPage product={routeProduct} onBack={() => routerNavigate(PRODUCTS_ROUTE)} />
+        {page === "product" && routeProduct && !parkingBuilderMode && (
+          <ProductDetailPage product={routeProduct} onBack={() => routerNavigate(PRODUCTS_ROUTE)} onPrimaryAction={routeProduct.slug === "smart-parking-sticker" ? () => routerNavigate(`${productPath(routeProduct.slug)}?mode=builder`) : undefined} />
         )}
 
         {page === "product" && !routeProduct && (
