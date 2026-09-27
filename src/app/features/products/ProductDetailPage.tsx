@@ -72,7 +72,7 @@ export function ProductDetailPage({
     return (
       <div className="min-h-screen bg-[#f4f8f7]">
         <main className="mx-auto max-w-7xl">
-          <section className="relative min-h-0 overflow-hidden bg-[#03151c] text-white shadow-2xl shadow-slate-900/10 sm:min-h-[760px] lg:min-h-[700px]">
+          <section className="relative min-h-[1200px] overflow-hidden bg-[#03151c] text-white shadow-2xl shadow-slate-900/10 sm:min-h-[760px] lg:min-h-[700px]">
             <div
               className="absolute inset-0 bg-right bg-no-repeat"
               style={{ backgroundImage: `url(${option2CarUrl})`, backgroundSize: "auto 100%" }}
@@ -80,21 +80,21 @@ export function ProductDetailPage({
             <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,21,28,0.98)_0%,rgba(3,21,28,0.9)_40%,rgba(3,21,28,0.28)_70%,rgba(3,21,28,0.12)_100%)]" />
 
 
-            <div className="relative z-20 flex min-h-0 flex-col px-7 pb-8 pt-10 sm:min-h-[760px] sm:px-10 sm:pb-10 sm:pt-12 lg:min-h-[700px] lg:px-14 lg:py-14">
+            <div className="relative z-20 flex min-h-[1200px] flex-col px-7 pb-10 pt-10 sm:min-h-[760px] sm:px-10 sm:pb-10 sm:pt-12 lg:min-h-[700px] lg:px-14 lg:py-14">
               <div className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-400/70 bg-emerald-400/5 px-4 py-2 text-xs font-mono uppercase tracking-[0.2em] text-emerald-300">
                 <Sparkles size={13} /> Smart parking
               </div>
 
               <h1
-                className="mt-8 max-w-[94%] text-[3.25rem] font-bold leading-[0.98] tracking-[-0.05em] sm:max-w-xl sm:text-5xl lg:max-w-2xl lg:text-[4.4rem]"
+                className="mt-8 max-w-[82%] text-[3.35rem] font-bold leading-[0.94] tracking-[-0.055em] sm:max-w-xl sm:text-5xl lg:max-w-2xl lg:text-[4.4rem]"
                 style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
               >
-                <span className="whitespace-nowrap">Someone needs</span>
-                <br />
-                <span className="whitespace-nowrap text-[#00e890]">to reach you?</span>
+                <span className="block">Someone</span>
+                <span className="block">needs</span>
+                <span className="block text-[#00e890]">to reach you?</span>
               </h1>
 
-              <p className="mt-7 max-w-[90%] text-[1.08rem] leading-8 text-slate-100 sm:max-w-xl sm:text-lg">
+              <p className="mt-7 max-w-[88%] text-[1.08rem] leading-8 text-slate-100 sm:max-w-xl sm:text-lg">
                 A personalized QR parking sticker that lets people contact you without printing your phone number on the sticker.
               </p>
 
