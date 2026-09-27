@@ -72,10 +72,10 @@ export function ProductDetailPage({
     return (
       <div className="min-h-screen bg-[#f4f8f7]">
         <main className="mx-auto max-w-7xl">
-          <section className="relative min-h-[940px] overflow-hidden bg-[#03151c] text-white shadow-2xl shadow-slate-900/10 sm:min-h-[760px] lg:min-h-[700px]">
+          <section className="relative min-h-[820px] overflow-hidden bg-[#03151c] text-white shadow-2xl shadow-slate-900/10 sm:min-h-[760px] lg:min-h-[700px]">
             <div
-              className="absolute inset-0 bg-right bg-no-repeat"
-              style={{ backgroundImage: `url(${option2CarUrl})`, backgroundSize: "auto 100%" }}
+              className="absolute inset-y-0 right-0 w-[58%] overflow-hidden bg-[#03151c]"
+              style={{ backgroundImage: `url(${option2CarUrl})`, backgroundSize: "138% auto" }}
             />
             <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,21,28,0.98)_0%,rgba(3,21,28,0.9)_40%,rgba(3,21,28,0.28)_70%,rgba(3,21,28,0.12)_100%)]" />
 
