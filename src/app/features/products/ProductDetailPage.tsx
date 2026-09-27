@@ -134,12 +134,6 @@ export function ProductDetailPage({
                 Preview your personalized sticker before you buy.
               </p>
 
-              <div className="pointer-events-none absolute right-[-2%] top-[39%] z-10 w-[46%] rotate-[7deg] sm:right-[5%] sm:top-[28%] sm:w-[31%] lg:w-[28%]">
-                <div className="absolute -inset-5 rounded-[45%_12%_16%_40%] bg-white/[0.04] blur-sm" />
-                <div className="relative rounded-2xl bg-white p-2 shadow-2xl shadow-black/70 sm:p-3">
-                  <img src={darkTemplateUrl} alt="Smart Parking Sticker dark design" className="block w-full rounded-xl" />
-                </div>
-              </div>
             </div>
           </section>
 
