@@ -73,14 +73,14 @@ export function ProductDetailPage({
     return (
       <div className="min-h-screen bg-[#f4f8f7]">
         <main className="mx-auto max-w-7xl">
-          <section className="relative isolate min-h-[720px] overflow-hidden bg-[#03151c] text-white lg:min-h-[680px]">
+          <section className="relative isolate min-h-[760px] overflow-hidden bg-[#03151c] text-white sm:min-h-[780px] lg:min-h-[680px]">
             <div
-              className="absolute inset-0 bg-[#03151c] bg-right-center bg-no-repeat lg:left-[42%]"
-              style={{ backgroundImage: `url(${option2CarUrl})`, backgroundSize: "cover", backgroundPosition: "center right" }}
+              className="absolute inset-0 bg-[#03151c] bg-no-repeat lg:left-[42%]"
+              style={{ backgroundImage: `url(${option2CarUrl})`, backgroundSize: "cover", backgroundPosition: "center center" }}
             />
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,21,28,0.16)_0%,rgba(3,21,28,0.22)_48%,rgba(3,21,28,0.86)_100%)] lg:bg-[linear-gradient(90deg,rgba(3,21,28,0.98)_0%,rgba(3,21,28,0.9)_38%,rgba(3,21,28,0.38)_62%,rgba(3,21,28,0.08)_100%)]" />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,21,28,0.18)_0%,rgba(3,21,28,0.24)_55%,rgba(3,21,28,0.48)_100%)] lg:bg-[linear-gradient(90deg,rgba(3,21,28,0.98)_0%,rgba(3,21,28,0.9)_38%,rgba(3,21,28,0.38)_62%,rgba(3,21,28,0.08)_100%)]" />
 
-            <div className="relative z-10 flex min-h-[720px] flex-col px-6 pb-7 pt-9 sm:px-10 sm:pt-12 lg:min-h-[680px] lg:px-14 lg:py-14">
+            <div className="relative z-10 flex min-h-[760px] flex-col px-6 pb-7 pt-9 sm:min-h-[780px] sm:px-10 sm:pt-12 lg:min-h-[680px] lg:px-14 lg:py-14">
               <div className="max-w-[650px]">
                 <div className="inline-flex items-center gap-2 rounded-full border border-emerald-300/70 bg-emerald-300/5 px-4 py-2 text-[11px] font-mono uppercase tracking-[0.22em] text-emerald-200">
                   <Sparkles size={13} /> Smart parking
