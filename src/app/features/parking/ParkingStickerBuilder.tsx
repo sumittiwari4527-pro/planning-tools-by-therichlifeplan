@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Download, Mail, Palette, Phone, QrCode, ShoppingCart, Sparkles } from "lucide-react";
+import { ArrowLeft, Download, Mail, Palette, Phone, QrCode, ShoppingCart, Sparkles } from "lucide-react";
 import QRCode from "qrcode";
 import {
   encryptParkingPayload,
@@ -49,7 +49,7 @@ const createStickerDataUrl = async (theme: ParkingTheme, qr: string) =>
 const isValidPhone = (value: string) => value.replace(/\D/g, "").length >= 10;
 const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 
-export function ParkingStickerBuilder() {
+export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
   const [form, setForm] = useState<FormState>(initialForm);
   const [qrDataUrl, setQrDataUrl] = useState("");
   const [stickerDataUrl, setStickerDataUrl] = useState("");
@@ -216,7 +216,7 @@ export function ParkingStickerBuilder() {
   return (
     <div className="min-h-screen bg-[#f8f9fb] pt-16">
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
-        <div className="mb-10 max-w-3xl">
+        <button\n          type="button"\n          onClick={onBack}\n          className="mb-5 inline-flex items-center gap-2 text-sm font-medium text-[#6b7a99] hover:text-[#0f1523] cursor-pointer"\n        >\n          <ArrowLeft size={15} /> Back to product\n        </button>\n\n        <div className="mb-10 max-w-3xl">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-[#eefaf3] px-4 py-1.5 text-xs font-mono uppercase tracking-widest text-[#008d50]">
             <Sparkles size={12} /> Smart parking
           </div>
