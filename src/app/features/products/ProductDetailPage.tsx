@@ -70,9 +70,9 @@ export function ProductDetailPage({
 
   if (isParking) {
     return (
-      <div className="min-h-screen bg-[#f4f8f7]">
-        <main className="mx-auto max-w-7xl">
-          <section className="relative min-h-[1200px] overflow-hidden bg-[#03151c] text-white shadow-2xl shadow-slate-900/10 sm:min-h-[760px] lg:min-h-[700px]">
+      <div className="min-h-screen bg-[#f4f8f7] px-3 py-3 sm:px-5 sm:py-5 lg:px-8 lg:py-8">
+        <main className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] border border-white/80 bg-white shadow-[0_20px_60px_rgba(15,21,35,0.08)]">
+          <section className="relative min-h-[1200px] overflow-hidden rounded-[1.75rem] bg-[#03151c] text-white shadow-2xl shadow-slate-900/10 sm:min-h-[760px] lg:min-h-[700px]">
             <div
               className="absolute inset-0 bg-right bg-no-repeat"
               style={{ backgroundImage: `url(${option2CarUrl})`, backgroundSize: "auto 100%" }}
