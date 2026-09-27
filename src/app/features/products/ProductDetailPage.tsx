@@ -95,8 +95,15 @@ export function ProductDetailPage({
                   <Sparkles size={13} /> Smart parking
                 </div>
 
+                <div className="pointer-events-none absolute right-[-5%] top-[26%] z-10 h-[235px] w-[43%] sm:hidden">
+                  <div className="absolute inset-0 rotate-[8deg] rounded-[34%_8%_12%_40%] border border-white/10 bg-[linear-gradient(135deg,rgba(120,170,180,0.22),rgba(5,24,32,0.9))] shadow-[-20px_10px_60px_rgba(0,0,0,0.5)]" />
+                  <div className="absolute right-[9%] top-[25%] w-[78%] rotate-[7deg] rounded-xl bg-white p-1.5 shadow-2xl shadow-black/70">
+                    <img src={darkTemplateUrl} alt="Smart Parking Sticker dark design" className="block w-full rounded-lg" />
+                  </div>
+                </div>
+
                 <h1
-                  className="mt-6 max-w-3xl text-[2.75rem] font-bold leading-[0.98] tracking-[-0.045em] sm:text-5xl lg:text-[4.25rem]"
+                  className="relative z-20 mt-6 max-w-[68%] text-[2.75rem] font-bold leading-[0.98] tracking-[-0.045em] sm:max-w-3xl sm:text-5xl lg:text-[4.25rem]"
                   style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
                 >
                   Someone needs
@@ -104,21 +111,11 @@ export function ProductDetailPage({
                   <span className="text-[#00e890]">to reach you?</span>
                 </h1>
 
-                <p className="mt-6 max-w-2xl text-base leading-7 text-slate-100 sm:text-lg lg:max-w-xl">
+                <p className="relative z-20 mt-6 max-w-[65%] text-base leading-7 text-slate-100 sm:max-w-2xl sm:text-lg lg:max-w-xl">
                   A personalized QR parking sticker that lets people contact you without printing your phone number on the sticker.
                 </p>
 
-                <div className="relative mt-7 h-[205px] sm:hidden">
-                  <div className="absolute right-[-7%] top-0 h-[190px] w-[72%] rotate-[5deg] rounded-[34%_8%_12%_40%] border border-white/10 bg-white/[0.03] shadow-[-20px_10px_60px_rgba(0,0,0,0.45)]" />
-                  <div className="absolute right-[8%] top-7 z-10 w-[42%] rotate-[7deg] rounded-xl bg-white p-1.5 shadow-2xl shadow-black/60">
-                    <img src={darkTemplateUrl} alt="Smart Parking Sticker dark design" className="block w-full rounded-lg" />
-                  </div>
-                  <div className="absolute bottom-2 left-0 rounded-full border border-white/10 bg-black/35 px-3 py-1.5 text-[10px] text-slate-300 backdrop-blur-sm">
-                    <CarFront size={12} className="mr-1 inline text-emerald-300" /> Place it on your parked car
-                  </div>
-                </div>
-
-                <div className="mt-2 grid grid-cols-3 gap-1 sm:mt-8 sm:gap-5 lg:max-w-2xl">
+                <div className="mt-7 grid grid-cols-3 gap-1 sm:mt-8 sm:gap-5 lg:max-w-2xl">
                   {[
                     { icon: QrCode, number: "1", title: "Scan", text: "They scan your sticker." },
                     { icon: MessageCircle, number: "2", title: "Contact", text: "The contact page opens instantly." },
