@@ -2,6 +2,7 @@ import { ArrowLeft, Check, FileText, ShieldCheck, Sparkles, ArrowRight, Phone, Q
 import type { Product } from "./types";
 import lightTemplateUrl from "../parking/assets/parking-template-light.svg?url";
 import darkTemplateUrl from "../parking/assets/parking-template-dark.svg?url";
+import option2CarUrl from "./assets/option2-car.jpg?url";
 
 const typeLabels: Record<Product["type"], string> = {
   ebook: "Ebook",
@@ -72,15 +73,12 @@ export function ProductDetailPage({
       <div className="min-h-screen bg-[#f4f8f7]">
         <main className="mx-auto max-w-7xl">
           <section className="relative min-h-[1040px] overflow-hidden bg-[#03151c] text-white shadow-2xl shadow-slate-900/10 sm:min-h-[760px] lg:min-h-[700px]">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(18,84,76,0.5),transparent_35%),linear-gradient(105deg,#03151c_0%,#05262b_48%,#07151e_100%)]" />
-            <div className="absolute inset-y-0 right-0 w-[54%] overflow-hidden sm:w-[52%]">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_42%_22%,rgba(124,180,188,0.24),transparent_30%),linear-gradient(120deg,rgba(7,35,43,0.3),rgba(2,14,21,0.85))]" />
-              <div className="absolute -right-[18%] top-[-8%] h-[112%] w-[92%] rotate-[9deg] rounded-[46%_0_0_38%] border-l border-white/15 bg-[linear-gradient(135deg,rgba(100,155,164,0.28),rgba(16,52,61,0.52)_38%,rgba(1,12,18,0.94)_82%)] shadow-[-45px_0_100px_rgba(0,0,0,0.45)]" />
-              <div className="absolute right-[12%] top-[6%] h-[76%] w-[3px] rotate-[9deg] bg-white/10" />
-              <div className="absolute right-[2%] top-[22%] h-[36%] w-[48%] rotate-[9deg] rounded-[50%] bg-[radial-gradient(circle_at_30%_30%,rgba(173,219,225,0.2),transparent_48%),linear-gradient(135deg,rgba(40,78,88,0.2),rgba(1,14,21,0.68))]" />
-              <div className="absolute bottom-[10%] right-[5%] h-[18%] w-[62%] rotate-[8deg] rounded-[50%] bg-black/45 blur-xl" />
-            </div>
-            <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,21,28,0.98)_0%,rgba(3,21,28,0.9)_42%,rgba(3,21,28,0.2)_72%,rgba(3,21,28,0.15)_100%)]" />
+            <div
+              className="absolute inset-0 bg-cover bg-[position:70%_center] sm:bg-[position:72%_center]"
+              style={{ backgroundImage: `url(${option2CarUrl})` }}
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,21,28,0.98)_0%,rgba(3,21,28,0.9)_40%,rgba(3,21,28,0.28)_70%,rgba(3,21,28,0.12)_100%)]" />
+
 
             <div className="relative z-20 flex min-h-[1040px] flex-col px-7 pb-8 pt-10 sm:min-h-[760px] sm:px-10 sm:pb-10 sm:pt-12 lg:min-h-[700px] lg:px-14 lg:py-14">
               <div className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-400/70 bg-emerald-400/5 px-4 py-2 text-xs font-mono uppercase tracking-[0.2em] text-emerald-300">
