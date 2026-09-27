@@ -2,6 +2,7 @@ import { ArrowLeft, Check, FileText, ShieldCheck, Sparkles, ArrowRight, Phone, Q
 import type { Product } from "./types";
 import lightTemplateUrl from "../parking/assets/parking-template-light.svg?url";
 import darkTemplateUrl from "../parking/assets/parking-template-dark.svg?url";
+import option2CarUrl from "./assets/option2-car.jpg?url";
 
 const typeLabels: Record<Product["type"], string> = {
   ebook: "Ebook",
@@ -72,25 +73,15 @@ export function ProductDetailPage({
       <div className="min-h-screen bg-[#f4f8f7]">
         <main className="mx-auto max-w-7xl">
           <section className="relative isolate min-h-[720px] overflow-hidden bg-[#03151c] text-white lg:min-h-[680px]">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_42%,rgba(20,130,115,0.34),transparent_30%),linear-gradient(135deg,#03151c_0%,#061c24_52%,#092d31_100%)]" />
-
-            <div className="absolute inset-x-[-12%] bottom-[-8%] h-[54%] sm:inset-x-[-5%] sm:bottom-[-12%] sm:h-[58%] lg:inset-y-0 lg:bottom-auto lg:left-[48%] lg:h-full lg:w-[62%]">
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_62%_42%,rgba(73,161,143,0.38),transparent_38%),linear-gradient(155deg,rgba(11,39,43,0.35),rgba(2,16,22,0.95))]" />
-              <div className="absolute inset-[10%_8%_0] rounded-[46%_46%_8%_8%] border border-white/10 bg-[linear-gradient(145deg,rgba(83,135,132,0.22),rgba(5,22,28,0.78))] shadow-[0_-30px_100px_rgba(0,0,0,0.35)]" />
-              <div className="absolute left-[12%] right-[4%] top-[16%] h-px bg-white/10" />
-              <div className="absolute bottom-[7%] left-0 right-0 h-[34%] rounded-[50%_50%_0_0] bg-[linear-gradient(180deg,rgba(2,13,18,0),rgba(2,13,18,0.9))]" />
-              <div className="absolute bottom-[10%] right-[12%] w-[150px] rotate-[-8deg] rounded-2xl border border-white/20 bg-white p-2 shadow-2xl shadow-black/40 sm:w-[190px] lg:right-[17%] lg:w-[220px]">
-                <img src={darkTemplateUrl} alt="Smart Parking Sticker preview" className="block w-full rounded-xl" />
-              </div>
-              <div className="absolute bottom-[3%] left-[18%] h-16 w-[64%] rounded-[50%] bg-black/40 blur-2xl" />
-              <div className="absolute right-[18%] top-[25%] h-28 w-28 rounded-full bg-emerald-300/10 blur-3xl sm:h-40 sm:w-40" />
-            </div>
-
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,21,28,0.05)_0%,rgba(3,21,28,0.12)_46%,rgba(3,21,28,0.72)_100%)] lg:bg-[linear-gradient(90deg,rgba(3,21,28,0.98)_0%,rgba(3,21,28,0.94)_38%,rgba(3,21,28,0.45)_62%,rgba(3,21,28,0.12)_100%)]" />
+            <div
+              className="absolute inset-0 bg-[#03151c] bg-right-center bg-no-repeat lg:left-[42%]"
+              style={{ backgroundImage: `url(${option2CarUrl})`, backgroundSize: "auto 118%" }}
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,21,28,0.16)_0%,rgba(3,21,28,0.22)_48%,rgba(3,21,28,0.86)_100%)] lg:bg-[linear-gradient(90deg,rgba(3,21,28,0.98)_0%,rgba(3,21,28,0.9)_38%,rgba(3,21,28,0.38)_62%,rgba(3,21,28,0.08)_100%)]" />
 
             <div className="relative z-10 flex min-h-[720px] flex-col px-6 pb-7 pt-9 sm:px-10 sm:pt-12 lg:min-h-[680px] lg:px-14 lg:py-14">
-              <div className="max-w-2xl">
-                <div className="inline-flex items-center gap-2 rounded-full border border-emerald-300/60 bg-emerald-300/10 px-4 py-2 text-[11px] font-mono uppercase tracking-[0.22em] text-emerald-200">
+              <div className="max-w-[650px]">
+                <div className="inline-flex items-center gap-2 rounded-full border border-emerald-300/70 bg-emerald-300/5 px-4 py-2 text-[11px] font-mono uppercase tracking-[0.22em] text-emerald-200">
                   <Sparkles size={13} /> Smart parking
                 </div>
 
@@ -99,11 +90,11 @@ export function ProductDetailPage({
                   style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
                 >
                   <span className="block">Someone needs</span>
-                  <span className="block text-[#00e890]">to reach you?</span>
+                  <span className="block">to reach you?</span>
                 </h1>
 
                 <p className="mt-6 max-w-[590px] text-[1.02rem] leading-7 text-slate-100 sm:text-lg">
-                  A personalized QR parking sticker that lets people contact you without printing your phone number on the sticker.
+                  Scan the sticker to contact the owner — without printing your phone number on the sticker.
                 </p>
 
                 <div className="mt-7 grid max-w-[610px] grid-cols-3 gap-3 sm:gap-6">
@@ -111,13 +102,14 @@ export function ProductDetailPage({
                     { icon: QrCode, title: "Scan", text: "They scan your sticker." },
                     { icon: MessageCircle, title: "Contact", text: "The contact page opens." },
                     { icon: Phone, title: "Reach You", text: "You get the call or email." },
-                  ].map(({ icon: Icon, title, text }) => (
-                    <div key={title} className="min-w-0">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-full border border-emerald-400/70 bg-[#06262a]/75 text-[#00e890] sm:h-14 sm:w-14">
+                  ].map(({ icon: Icon, title, text }, index) => (
+                    <div key={title} className="relative min-w-0">
+                      {index > 0 && <div className="absolute -left-4 top-6 hidden w-5 border-t-2 border-white/80 sm:block" />}
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full border border-emerald-400/80 bg-[#06262a]/55 text-[#00e890] sm:h-14 sm:w-14">
                         <Icon size={21} />
                       </div>
-                      <div className="mt-3 text-sm font-bold text-white">{title}</div>
-                      <div className="mt-1 text-[10px] leading-4 text-slate-300 sm:text-xs sm:leading-5">{text}</div>
+                      <div className="mt-3 text-sm font-bold text-white sm:text-base">{title}</div>
+                      <div className="mt-1 max-w-[135px] text-[10px] leading-4 text-slate-300 sm:text-xs sm:leading-5">{text}</div>
                     </div>
                   ))}
                 </div>
@@ -130,7 +122,7 @@ export function ProductDetailPage({
                   >
                     Create My Sticker <ArrowRight size={19} />
                   </button>
-                  <div className="shrink-0 border-l border-white/35 pl-3 sm:pl-6">
+                  <div className="shrink-0 border-l border-white/45 pl-3 sm:pl-6">
                     <div className="text-2xl font-bold text-white sm:text-3xl">₹199</div>
                     <div className="mt-1 text-xs text-slate-300 sm:text-sm">one-time</div>
                   </div>
