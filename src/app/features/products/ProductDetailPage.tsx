@@ -3,7 +3,7 @@ import type { Product } from "./types";
 import lightTemplateUrl from "../parking/assets/parking-template-light.svg?url";
 import darkTemplateUrl from "../parking/assets/parking-template-dark.svg?url";
 
-const option2CarUrl = "https://raw.githubusercontent.com/sumittiwari4527-pro/planning-tools-by-therichlifeplan/95f5eeba6fc27370d69e0de54c55ead24682d813/src/app/features/products/assets/option2-car.jpg";
+import option2CarUrl from "./assets/option2-car-generated.svg?url";
 
 const typeLabels: Record<Product["type"], string> = {
   ebook: "Ebook",
@@ -76,7 +76,7 @@ export function ProductDetailPage({
           <section className="relative isolate min-h-[720px] overflow-hidden bg-[#03151c] text-white lg:min-h-[680px]">
             <div
               className="absolute inset-0 bg-[#03151c] bg-right-center bg-no-repeat lg:left-[42%]"
-              style={{ backgroundImage: `url(${option2CarUrl})`, backgroundSize: "auto 118%" }}
+              style={{ backgroundImage: `url(${option2CarUrl})`, backgroundSize: "cover", backgroundPosition: "center right" }}
             />
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,21,28,0.16)_0%,rgba(3,21,28,0.22)_48%,rgba(3,21,28,0.86)_100%)] lg:bg-[linear-gradient(90deg,rgba(3,21,28,0.98)_0%,rgba(3,21,28,0.9)_38%,rgba(3,21,28,0.38)_62%,rgba(3,21,28,0.08)_100%)]" />
 
