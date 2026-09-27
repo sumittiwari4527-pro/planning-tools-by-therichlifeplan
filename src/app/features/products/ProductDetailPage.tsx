@@ -1,4 +1,4 @@
-import { ArrowLeft, Check, FileText, ShieldCheck, Sparkles, ArrowRight, Phone, QrCode, MessageCircle, UserRound, CarFront, Clock3 } from "lucide-react";
+import { ArrowLeft, Check, FileText, ShieldCheck, Sparkles, ArrowRight, Phone, QrCode, MessageCircle, CarFront, Clock3 } from "lucide-react";
 import type { Product } from "./types";
 import lightTemplateUrl from "../parking/assets/parking-template-light.svg?url";
 import darkTemplateUrl from "../parking/assets/parking-template-dark.svg?url";
@@ -104,8 +104,8 @@ export function ProductDetailPage({
                 <div className="mt-7 grid grid-cols-3 gap-2 sm:gap-4">
                   {[
                     { icon: QrCode, number: "1", title: "Scan", text: "They scan your sticker." },
-                    { icon: Phone, number: "2", title: "Contact", text: "They can call or email you." },
-                    { icon: Phone, number: "3", title: "Reach You", text: "They can call or email you." },
+                    { icon: MessageCircle, number: "2", title: "Contact", text: "The contact page opens instantly." },
+                    { icon: Phone, number: "3", title: "Reach You", text: "You get the call or email." },
                   ].map(({ icon: Icon, number, title, text }) => (
                     <div key={number} className="min-w-0">
                       <div className="flex h-10 w-10 items-center justify-center rounded-full border border-emerald-400/50 bg-emerald-400/5 text-[#00e890] sm:h-12 sm:w-12">
@@ -230,7 +230,7 @@ export function ProductDetailPage({
             <div className="mx-auto max-w-3xl text-center">
               <div className="text-xs font-mono uppercase tracking-widest text-[#008d50]">How it works</div>
               <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#0f1523] sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                Scan. Contact. Respond.
+                Scan. Contact. Reach you.
               </h2>
               <p className="mt-3 text-sm leading-6 text-[#6b7a99]">A simple experience for you and the person who needs to reach you.</p>
             </div>
