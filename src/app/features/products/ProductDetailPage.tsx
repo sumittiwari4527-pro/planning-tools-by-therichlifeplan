@@ -89,9 +89,9 @@ export function ProductDetailPage({
                 className="mt-8 max-w-[94%] text-[3.25rem] font-bold leading-[0.98] tracking-[-0.05em] sm:max-w-xl sm:text-5xl lg:max-w-2xl lg:text-[4.4rem]"
                 style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
               >
-                Someone needs
+                <span className="whitespace-nowrap">Someone needs</span>
                 <br />
-                <span className="text-[#00e890]">to reach you?</span>
+                <span className="whitespace-nowrap text-[#00e890]">to reach you?</span>
               </h1>
 
               <p className="mt-7 max-w-[90%] text-[1.08rem] leading-8 text-slate-100 sm:max-w-xl sm:text-lg">
