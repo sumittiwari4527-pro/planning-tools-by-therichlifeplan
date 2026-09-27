@@ -69,8 +69,8 @@ export function ProductDetailPage({
 
   if (isParking) {
     return (
-      <div className="min-h-screen bg-[#f4f8f7] pt-16">
-        <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
+      <div className="min-h-screen bg-[#f4f8f7] pt-24 sm:pt-20">
+        <main className="mx-auto max-w-7xl px-4 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-10">
           <button
             onClick={onBack}
             className="mb-5 inline-flex items-center gap-2 text-sm font-medium text-[#6b7a99] hover:text-[#0f1523] cursor-pointer"
@@ -83,7 +83,7 @@ export function ProductDetailPage({
             <div className="pointer-events-none absolute -bottom-40 -left-32 h-96 w-96 rounded-full bg-cyan-400/10 blur-3xl" />
 
             <div className="relative grid lg:grid-cols-[0.95fr_1.05fr]">
-              <div className="flex flex-col justify-center px-6 py-8 sm:px-10 sm:py-12 lg:px-12 lg:py-14">
+              <div className="flex flex-col px-6 py-7 sm:px-10 sm:py-10 lg:justify-center lg:px-12 lg:py-14">
                 <div className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-4 py-1.5 text-xs font-mono uppercase tracking-[0.2em] text-emerald-300">
                   <Sparkles size={12} /> Smart parking
                 </div>
@@ -101,7 +101,22 @@ export function ProductDetailPage({
                   A personalized QR parking sticker that lets people contact you without printing your phone number on the sticker.
                 </p>
 
-                <div className="mt-7 grid grid-cols-3 gap-2 sm:gap-4">
+                <div className="relative mt-6 flex min-h-[225px] items-center justify-center overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#071b25] px-3 py-4 lg:hidden">
+                  <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(16,185,129,0.18),transparent_38%),linear-gradient(135deg,#0b2830,#031018)]" />
+                  <div className="pointer-events-none absolute -left-8 top-20 h-px w-[115%] rotate-[-7deg] bg-white/10" />
+                  <div className="pointer-events-none absolute left-0 right-0 bottom-0 h-20 bg-gradient-to-t from-black/40 to-transparent" />
+                  <img
+                    src={darkTemplateUrl}
+                    alt="Smart Parking Sticker dark design"
+                    className="relative z-10 block w-[76%] max-w-[320px] rotate-[2deg] rounded-[14px] bg-white p-2 shadow-2xl shadow-black/50"
+                  />
+                  <div className="absolute bottom-3 left-3 z-20 flex items-center gap-2 rounded-full border border-white/10 bg-black/30 px-3 py-1.5 text-[10px] text-slate-300 backdrop-blur-sm">
+                    <CarFront size={13} className="text-emerald-300" />
+                    Place it on your parked car
+                  </div>
+                </div>
+
+                <div className="mt-6 grid grid-cols-3 gap-2 sm:mt-7 sm:gap-4">
                   {[
                     { icon: QrCode, number: "1", title: "Scan", text: "They scan your sticker." },
                     { icon: MessageCircle, number: "2", title: "Contact", text: "The contact page opens instantly." },
@@ -117,7 +132,7 @@ export function ProductDetailPage({
                   ))}
                 </div>
 
-                <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
+                <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
                   <button
                     type="button"
                     onClick={onPrimaryAction}
@@ -135,30 +150,16 @@ export function ProductDetailPage({
                 </p>
               </div>
 
-              <div className="relative min-h-[300px] overflow-hidden border-t border-white/5 bg-[#071b25] sm:min-h-[390px] lg:min-h-[520px] lg:border-l lg:border-t-0">
+              <div className="relative hidden min-h-[520px] overflow-hidden border-l border-white/5 bg-[#071b25] lg:flex lg:items-center lg:justify-center">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(16,185,129,0.18),transparent_38%),linear-gradient(135deg,#0b2830,#031018)]" />
                 <div className="absolute -left-10 top-16 h-[420px] w-[110%] rotate-[-12deg] rounded-[40%] border border-white/10 bg-white/[0.025] shadow-[inset_0_0_80px_rgba(0,0,0,0.45)]" />
-                <div className="absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-slate-900/70 to-transparent" />
                 <div className="absolute bottom-0 left-0 h-1/3 w-full bg-gradient-to-t from-black/60 to-transparent" />
-
-                <div className="absolute left-[8%] top-[13%] h-1 w-[82%] rotate-[-7deg] bg-white/10" />
-                <div className="absolute left-[12%] top-[21%] h-px w-[72%] rotate-[-7deg] bg-white/10" />
-                <div className="absolute left-[18%] top-[29%] h-px w-[64%] rotate-[-7deg] bg-white/10" />
-
-                <div className="absolute bottom-[8%] left-0 right-0 h-24 bg-gradient-to-r from-slate-800/70 via-slate-700/30 to-slate-900/70" />
-                <div className="absolute bottom-[9%] left-[10%] right-[12%] h-2 rounded-full bg-black/50 blur-sm" />
-
-                <div className="absolute right-[8%] top-[18%] w-[58%] rotate-[4deg] rounded-[18px] bg-white p-2 shadow-2xl shadow-black/50 sm:right-[10%] sm:top-[17%] sm:w-[55%] sm:p-3">
-                  <div className="overflow-hidden rounded-[12px] bg-slate-100">
-                    <img
-                      src={darkTemplateUrl}
-                      alt="Smart Parking Sticker dark design"
-                      className="block w-full"
-                    />
-                  </div>
-                </div>
-
-                <div className="absolute bottom-5 left-5 flex items-center gap-2 rounded-full border border-white/10 bg-black/30 px-3 py-1.5 text-[10px] text-slate-300 backdrop-blur-sm sm:left-8 sm:text-xs">
+                <img
+                  src={darkTemplateUrl}
+                  alt="Smart Parking Sticker dark design"
+                  className="relative z-10 block w-[72%] max-w-[430px] rotate-[3deg] rounded-[18px] bg-white p-3 shadow-2xl shadow-black/50"
+                />
+                <div className="absolute bottom-6 left-8 z-20 flex items-center gap-2 rounded-full border border-white/10 bg-black/30 px-3 py-1.5 text-xs text-slate-300 backdrop-blur-sm">
                   <CarFront size={13} className="text-emerald-300" />
                   Place it on your parked car
                 </div>
