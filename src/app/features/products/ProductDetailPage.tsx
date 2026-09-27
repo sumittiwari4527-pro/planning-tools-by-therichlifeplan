@@ -3,7 +3,7 @@ import type { Product } from "./types";
 import lightTemplateUrl from "../parking/assets/parking-template-light.svg?url";
 import darkTemplateUrl from "../parking/assets/parking-template-dark.svg?url";
 
-import option2CarUrl from "./assets/option2-car-generated.svg?url";
+import option2CarUrl from "./assets/option2-car-hero.webp?url";
 
 const typeLabels: Record<Product["type"], string> = {
   ebook: "Ebook",
