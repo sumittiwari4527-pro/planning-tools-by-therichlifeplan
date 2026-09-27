@@ -346,10 +346,10 @@ export default function App() {
 
         {page === "products" && <ProductsPage onOpenProduct={(product) => routerNavigate(productPath(product.slug))} />}
 
-        {page === "product" && routeProduct?.slug === "smart-parking-sticker" && <ParkingStickerBuilder />}
+        {page === "product" && routeProduct?.slug === "smart-parking-sticker" && new URLSearchParams(location.search).get("mode") === "builder" && <ParkingStickerBuilder />}
 
-        {page === "product" && routeProduct && routeProduct.slug !== "smart-parking-sticker" && (
-          <ProductDetailPage product={routeProduct} onBack={() => routerNavigate(PRODUCTS_ROUTE)} />
+        {page === "product" && routeProduct && (
+          <ProductDetailPage product={routeProduct} onBack={() => routerNavigate(PRODUCTS_ROUTE)} onPrimaryAction={routeProduct.slug === "smart-parking-sticker" ? () => routerNavigate(`${productPath(routeProduct.slug)}?mode=builder`) : undefined} />
         )}
 
         {page === "product" && !routeProduct && (
