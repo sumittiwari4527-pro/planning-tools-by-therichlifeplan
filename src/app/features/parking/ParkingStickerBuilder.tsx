@@ -215,7 +215,14 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="min-h-screen bg-[#f8f9fb] pt-16">
-      <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">\n        <button\n          type="button"\n          onClick={onBack}\n          className="mb-5 inline-flex items-center gap-2 text-sm font-medium text-[#6b7a99] hover:text-[#0f1523] cursor-pointer"\n        >\n          <ArrowLeft size={15} /> Back to product\n        </button>
+      <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+        <button
+          type="button"
+          onClick={onBack}
+          className="mb-5 inline-flex items-center gap-2 text-sm font-medium text-[#6b7a99] hover:text-[#0f1523] cursor-pointer"
+        >
+          <ArrowLeft size={15} /> Back to product
+        </button>
         <div className="mb-10 max-w-3xl">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-[#eefaf3] px-4 py-1.5 text-xs font-mono uppercase tracking-widest text-[#008d50]">
             <Sparkles size={12} /> Smart parking
