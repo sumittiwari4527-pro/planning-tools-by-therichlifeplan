@@ -73,14 +73,14 @@ export function ProductDetailPage({
     return (
       <div className="min-h-screen bg-[#f4f8f7]">
         <main className="mx-auto max-w-7xl">
-          <section className="relative isolate min-h-[760px] overflow-hidden bg-[#03151c] text-white sm:min-h-[780px] lg:min-h-[680px]">
+          <section className="relative isolate min-h-[700px] overflow-hidden bg-[#03151c] text-white sm:min-h-[760px] lg:min-h-[680px]">
             <div
               className="absolute inset-0 bg-[#03151c] bg-no-repeat lg:left-[42%]"
-              style={{ backgroundImage: `url(${option2CarUrl})`, backgroundSize: "cover", backgroundPosition: "center center" }}
+              style={{ backgroundImage: `url(${option2CarUrl})`, backgroundSize: "cover", backgroundPosition: "center 34%" }}
             />
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,21,28,0.18)_0%,rgba(3,21,28,0.24)_55%,rgba(3,21,28,0.48)_100%)] lg:bg-[linear-gradient(90deg,rgba(3,21,28,0.98)_0%,rgba(3,21,28,0.9)_38%,rgba(3,21,28,0.38)_62%,rgba(3,21,28,0.08)_100%)]" />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,21,28,0.62)_0%,rgba(3,21,28,0.42)_45%,rgba(3,21,28,0.68)_100%)] lg:bg-[linear-gradient(90deg,rgba(3,21,28,0.98)_0%,rgba(3,21,28,0.9)_38%,rgba(3,21,28,0.38)_62%,rgba(3,21,28,0.08)_100%)]" />
 
-            <div className="relative z-10 flex min-h-[760px] flex-col px-6 pb-7 pt-9 sm:min-h-[780px] sm:px-10 sm:pt-12 lg:min-h-[680px] lg:px-14 lg:py-14">
+            <div className="relative z-10 flex min-h-[700px] flex-col px-6 pb-8 pt-8 sm:min-h-[760px] sm:px-10 sm:pt-12 lg:min-h-[680px] lg:px-14 lg:py-14">
               <div className="max-w-[650px]">
                 <div className="inline-flex items-center gap-2 rounded-full border border-emerald-300/70 bg-emerald-300/5 px-4 py-2 text-[11px] font-mono uppercase tracking-[0.22em] text-emerald-200">
                   <Sparkles size={13} /> Smart parking
@@ -98,7 +98,7 @@ export function ProductDetailPage({
                   Scan the sticker to contact the owner — without printing your phone number on the sticker.
                 </p>
 
-                <div className="mt-7 grid max-w-[610px] grid-cols-3 gap-3 sm:gap-6">
+                <div className="mt-6 grid max-w-[610px] grid-cols-3 gap-2.5 sm:mt-7 sm:gap-6">
                   {[
                     { icon: QrCode, title: "Scan", text: "They scan your sticker." },
                     { icon: MessageCircle, title: "Contact", text: "The contact page opens." },
@@ -110,26 +110,26 @@ export function ProductDetailPage({
                         <Icon size={21} />
                       </div>
                       <div className="mt-3 text-sm font-bold text-white sm:text-base">{title}</div>
-                      <div className="mt-1 max-w-[135px] text-[10px] leading-4 text-slate-300 sm:text-xs sm:leading-5">{text}</div>
+                      <div className="mt-1 max-w-[135px] text-[10px] leading-4 text-slate-200 sm:text-xs sm:leading-5">{text}</div>
                     </div>
                   ))}
                 </div>
 
-                <div className="mt-7 flex w-full max-w-[610px] items-center gap-3 sm:gap-6">
+                <div className="mt-6 flex w-full max-w-[610px] flex-col items-stretch gap-3 sm:mt-7 sm:flex-row sm:items-center sm:gap-6">
                   <button
                     type="button"
                     onClick={onPrimaryAction}
-                    className="inline-flex min-h-[58px] min-w-0 flex-1 items-center justify-center gap-2 rounded-2xl bg-[#00d980] px-3 text-sm font-bold text-[#03121d] shadow-xl shadow-emerald-950/30 transition hover:bg-[#18e895] cursor-pointer sm:min-h-[62px] sm:px-5 sm:text-base"
+                    className="inline-flex min-h-[56px] w-full min-w-0 flex-1 items-center justify-center gap-2 rounded-2xl bg-[#00d980] px-3 text-sm font-bold text-[#03121d] shadow-xl shadow-emerald-950/30 transition hover:bg-[#18e895] cursor-pointer sm:min-h-[62px] sm:px-5 sm:text-base"
                   >
                     Create My Sticker <ArrowRight size={19} />
                   </button>
-                  <div className="shrink-0 border-l border-white/45 pl-3 sm:pl-6">
-                    <div className="text-2xl font-bold text-white sm:text-3xl">₹199</div>
-                    <div className="mt-1 text-xs text-slate-300 sm:text-sm">one-time</div>
+                  <div className="flex items-center justify-center gap-2 border-t border-white/35 pt-2 text-center sm:block sm:border-l sm:border-t-0 sm:pl-6 sm:pt-0">
+                    <div className="text-xl font-bold text-white sm:text-3xl">₹199</div>
+                    <div className="mt-0.5 text-xs text-slate-300 sm:mt-1 sm:text-sm">one-time</div>
                   </div>
                 </div>
 
-                <p className="mt-5 flex items-start gap-2 text-xs leading-5 text-slate-200 sm:text-sm">
+                <p className="mt-4 flex items-start gap-2 text-xs leading-5 text-slate-100 sm:text-sm">
                   <span className="mt-0.5 text-lg leading-4 text-emerald-200">◉</span>
                   Preview your personalized sticker before you buy.
                 </p>
