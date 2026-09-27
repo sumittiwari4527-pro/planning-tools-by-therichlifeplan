@@ -73,21 +73,21 @@ export function ProductDetailPage({
     return (
       <div className="min-h-screen bg-[#f4f8f7]">
         <main className="mx-auto max-w-7xl">
-          <section className="relative isolate min-h-[700px] overflow-hidden bg-[#03151c] text-white sm:min-h-[760px] lg:min-h-[680px]">
+          <section className="relative isolate min-h-[820px] overflow-hidden bg-[#03151c] text-white sm:min-h-[860px] lg:min-h-[680px]">
             <div
               className="absolute inset-0 bg-[#03151c] bg-no-repeat lg:left-[42%]"
-              style={{ backgroundImage: `url(${option2CarUrl})`, backgroundSize: "cover", backgroundPosition: "center 34%" }}
+              style={{ backgroundImage: `url(${option2CarUrl})`, backgroundSize: "cover", backgroundPosition: "center center" }}
             />
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,21,28,0.62)_0%,rgba(3,21,28,0.42)_45%,rgba(3,21,28,0.68)_100%)] lg:bg-[linear-gradient(90deg,rgba(3,21,28,0.98)_0%,rgba(3,21,28,0.9)_38%,rgba(3,21,28,0.38)_62%,rgba(3,21,28,0.08)_100%)]" />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,21,28,0.88)_0%,rgba(3,21,28,0.48)_48%,rgba(3,21,28,0.7)_100%)] lg:bg-[linear-gradient(90deg,rgba(3,21,28,0.99)_0%,rgba(3,21,28,0.94)_35%,rgba(3,21,28,0.52)_60%,rgba(3,21,28,0.12)_100%)]" />
 
-            <div className="relative z-10 flex min-h-[700px] flex-col px-6 pb-8 pt-8 sm:min-h-[760px] sm:px-10 sm:pt-12 lg:min-h-[680px] lg:px-14 lg:py-14">
+            <div className="relative z-10 flex min-h-[820px] flex-col px-6 pb-10 pt-12 sm:min-h-[860px] sm:px-10 sm:pt-14 lg:min-h-[680px] lg:px-14 lg:py-14">
               <div className="max-w-[650px]">
                 <div className="inline-flex items-center gap-2 rounded-full border border-emerald-300/70 bg-emerald-300/5 px-4 py-2 text-[11px] font-mono uppercase tracking-[0.22em] text-emerald-200">
                   <Sparkles size={13} /> Smart parking
                 </div>
 
                 <h1
-                  className="mt-7 max-w-[650px] text-[2.9rem] font-bold leading-[0.98] tracking-[-0.055em] sm:text-5xl lg:text-[4.6rem]"
+                  className="mt-7 max-w-[650px] text-[2.8rem] font-bold leading-[0.98] tracking-[-0.055em] sm:text-5xl lg:text-[4.6rem]"
                   style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
                 >
                   <span className="block">Someone needs</span>
@@ -98,14 +98,14 @@ export function ProductDetailPage({
                   Scan the sticker to contact the owner — without printing your phone number on the sticker.
                 </p>
 
-                <div className="mt-6 grid max-w-[610px] grid-cols-3 gap-2.5 sm:mt-7 sm:gap-6">
+                <div className="mt-8 grid max-w-[610px] grid-cols-3 gap-2 sm:gap-5">
                   {[
                     { icon: QrCode, title: "Scan", text: "They scan your sticker." },
                     { icon: MessageCircle, title: "Contact", text: "The contact page opens." },
                     { icon: Phone, title: "Reach You", text: "You get the call or email." },
                   ].map(({ icon: Icon, title, text }, index) => (
                     <div key={title} className="relative min-w-0">
-                      {index > 0 && <div className="absolute -left-4 top-6 hidden w-5 border-t-2 border-white/80 sm:block" />}
+                      {index > 0 && <ArrowRight className="absolute -left-4 top-5 text-white/80 sm:-left-5 sm:top-6" size={17} />}
                       <div className="flex h-12 w-12 items-center justify-center rounded-full border border-emerald-400/80 bg-[#06262a]/55 text-[#00e890] sm:h-14 sm:w-14">
                         <Icon size={21} />
                       </div>
@@ -115,21 +115,21 @@ export function ProductDetailPage({
                   ))}
                 </div>
 
-                <div className="mt-6 flex w-full max-w-[610px] flex-col items-stretch gap-3 sm:mt-7 sm:flex-row sm:items-center sm:gap-6">
+                <div className="mt-8 flex w-full max-w-[610px] items-center gap-3 sm:gap-6">
                   <button
                     type="button"
                     onClick={onPrimaryAction}
-                    className="inline-flex min-h-[56px] w-full min-w-0 flex-1 items-center justify-center gap-2 rounded-2xl bg-[#00d980] px-3 text-sm font-bold text-[#03121d] shadow-xl shadow-emerald-950/30 transition hover:bg-[#18e895] cursor-pointer sm:min-h-[62px] sm:px-5 sm:text-base"
+                    className="inline-flex min-h-[58px] min-w-0 flex-1 items-center justify-center gap-2 rounded-2xl bg-[#00d980] px-3 text-sm font-bold text-[#03121d] shadow-xl shadow-emerald-950/30 transition hover:bg-[#18e895] cursor-pointer sm:min-h-[62px] sm:px-5 sm:text-base"
                   >
                     Create My Sticker <ArrowRight size={19} />
                   </button>
-                  <div className="flex items-center justify-center gap-2 border-t border-white/35 pt-2 text-center sm:block sm:border-l sm:border-t-0 sm:pl-6 sm:pt-0">
-                    <div className="text-xl font-bold text-white sm:text-3xl">₹199</div>
-                    <div className="mt-0.5 text-xs text-slate-300 sm:mt-1 sm:text-sm">one-time</div>
+                  <div className="shrink-0 border-l border-white/45 pl-3 sm:pl-6">
+                    <div className="text-2xl font-bold text-white sm:text-3xl">₹199</div>
+                    <div className="mt-1 text-xs text-slate-300 sm:text-sm">one-time</div>
                   </div>
                 </div>
 
-                <p className="mt-4 flex items-start gap-2 text-xs leading-5 text-slate-100 sm:text-sm">
+                <p className="mt-5 flex items-start gap-2 text-xs leading-5 text-slate-200 sm:text-sm">
                   <span className="mt-0.5 text-lg leading-4 text-emerald-200">◉</span>
                   Preview your personalized sticker before you buy.
                 </p>
