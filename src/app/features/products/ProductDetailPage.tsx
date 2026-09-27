@@ -100,7 +100,7 @@ export function ProductDetailPage({
                   <span className="block">exposing your phone number.</span>
                 </p>
 
-                <div className="mt-8 grid w-full max-w-[390px] grid-cols-3 gap-0 sm:mt-7 sm:max-w-[520px]">
+                <div className="mt-8 grid w-full max-w-[330px] grid-cols-3 gap-0 sm:mt-7 sm:max-w-[440px]">
                   {[
                     { icon: QrCode, title: "Scan", text: "They scan your sticker." },
                     { icon: MessageCircle, title: "Contact", text: "The contact page opens." },
