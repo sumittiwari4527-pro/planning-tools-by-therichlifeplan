@@ -107,7 +107,7 @@ export function ProductDetailPage({
                     { icon: Phone, title: "Reach You", text: "You get the call or email." },
                   ].map(({ icon: Icon, title, text }, index) => (
                     <div key={title} className="relative flex min-w-0 flex-col items-start text-left">
-                      {index > 0 && <span className="absolute -left-4 top-5 text-xl font-medium text-white/80 sm:-left-5 sm:top-6">&gt;</span>}
+                      {index > 0 && <span className="absolute -left-5 top-5 text-xl font-medium text-white/80 sm:-left-6 sm:top-6">&gt;</span>}
                       <div className="flex h-14 w-14 items-center justify-center rounded-full border border-emerald-400/80 bg-[#06262a]/55 text-[#00e890] sm:h-16 sm:w-16">
                         <Icon size={21} />
                       </div>
