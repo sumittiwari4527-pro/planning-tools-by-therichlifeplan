@@ -105,7 +105,7 @@ export function ProductDetailPage({
                   {[
                     { icon: QrCode, number: "1", title: "Scan", text: "They scan your sticker." },
                     { icon: Phone, number: "2", title: "Contact", text: "They can call or email you." },
-                    { icon: UserRound, number: "3", title: "You Respond", text: "You reply at your convenience." },
+                    { icon: Phone, number: "3", title: "Reach You", text: "They can call or email you." },
                   ].map(({ icon: Icon, number, title, text }) => (
                     <div key={number} className="min-w-0">
                       <div className="flex h-10 w-10 items-center justify-center rounded-full border border-emerald-400/50 bg-emerald-400/5 text-[#00e890] sm:h-12 sm:w-12">
@@ -168,7 +168,7 @@ export function ProductDetailPage({
 
           <section className="grid grid-cols-2 overflow-hidden rounded-[1.75rem] bg-white shadow-sm lg:grid-cols-4">
             {[
-              { icon: ShieldCheck, title: "Keep your number private", text: "Your phone number stays off the sticker." },
+              { icon: ShieldCheck, title: "Keep your number off the sticker", text: "Your phone number is not printed on the sticker." },
               { icon: QrCode, title: "No app required", text: "Works from a normal phone camera." },
               { icon: CarFront, title: "Made for parked cars", text: "Useful for tight parking and blocked cars." },
               { icon: Clock3, title: "Quick & easy setup", text: "Create, preview and order in minutes." },
