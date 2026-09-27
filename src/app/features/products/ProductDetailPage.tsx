@@ -98,7 +98,7 @@ export function ProductDetailPage({
                 </h1>
 
                 <p className="mt-5 max-w-xl text-base leading-7 text-slate-200 sm:text-lg">
-                  A personalized QR parking sticker that lets people contact you without exposing your phone number.
+                  A personalized QR parking sticker that lets people contact you without printing your phone number on the sticker.
                 </p>
 
                 <div className="mt-7 grid grid-cols-3 gap-2 sm:gap-4">
