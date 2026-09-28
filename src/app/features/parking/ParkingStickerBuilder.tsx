@@ -288,8 +288,8 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
 
               <div>
                 <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Palette size={15} /> Sticker style</div>
-                <div className="grid grid-cols-2 gap-3">
-                  {(["dark", "light"] as const).map((theme) => (
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  {(["dark", "light", "physical"] as const).map((theme) => (
                     <button
                       key={theme}
                       type="button"
@@ -313,7 +313,7 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
                           </div>
                         </div>
                       </div>
-                      <div className="mt-2 text-sm font-semibold capitalize text-[#0f1523]">{theme}</div>
+                      <div className="mt-2 text-sm font-semibold capitalize text-[#0f1523]">{theme === "physical" ? "Physical" : theme}</div>
                     </button>
                   ))}
                 </div>
