@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1254" height="1254" viewBox="0 0 1254 1254">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#008b4d"/><stop offset="1" stop-color="#007442"/></linearGradient></defs>
+<rect x="25" y="25" width="1204" height="1204" rx="70" fill="#fff" stroke="#c9ced1" stroke-width="3"/>
+<g transform="translate(130 67)"><rect width="190" height="190" rx="35" fill="#07121a"/><circle cx="95" cy="95" r="66" fill="none" stroke="#fff" stroke-width="6"/><path d="M95 17v40M95 133v40M17 95h40M133 95h40" stroke="#fff" stroke-width="6" stroke-linecap="round"/><path d="M42 144 145 43l-29 62-40 14z" fill="#00c968"/><path d="M42 144 80 108l29 9-39 40z" fill="#fff"/></g>
+<text x="355" y="165" font-family="Arial,Helvetica,sans-serif" font-size="82" font-weight="800" letter-spacing="-4" fill="#07121a">The<tspan fill="#00a95c">RichLife</tspan>Plan</text>
+<text x="357" y="220" font-family="Arial,Helvetica,sans-serif" font-size="31" font-weight="500" letter-spacing="7" fill="#07121a">SMART PARKING STICKER</text>
+<g fill="none" stroke="#00b85c" stroke-width="22" stroke-linecap="round"><path d="M260 350v-52h52"/><path d="M994 350v-52h-52"/><path d="M260 855v52h52"/><path d="M994 855v52h-52"/></g>
+<rect x="325" y="318" width="598" height="573" rx="18" fill="#fff"/>
+<g fill="none" stroke="#00b85c" stroke-width="22" stroke-linecap="round"><path d="M260 350v-52h52"/><path d="M994 350v-52h-52"/><path d="M260 855v52h52"/><path d="M994 855v52h-52"/></g>
+<rect x="87" y="948" width="1080" height="220" rx="48" fill="url(#g)"/>
+<g transform="translate(218 978)" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"><rect width="110" height="145" rx="21"/><path d="M39 16h32M39 129h32" stroke-width="7"/><path d="M32 57h20v20M78 57H58v20M32 105h20V85M78 105H58V85" stroke-width="7"/></g>
+<text x="418" y="1044" font-family="Arial,Helvetica,sans-serif" font-size="73" font-weight="800" letter-spacing="-2" fill="#fff">SCAN TO</text>
+<text x="418" y="1110" font-family="Arial,Helvetica,sans-serif" font-size="49" font-weight="800" letter-spacing="-1" fill="#fff">CONTACT OWNER</text>
+</svg>
