@@ -328,7 +328,7 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
                           </div>
                         </div>
                       )}
-                      <div className="mt-2 text-sm font-semibold text-[#0f1523]">{theme === "physical" ? "Physical · ₹399" : `Digital · ${theme === "dark" ? "Dark" : "Light"} · ₹199`}</div>
+                      <div className="mt-2 text-sm font-semibold text-[#0f1523]">{theme === "physical" ? "Clean" : theme === "dark" ? "Dark" : "Light"}</div>
                     </button>
                   ))}
                 </div>
