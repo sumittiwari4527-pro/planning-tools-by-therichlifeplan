@@ -183,7 +183,7 @@ export function ProductDetailPage({
                 ].map((item) => (
                   <div key={item.label} className="overflow-hidden rounded-3xl border border-[#dfe7e3] bg-white p-3 shadow-sm">
                     <div className="overflow-hidden rounded-2xl bg-slate-100">
-                      <img src={item.src} alt={"Smart Parking Sticker — " + item.label} className="block aspect-[3/2] w-full object-cover" />
+                      <img src={item.src} alt={"Smart Parking Sticker — " + item.label} className="block h-auto w-full object-contain" />
                     </div>
                     <div className="px-2 pb-1 pt-3 text-sm font-semibold text-[#33405a]">{item.label}</div>
                   </div>
