@@ -170,28 +170,22 @@ export function ProductDetailPage({
               <div>
                 <div className="text-xs font-mono uppercase tracking-widest text-[#008d50]">Choose your design</div>
                 <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#0f1523] sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Stylish. Clear. Effective.</h2>
-                <p className="mt-3 max-w-md text-sm leading-6 text-[#6b7a99]">Choose a digital design for self-printing, or select the physical sticker option for a professionally printed version.</p>
+                <p className="mt-3 max-w-md text-sm leading-6 text-[#6b7a99]">Choose the design that fits your style. You can select your preferred version when you create your sticker.</p>
                 <button type="button" onClick={onPrimaryAction} className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-[#008d50] hover:text-[#006e3e] cursor-pointer">
-                  Choose your version <ArrowRight size={15} />
+                  Create your sticker <ArrowRight size={15} />
                 </button>
               </div>
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {[
-                  { src: darkTemplateUrl, label: "Digital · Dark", price: "₹199" },
-                  { src: lightTemplateUrl, label: "Digital · Light", price: "₹199" },
-                  { src: physicalTemplateUrl, label: "Physical Sticker", price: "₹399" },
+                  { src: darkTemplateUrl, label: "Dark Design" },
+                  { src: lightTemplateUrl, label: "Light Design" },
+                  { src: physicalTemplateUrl, label: "Clean Design" },
                 ].map((item) => (
                   <div key={item.label} className="overflow-hidden rounded-3xl border border-[#dfe7e3] bg-white p-3 shadow-sm">
                     <div className="overflow-hidden rounded-2xl bg-slate-100">
-                      <img src={item.src} alt={"Smart Parking Sticker — " + item.label} className="block aspect-square w-full object-cover" />
+                      <img src={item.src} alt={"Smart Parking Sticker — " + item.label} className="block aspect-[3/2] w-full object-cover" />
                     </div>
-                    <div className="px-2 pb-1 pt-3">
-                      <div className="text-sm font-semibold text-[#33405a]">{item.label}</div>
-                      <div className="mt-3 grid grid-cols-2 gap-2">
-                        <button type="button" onClick={onPrimaryAction} className="rounded-xl border border-[#dbe2ec] bg-white px-2 py-2 text-xs font-bold text-[#33405a] hover:border-[#00b968] hover:text-[#008d50] cursor-pointer">Download · ₹199</button>
-                        <button type="button" onClick={onPrimaryAction} className="rounded-xl bg-[#00b968] px-2 py-2 text-xs font-bold text-white hover:bg-[#009f5b] cursor-pointer">Physical · ₹399</button>
-                      </div>
-                    </div>
+                    <div className="px-2 pb-1 pt-3 text-sm font-semibold text-[#33405a]">{item.label}</div>
                   </div>
                 ))}
               </div>
@@ -263,7 +257,7 @@ export function ProductDetailPage({
                 ["Can I preview it before buying?", "Yes. Your personalized preview works for 24 hours, so you can see the design and scan the QR before purchasing."],
                 ["Do I need an app?", "No. The QR opens the contact page in a normal mobile browser."],
                 ["Can I choose the design?", "Yes. Every design is available as a downloadable SVG or as a printed physical sticker. Choose your design and version in the builder."],
-                ["What do I receive after purchase?", "A personalized sticker with your permanent QR, downloadable as an SVG for printing."],
+                ["What do I receive after purchase?", "You can choose a downloadable sticker or a printed physical sticker when you create your order."],
               ].map(([question, answer]) => (
                 <div key={question}>
                   <h3 className="text-sm font-bold text-[#0f1523]">{question}</h3>
