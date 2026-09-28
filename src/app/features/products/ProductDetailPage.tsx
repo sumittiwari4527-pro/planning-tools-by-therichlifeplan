@@ -97,7 +97,7 @@ export function ProductDetailPage({
                 <p className="mt-6 max-w-[470px] text-[1.02rem] leading-7 text-slate-100 sm:text-lg">
                   <span className="block">Scan the sticker to contact</span>
                   <span className="block">the owner — without</span>
-                  <span className="block">exposing your phone number.</span>
+                  <span className="block">printing your phone number on the sticker.</span>
                 </p>
 
                 <div className="mt-8 grid w-full max-w-[300px] grid-cols-3 gap-0 sm:mt-7 sm:max-w-[400px]">
