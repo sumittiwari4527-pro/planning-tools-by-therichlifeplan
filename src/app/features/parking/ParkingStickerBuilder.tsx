@@ -160,7 +160,7 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
   }, [finalPayload]);
 
   useEffect(() => {
-    if (!checkoutUrl) return;
+    if (!checkoutUrl && !physicalCheckoutUrl) return;
 
     const setup = () => {
       if (!window.LemonSqueezy) return false;
@@ -418,18 +418,22 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
 
             {paymentComplete && (
               <div className="mt-5 rounded-3xl border border-emerald-200 bg-[#eefaf3] p-5">
-                <div className="text-sm font-bold text-[#0f1523]">Your sticker is ready 🎉</div>
+                <div className="text-sm font-bold text-[#0f1523]">{form.delivery === "physical" ? "Physical sticker ordered 🎉" : "Your sticker is ready 🎉"}</div>
                 <p className="mt-1 text-xs leading-5 text-[#527060]">
-                  Payment completed. The final QR is now marked as a purchased sticker.
+                  {form.delivery === "physical"
+                    ? "Payment completed. Your permanent QR is ready for the physical sticker order."
+                    : "Payment completed. The final QR is now marked as a purchased sticker."}
                 </p>
-                <button
-                  type="button"
-                  onClick={downloadSticker}
-                  disabled={!stickerDataUrl}
-                  className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-[#071421] px-5 py-3 text-sm font-bold text-white disabled:opacity-50"
-                >
-                  <Download size={16} /> Download sticker
-                </button>
+                {form.delivery === "digital" && (
+                  <button
+                    type="button"
+                    onClick={downloadSticker}
+                    disabled={!stickerDataUrl}
+                    className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-[#071421] px-5 py-3 text-sm font-bold text-white disabled:opacity-50"
+                  >
+                    <Download size={16} /> Download sticker
+                  </button>
+                )}
               </div>
             )}
 
