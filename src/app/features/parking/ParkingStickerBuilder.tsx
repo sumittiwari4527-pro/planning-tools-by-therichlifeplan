@@ -10,12 +10,15 @@ import {
 import { buildParkingTemplateSvg } from "./parkingTemplates";
 import physicalTemplateUrl from "./assets/parking-template-physical.svg?url";
 
+type ParkingDelivery = "digital" | "physical";
+
 type FormState = {
   name: string;
   phone: string;
   email: string;
   vehicle: string;
   theme: ParkingTheme;
+  delivery: ParkingDelivery;
 };
 
 const initialForm: FormState = {
@@ -24,6 +27,7 @@ const initialForm: FormState = {
   email: "",
   vehicle: "",
   theme: "dark",
+  delivery: "digital",
 };
 
 declare global {
@@ -190,9 +194,9 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
   }, []);
 
   const startCheckout = () => {
-    const selectedCheckoutUrl = form.theme === "physical" ? physicalCheckoutUrl : checkoutUrl;
+    const selectedCheckoutUrl = form.delivery === "physical" ? physicalCheckoutUrl : checkoutUrl;
     if (!previewPayload || !selectedCheckoutUrl) {
-      setError(form.theme === "physical"
+      setError(form.delivery === "physical"
         ? "Physical checkout is not configured yet. Add the Lemon Squeezy physical parking checkout URL to the site environment."
         : "Checkout is not configured yet. Add the Lemon Squeezy parking checkout URL to the site environment.");
       return;
@@ -330,6 +334,23 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
                 </div>
               </div>
 
+              <div>
+                <div className="mb-2 text-sm font-semibold text-[#33405a]">How do you want it?</div>
+                <div className="grid grid-cols-2 gap-3">
+                  {(["digital", "physical"] as const).map((delivery) => (
+                    <button
+                      key={delivery}
+                      type="button"
+                      onClick={() => update("delivery", delivery)}
+                      className={"rounded-2xl border p-4 text-left transition " + (form.delivery === delivery ? "border-[#00b968] bg-[#eefaf3] ring-4 ring-emerald-50" : "border-[#dbe2ec] bg-white")}
+                    >
+                      <div className="text-sm font-bold text-[#0f1523]">{delivery === "digital" ? "Downloadable" : "Physical sticker"}</div>
+                      <div className="mt-1 text-xs text-[#6b7a99]">{delivery === "digital" ? "₹199 · SVG download" : "₹399 · Printed & delivered"}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <button
                 type="button"
                 onClick={generatePreview}
@@ -387,7 +408,7 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
                     <ShoppingCart size={16} /> Get yours
                   </button>
                 </div>
-                {!checkoutUrl && (
+                {!(form.delivery === "physical" ? physicalCheckoutUrl : checkoutUrl) && (
                   <p className="mt-3 text-xs text-[#7a6651]">
                     Checkout URL is not configured yet. The UI is ready for the Lemon Squeezy product checkout URL.
                   </p>
