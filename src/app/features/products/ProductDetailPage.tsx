@@ -172,7 +172,7 @@ export function ProductDetailPage({
                 <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#0f1523] sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Stylish. Clear. Effective.</h2>
                 <p className="mt-3 max-w-md text-sm leading-6 text-[#6b7a99]">Choose a digital design for self-printing, or select the physical sticker option for a professionally printed version.</p>
                 <button type="button" onClick={onPrimaryAction} className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-[#008d50] hover:text-[#006e3e] cursor-pointer">
-                  Create my sticker <ArrowRight size={15} />
+                  Choose your version <ArrowRight size={15} />
                 </button>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
@@ -185,9 +185,12 @@ export function ProductDetailPage({
                     <div className="overflow-hidden rounded-2xl bg-slate-100">
                       <img src={item.src} alt={"Smart Parking Sticker — " + item.label} className="block aspect-square w-full object-cover" />
                     </div>
-                    <div className="flex items-center justify-between gap-2 px-2 pb-1 pt-3">
+                    <div className="px-2 pb-1 pt-3">
                       <div className="text-sm font-semibold text-[#33405a]">{item.label}</div>
-                      <div className="text-sm font-bold text-[#008d50]">{item.price}</div>
+                      <div className="mt-3 grid grid-cols-2 gap-2">
+                        <button type="button" onClick={onPrimaryAction} className="rounded-xl border border-[#dbe2ec] bg-white px-2 py-2 text-xs font-bold text-[#33405a] hover:border-[#00b968] hover:text-[#008d50] cursor-pointer">Download · ₹199</button>
+                        <button type="button" onClick={onPrimaryAction} className="rounded-xl bg-[#00b968] px-2 py-2 text-xs font-bold text-white hover:bg-[#009f5b] cursor-pointer">Physical · ₹399</button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -259,7 +262,7 @@ export function ProductDetailPage({
               {[
                 ["Can I preview it before buying?", "Yes. Your personalized preview works for 24 hours, so you can see the design and scan the QR before purchasing."],
                 ["Do I need an app?", "No. The QR opens the contact page in a normal mobile browser."],
-                ["Can I choose the design?", "Yes. Choose between Digital Light, Digital Dark, or the Physical Sticker option in the builder."],
+                ["Can I choose the design?", "Yes. Every design is available as a downloadable SVG or as a printed physical sticker. Choose your design and version in the builder."],
                 ["What do I receive after purchase?", "A personalized sticker with your permanent QR, downloadable as an SVG for printing."],
               ].map(([question, answer]) => (
                 <div key={question}>
