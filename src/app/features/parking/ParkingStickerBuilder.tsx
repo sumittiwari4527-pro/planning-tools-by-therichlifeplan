@@ -38,6 +38,7 @@ declare global {
 }
 
 const checkoutUrl = import.meta.env.VITE_LEMON_SQUEEZY_PARKING_CHECKOUT_URL as string | undefined;
+const physicalCheckoutUrl = import.meta.env.VITE_LEMON_SQUEEZY_PARKING_PHYSICAL_CHECKOUT_URL as string | undefined;
 
 const createStickerDataUrl = async (theme: ParkingTheme, qr: string) =>
   svgToDataUrl(
@@ -189,12 +190,15 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
   }, []);
 
   const startCheckout = () => {
-    if (!previewPayload || !checkoutUrl) {
-      setError("Checkout is not configured yet. Add the Lemon Squeezy parking checkout URL to the site environment.");
+    const selectedCheckoutUrl = form.theme === "physical" ? physicalCheckoutUrl : checkoutUrl;
+    if (!previewPayload || !selectedCheckoutUrl) {
+      setError(form.theme === "physical"
+        ? "Physical checkout is not configured yet. Add the Lemon Squeezy physical parking checkout URL to the site environment."
+        : "Checkout is not configured yet. Add the Lemon Squeezy parking checkout URL to the site environment.");
       return;
     }
 
-    const url = new URL(checkoutUrl);
+    const url = new URL(selectedCheckoutUrl);
     url.searchParams.set("checkout[email]", form.email.trim());
     url.searchParams.set("checkout[name]", form.name.trim());
 
@@ -320,7 +324,7 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
                           </div>
                         </div>
                       )}
-                      <div className="mt-2 text-sm font-semibold capitalize text-[#0f1523]">{theme === "physical" ? "Physical" : theme}</div>
+                      <div className="mt-2 text-sm font-semibold text-[#0f1523]">{theme === "physical" ? "Physical · ₹399" : `Digital · ${theme === "dark" ? "Dark" : "Light"} · ₹199`}</div>
                     </button>
                   ))}
                 </div>
