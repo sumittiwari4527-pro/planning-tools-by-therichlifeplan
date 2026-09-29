@@ -29,22 +29,9 @@ type PhoneCountryCode = (typeof PHONE_COUNTRIES)[number][0];
 const getBrowserCountry = (): PhoneCountryCode => {
   const supported = new Set(PHONE_COUNTRIES.map(([code]) => code));
 
-  // Prefer an explicitly configured browser locale such as en-IN or de-DE.
-  // Do not call maximize() here because it can invent a default region (for
-  // example, "en" may become "en-US"), which is not the user's actual locale.
-  const locales = navigator.languages?.length ? navigator.languages : [navigator.language];
-
-  for (const language of locales) {
-    try {
-      const region = new Intl.Locale(language).region?.toUpperCase();
-      if (region && supported.has(region)) return region as PhoneCountryCode;
-    } catch {
-      // Continue with the next locale.
-    }
-  }
-
-  // If the browser only exposes a language, use its timezone as a practical
-  // fallback for common cases such as an India-configured iPhone using "en".
+  // On iOS Safari, navigator.language can be "en-US" even when the device is
+  // configured for India. Prefer the browser timezone because it reflects the
+  // device's regional configuration more reliably in that case.
   try {
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const timezoneCountry: Record<string, PhoneCountryCode> = {
@@ -75,7 +62,18 @@ const getBrowserCountry = (): PhoneCountryCode => {
     const country = timezoneCountry[timezone];
     if (country && supported.has(country)) return country;
   } catch {
-    // Fall back to India when browser locale/timezone information is unavailable.
+    // Continue with locale detection.
+  }
+
+  // If timezone is unavailable, use an explicitly supplied locale region.
+  const locales = navigator.languages?.length ? navigator.languages : [navigator.language];
+  for (const language of locales) {
+    try {
+      const region = new Intl.Locale(language).region?.toUpperCase();
+      if (region && supported.has(region)) return region as PhoneCountryCode;
+    } catch {
+      // Continue with the next locale.
+    }
   }
 
   return "IN";
