@@ -360,7 +360,6 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
                     className="min-w-0 flex-1 rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none transition focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50"
                   />
                 </div>
-                <p className="mt-1.5 text-xs text-[#8b95aa]">Country code is preselected from your browser locale. You can change it anytime.</p>
               </label>
 
               <label className="block">
