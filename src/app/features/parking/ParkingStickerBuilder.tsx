@@ -454,7 +454,7 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
                       onClick={startCheckout}
                       className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#00b968] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-100"
                     >
-                      <ShoppingCart size={16} /> Get yours
+                      <ShoppingCart size={16} /> Buy now
                     </button>
                   )}
                 </div>
