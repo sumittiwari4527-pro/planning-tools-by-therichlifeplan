@@ -80,7 +80,7 @@ const createStickerDataUrl = async (theme: ParkingTheme, qr: string) =>
     })
   );
 
-const isValidPhone = (value: string) => value.replace(/\D/g, "").length >= 10;
+const isValidPhone = (value: string) => {\n  const digits = value.replace(/\\D/g, "");\n  return digits.length >= 7 && digits.length <= 15;\n};\n\nconst countryFlag = (code: string) =>\n  code.replace(/[A-Z]/g, (letter) => String.fromCodePoint(letter.charCodeAt(0) + 127397));
 const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 
 export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
@@ -299,7 +299,7 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
                     className="w-[126px] shrink-0 rounded-2xl border border-[#dbe2ec] bg-white px-3 py-3 text-sm outline-none transition focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50"
                   >
                     {PHONE_COUNTRIES.map(([code, name, dialCode]) => (
-                      <option key={code} value={code}>{code === "IN" ? "🇮🇳" : ""} {dialCode} · {name}</option>
+                      <option key={code} value={code}>{countryFlag(code)} {dialCode} · {name}</option>
                     ))}
                   </select>
                   <input
