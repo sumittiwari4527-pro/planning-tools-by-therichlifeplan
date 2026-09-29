@@ -80,7 +80,14 @@ const createStickerDataUrl = async (theme: ParkingTheme, qr: string) =>
     })
   );
 
-const isValidPhone = (value: string) => {\n  const digits = value.replace(/\\D/g, "");\n  return digits.length >= 7 && digits.length <= 15;\n};\n\nconst countryFlag = (code: string) =>\n  code.replace(/[A-Z]/g, (letter) => String.fromCodePoint(letter.charCodeAt(0) + 127397));
+const isValidPhone = (value: string) => {
+  const digits = value.replace(/\D/g, "");
+  return digits.length >= 7 && digits.length <= 15;
+};
+
+const countryFlag = (code: string) =>
+  code.replace(/[A-Z]/g, (letter) => String.fromCodePoint(letter.charCodeAt(0) + 127397));
+
 const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 
 export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
