@@ -27,13 +27,57 @@ const PHONE_COUNTRIES = [
 type PhoneCountryCode = (typeof PHONE_COUNTRIES)[number][0];
 
 const getBrowserCountry = (): PhoneCountryCode => {
-  try {
-    const locale = new Intl.Locale(navigator.language).maximize();
-    const region = locale.region?.toUpperCase();
-    if (region && PHONE_COUNTRIES.some(([code]) => code === region)) return region as PhoneCountryCode;
-  } catch {
-    // Fall back to India when the browser locale cannot provide a supported region.
+  const supported = new Set(PHONE_COUNTRIES.map(([code]) => code));
+
+  // Prefer an explicitly configured browser locale such as en-IN or de-DE.
+  // Do not call maximize() here because it can invent a default region (for
+  // example, "en" may become "en-US"), which is not the user's actual locale.
+  const locales = navigator.languages?.length ? navigator.languages : [navigator.language];
+
+  for (const language of locales) {
+    try {
+      const region = new Intl.Locale(language).region?.toUpperCase();
+      if (region && supported.has(region)) return region as PhoneCountryCode;
+    } catch {
+      // Continue with the next locale.
+    }
   }
+
+  // If the browser only exposes a language, use its timezone as a practical
+  // fallback for common cases such as an India-configured iPhone using "en".
+  try {
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const timezoneCountry: Record<string, PhoneCountryCode> = {
+      "Asia/Kolkata": "IN",
+      "Asia/Calcutta": "IN",
+      "America/New_York": "US",
+      "America/Chicago": "US",
+      "America/Denver": "US",
+      "America/Los_Angeles": "US",
+      "America/Toronto": "CA",
+      "Europe/London": "GB",
+      "Europe/Berlin": "DE",
+      "Europe/Paris": "FR",
+      "Europe/Amsterdam": "NL",
+      "Europe/Stockholm": "SE",
+      "Europe/Oslo": "NO",
+      "Europe/Copenhagen": "DK",
+      "Europe/Zurich": "CH",
+      "Asia/Dubai": "AE",
+      "Asia/Singapore": "SG",
+      "Asia/Tokyo": "JP",
+      "Asia/Seoul": "KR",
+      "Asia/Shanghai": "CN",
+      "Asia/Hong_Kong": "HK",
+      "Australia/Sydney": "AU",
+      "Pacific/Auckland": "NZ",
+    };
+    const country = timezoneCountry[timezone];
+    if (country && supported.has(country)) return country;
+  } catch {
+    // Fall back to India when browser locale/timezone information is unavailable.
+  }
+
   return "IN";
 };
 
