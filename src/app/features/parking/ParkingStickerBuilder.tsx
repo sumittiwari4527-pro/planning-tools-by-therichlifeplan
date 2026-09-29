@@ -10,11 +10,39 @@ import {
 import { buildParkingTemplateSvg } from "./parkingTemplates";
 import physicalTemplateUrl from "./assets/parking-template-physical.svg?url";
 
+const PHONE_COUNTRIES = [
+  ["IN", "India", "+91"], ["US", "United States", "+1"], ["CA", "Canada", "+1"], ["GB", "United Kingdom", "+44"],
+  ["AU", "Australia", "+61"], ["NZ", "New Zealand", "+64"], ["DE", "Germany", "+49"], ["FR", "France", "+33"],
+  ["NL", "Netherlands", "+31"], ["SE", "Sweden", "+46"], ["NO", "Norway", "+47"], ["DK", "Denmark", "+45"],
+  ["CH", "Switzerland", "+41"], ["AT", "Austria", "+43"], ["BE", "Belgium", "+32"], ["IE", "Ireland", "+353"],
+  ["ES", "Spain", "+34"], ["IT", "Italy", "+39"], ["PT", "Portugal", "+351"], ["PL", "Poland", "+48"],
+  ["FI", "Finland", "+358"], ["IS", "Iceland", "+354"], ["CZ", "Czechia", "+420"], ["RO", "Romania", "+40"],
+  ["HU", "Hungary", "+36"], ["GR", "Greece", "+30"], ["AE", "United Arab Emirates", "+971"], ["SA", "Saudi Arabia", "+966"],
+  ["QA", "Qatar", "+974"], ["SG", "Singapore", "+65"], ["MY", "Malaysia", "+60"], ["TH", "Thailand", "+66"],
+  ["ID", "Indonesia", "+62"], ["PH", "Philippines", "+63"], ["JP", "Japan", "+81"], ["KR", "South Korea", "+82"],
+  ["CN", "China", "+86"], ["HK", "Hong Kong", "+852"], ["TW", "Taiwan", "+886"], ["BR", "Brazil", "+55"],
+  ["MX", "Mexico", "+52"], ["ZA", "South Africa", "+27"], ["NG", "Nigeria", "+234"], ["KE", "Kenya", "+254"],
+] as const;
+
+type PhoneCountryCode = (typeof PHONE_COUNTRIES)[number][0];
+
+const getBrowserCountry = (): PhoneCountryCode => {
+  try {
+    const locale = new Intl.Locale(navigator.language).maximize();
+    const region = locale.region?.toUpperCase();
+    if (region && PHONE_COUNTRIES.some(([code]) => code === region)) return region as PhoneCountryCode;
+  } catch {
+    // Fall back to India when the browser locale cannot provide a supported region.
+  }
+  return "IN";
+};
+
 type ParkingDelivery = "digital" | "physical";
 
 type FormState = {
   name: string;
   phone: string;
+  phoneCountry: PhoneCountryCode;
   email: string;
   vehicle: string;
   theme: ParkingTheme;
@@ -24,6 +52,7 @@ type FormState = {
 const initialForm: FormState = {
   name: "",
   phone: "",
+  phoneCountry: "IN",
   email: "",
   vehicle: "",
   theme: "dark",
@@ -55,7 +84,7 @@ const isValidPhone = (value: string) => value.replace(/\D/g, "").length >= 10;
 const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 
 export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
-  const [form, setForm] = useState<FormState>(initialForm);
+  const [form, setForm] = useState<FormState>(() => ({ ...initialForm, phoneCountry: getBrowserCountry() }));
   const [qrDataUrl, setQrDataUrl] = useState("");
   const [stickerDataUrl, setStickerDataUrl] = useState("");
   const [previewPayload, setPreviewPayload] = useState<ParkingPayload | null>(null);
@@ -89,7 +118,7 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
         createdAt,
         expiresAt: createdAt + 24 * 60 * 60 * 1000,
         name: form.name.trim(),
-        phone: form.phone.trim(),
+        phone: `${PHONE_COUNTRIES.find(([code]) => code === form.phoneCountry)?.[2] ?? "+91"}${form.phone.replace(/\D/g, "")}`,
         ...(form.email.trim() ? { email: form.email.trim() } : {}),
         vehicle: form.vehicle.trim().toUpperCase(),
         theme: form.theme,
@@ -262,13 +291,27 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
 
               <label className="block">
                 <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Phone size={15} /> Phone *</span>
-                <input
-                  value={form.phone}
-                  onChange={(event) => update("phone", event.target.value)}
-                  inputMode="tel"
-                  placeholder="+91 98765 43210"
-                  className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none transition focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50"
-                />
+                <div className="flex gap-2">
+                  <select
+                    value={form.phoneCountry}
+                    onChange={(event) => update("phoneCountry", event.target.value as PhoneCountryCode)}
+                    aria-label="Country calling code"
+                    className="w-[126px] shrink-0 rounded-2xl border border-[#dbe2ec] bg-white px-3 py-3 text-sm outline-none transition focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50"
+                  >
+                    {PHONE_COUNTRIES.map(([code, name, dialCode]) => (
+                      <option key={code} value={code}>{code === "IN" ? "🇮🇳" : ""} {dialCode} · {name}</option>
+                    ))}
+                  </select>
+                  <input
+                    value={form.phone}
+                    onChange={(event) => update("phone", event.target.value.replace(/[^\d\s()-]/g, ""))}
+                    inputMode="tel"
+                    autoComplete="tel-national"
+                    placeholder="98765 43210"
+                    className="min-w-0 flex-1 rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none transition focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50"
+                  />
+                </div>
+                <p className="mt-1.5 text-xs text-[#8b95aa]">Country code is preselected from your browser locale. You can change it anytime.</p>
               </label>
 
               <label className="block">
