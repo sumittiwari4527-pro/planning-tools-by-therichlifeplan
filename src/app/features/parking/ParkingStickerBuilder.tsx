@@ -347,8 +347,8 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
                     aria-label="Country calling code"
                     className="w-[126px] shrink-0 rounded-2xl border border-[#dbe2ec] bg-white px-3 py-3 text-sm outline-none transition focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50"
                   >
-                    {PHONE_COUNTRIES.map(([code, name, dialCode]) => (
-                      <option key={code} value={code}>{countryFlag(code)} {dialCode} · {name}</option>
+                    {PHONE_COUNTRIES.map(([code, , dialCode]) => (
+                      <option key={code} value={code}>{countryFlag(code)} {dialCode}</option>
                     ))}
                   </select>
                   <input
