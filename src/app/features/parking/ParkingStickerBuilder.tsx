@@ -437,9 +437,8 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
               </div>
             )}
 
-            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {[
-                ["Browser generated", "No backend or database required."],
                 ["Encrypted QR", "AES-GCM payload with tamper detection."],
                 ["Direct contact", "Phone and email become tappable after scan."],
               ].map(([title, description]) => (
