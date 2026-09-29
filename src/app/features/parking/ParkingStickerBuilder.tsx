@@ -42,7 +42,6 @@ declare global {
 }
 
 const checkoutUrl = import.meta.env.VITE_LEMON_SQUEEZY_PARKING_CHECKOUT_URL as string | undefined;
-const physicalCheckoutUrl = import.meta.env.VITE_LEMON_SQUEEZY_PARKING_PHYSICAL_CHECKOUT_URL as string | undefined;
 
 const createStickerDataUrl = async (theme: ParkingTheme, qr: string) =>
   svgToDataUrl(
@@ -160,7 +159,7 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
   }, [finalPayload]);
 
   useEffect(() => {
-    if (!checkoutUrl && !physicalCheckoutUrl) return;
+    if (!checkoutUrl) return;
 
     const setup = () => {
       if (!window.LemonSqueezy) return false;
@@ -194,15 +193,13 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
   }, []);
 
   const startCheckout = () => {
-    const selectedCheckoutUrl = form.delivery === "physical" ? physicalCheckoutUrl : checkoutUrl;
-    if (!previewPayload || !selectedCheckoutUrl) {
-      setError(form.delivery === "physical"
-        ? "Physical checkout is not configured yet. Add the Lemon Squeezy physical parking checkout URL to the site environment."
-        : "Checkout is not configured yet. Add the Lemon Squeezy parking checkout URL to the site environment.");
+    if (form.delivery === "physical") return;
+    if (!previewPayload || !checkoutUrl) {
+      setError("Checkout is not configured yet. Add the Lemon Squeezy parking checkout URL to the site environment.");
       return;
     }
 
-    const url = new URL(selectedCheckoutUrl);
+    const url = new URL(checkoutUrl);
     url.searchParams.set("checkout[email]", form.email.trim());
     url.searchParams.set("checkout[name]", form.name.trim());
 
@@ -345,7 +342,7 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
                       className={"rounded-2xl border p-4 text-left transition " + (form.delivery === delivery ? "border-[#00b968] bg-[#eefaf3] ring-4 ring-emerald-50" : "border-[#dbe2ec] bg-white")}
                     >
                       <div className="text-sm font-bold text-[#0f1523]">{delivery === "digital" ? "Downloadable" : "Physical sticker"}</div>
-                      <div className="mt-1 text-xs text-[#6b7a99]">{delivery === "digital" ? "₹199 · SVG download" : "₹399 · Printed & delivered"}</div>
+                      <div className="mt-1 text-xs text-[#6b7a99]">{delivery === "digital" ? "₹199 · SVG download" : "Coming soon"}</div>
                     </button>
                   ))}
                 </div>
@@ -400,15 +397,25 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
                       Your final sticker gets a permanent QR payload after successful checkout.
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={startCheckout}
-                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#00b968] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-100"
-                  >
-                    <ShoppingCart size={16} /> Get yours
-                  </button>
+                  {form.delivery === "physical" ? (
+                    <button
+                      type="button"
+                      disabled
+                      className="inline-flex shrink-0 cursor-not-allowed items-center justify-center gap-2 rounded-2xl bg-[#d9dfea] px-5 py-3 text-sm font-bold text-[#7a8498]"
+                    >
+                      Coming soon
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={startCheckout}
+                      className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#00b968] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-100"
+                    >
+                      <ShoppingCart size={16} /> Get yours
+                    </button>
+                  )}
                 </div>
-                {!(form.delivery === "physical" ? physicalCheckoutUrl : checkoutUrl) && (
+                {form.delivery === "digital" && !checkoutUrl && (
                   <p className="mt-3 text-xs text-[#7a6651]">
                     Checkout URL is not configured yet. The UI is ready for the Lemon Squeezy product checkout URL.
                   </p>
