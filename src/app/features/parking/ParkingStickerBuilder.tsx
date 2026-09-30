@@ -145,11 +145,10 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
   const canPreview =
     form.name.trim().length >= 2 &&
     isValidPhone(form.phone) &&
-    isValidEmail(form.email) &&
     form.vehicle.trim().length >= 2;
 
   const phoneError = touched.phone && !isValidPhone(form.phone) ? "Enter a valid phone number (7–15 digits)." : "";
-  const emailError = touched.email && !isValidEmail(form.email) ? "Enter a valid email address." : "";
+  const emailError = touched.email && form.email.trim() && !isValidEmail(form.email) ? "Enter a valid email address." : "";
 
   const update = (field: keyof FormState, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
@@ -370,7 +369,7 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
               </label>
 
               <label className="block">
-                <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Mail size={15} /> Email *</span>
+                <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Mail size={15} /> Email <span className="font-normal text-[#8b95aa]">(optional)</span></span>
                 <input
                   value={form.email}
                   onChange={(event) => update("email", event.target.value)}
