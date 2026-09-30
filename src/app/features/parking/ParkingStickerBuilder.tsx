@@ -338,10 +338,8 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
                   value={form.name}
                   onChange={(event) => update("name", event.target.value)}
                   placeholder="e.g. Sumit Tiwari"
-                  className={`w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:ring-4 ${emailError ? "border-red-300 focus:border-red-500 focus:ring-red-50" : "border-[#dbe2ec] focus:border-[#00b968] focus:ring-emerald-50"}`}
-                  aria-invalid={Boolean(emailError)}
+                  className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none transition focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50"
                 />
-                {emailError && <p className="mt-2 text-xs text-red-600">{emailError}</p>}
               </label>
 
               <label className="block">
@@ -379,8 +377,10 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
                   onBlur={() => setTouched((current) => ({ ...current, email: true }))}
                   type="email"
                   placeholder="you@example.com"
-                  className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none transition focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50"
+                  className={`w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:ring-4 ${emailError ? "border-red-300 focus:border-red-500 focus:ring-red-50" : "border-[#dbe2ec] focus:border-[#00b968] focus:ring-emerald-50"}`}
+                  aria-invalid={Boolean(emailError)}
                 />
+                {emailError && <p className="mt-2 text-xs text-red-600">{emailError}</p>}
               </label>
 
               <label className="block">
