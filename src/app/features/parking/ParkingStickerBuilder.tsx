@@ -140,12 +140,16 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
   const [error, setError] = useState("");
   const [paymentComplete, setPaymentComplete] = useState(false);
   const [finalOrderId, setFinalOrderId] = useState("");
+  const [touched, setTouched] = useState({ phone: false, email: false });
 
   const canPreview =
     form.name.trim().length >= 2 &&
     isValidPhone(form.phone) &&
     isValidEmail(form.email) &&
     form.vehicle.trim().length >= 2;
+
+  const phoneError = touched.phone && !isValidPhone(form.phone) ? "Enter a valid phone number (7–15 digits)." : "";
+  const emailError = touched.email && !isValidEmail(form.email) ? "Enter a valid email address." : "";
 
   const update = (field: keyof FormState, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
@@ -334,8 +338,10 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
                   value={form.name}
                   onChange={(event) => update("name", event.target.value)}
                   placeholder="e.g. Sumit Tiwari"
-                  className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none transition focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50"
+                  className={`w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:ring-4 ${emailError ? "border-red-300 focus:border-red-500 focus:ring-red-50" : "border-[#dbe2ec] focus:border-[#00b968] focus:ring-emerald-50"}`}
+                  aria-invalid={Boolean(emailError)}
                 />
+                {emailError && <p className="mt-2 text-xs text-red-600">{emailError}</p>}
               </label>
 
               <label className="block">
@@ -353,13 +359,16 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
                   </select>
                   <input
                     value={form.phone}
+                    onBlur={() => setTouched((current) => ({ ...current, phone: true }))}
                     onChange={(event) => update("phone", event.target.value.replace(/[^\d\s()-]/g, ""))}
                     inputMode="tel"
                     autoComplete="tel-national"
                     placeholder="98765 43210"
-                    className="min-w-0 flex-1 rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none transition focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50"
+                    className={`min-w-0 flex-1 rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:ring-4 ${phoneError ? "border-red-300 focus:border-red-500 focus:ring-red-50" : "border-[#dbe2ec] focus:border-[#00b968] focus:ring-emerald-50"}`}
+                    aria-invalid={Boolean(phoneError)}
                   />
                 </div>
+                {phoneError && <p className="mt-2 text-xs text-red-600">{phoneError}</p>}
               </label>
 
               <label className="block">
@@ -367,6 +376,7 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
                 <input
                   value={form.email}
                   onChange={(event) => update("email", event.target.value)}
+                  onBlur={() => setTouched((current) => ({ ...current, email: true }))}
                   type="email"
                   placeholder="you@example.com"
                   className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none transition focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50"
