@@ -1,4 +1,4 @@
-export type ParkingTheme = "dark" | "light";
+export type ParkingTheme = "dark" | "light" | "physical";
 
 export type ParkingPayload = {
   v: 1;

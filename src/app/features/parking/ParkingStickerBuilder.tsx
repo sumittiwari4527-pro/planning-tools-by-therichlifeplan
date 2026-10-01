@@ -8,21 +8,97 @@ import {
   type ParkingTheme,
 } from "./parking";
 import { buildParkingTemplateSvg } from "./parkingTemplates";
+import physicalTemplateUrl from "./assets/parking-template-physical.svg?url";
+
+const PHONE_COUNTRIES = [
+  ["IN", "India", "+91"], ["US", "United States", "+1"], ["CA", "Canada", "+1"], ["GB", "United Kingdom", "+44"],
+  ["AU", "Australia", "+61"], ["NZ", "New Zealand", "+64"], ["DE", "Germany", "+49"], ["FR", "France", "+33"],
+  ["NL", "Netherlands", "+31"], ["SE", "Sweden", "+46"], ["NO", "Norway", "+47"], ["DK", "Denmark", "+45"],
+  ["CH", "Switzerland", "+41"], ["AT", "Austria", "+43"], ["BE", "Belgium", "+32"], ["IE", "Ireland", "+353"],
+  ["ES", "Spain", "+34"], ["IT", "Italy", "+39"], ["PT", "Portugal", "+351"], ["PL", "Poland", "+48"],
+  ["FI", "Finland", "+358"], ["IS", "Iceland", "+354"], ["CZ", "Czechia", "+420"], ["RO", "Romania", "+40"],
+  ["HU", "Hungary", "+36"], ["GR", "Greece", "+30"], ["AE", "United Arab Emirates", "+971"], ["SA", "Saudi Arabia", "+966"],
+  ["QA", "Qatar", "+974"], ["SG", "Singapore", "+65"], ["MY", "Malaysia", "+60"], ["TH", "Thailand", "+66"],
+  ["ID", "Indonesia", "+62"], ["PH", "Philippines", "+63"], ["JP", "Japan", "+81"], ["KR", "South Korea", "+82"],
+  ["CN", "China", "+86"], ["HK", "Hong Kong", "+852"], ["TW", "Taiwan", "+886"], ["BR", "Brazil", "+55"],
+  ["MX", "Mexico", "+52"], ["ZA", "South Africa", "+27"], ["NG", "Nigeria", "+234"], ["KE", "Kenya", "+254"],
+] as const;
+
+type PhoneCountryCode = (typeof PHONE_COUNTRIES)[number][0];
+
+const getBrowserCountry = (): PhoneCountryCode => {
+  const supported = new Set(PHONE_COUNTRIES.map(([code]) => code));
+
+  // On iOS Safari, navigator.language can be "en-US" even when the device is
+  // configured for India. Prefer the browser timezone because it reflects the
+  // device's regional configuration more reliably in that case.
+  try {
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const timezoneCountry: Record<string, PhoneCountryCode> = {
+      "Asia/Kolkata": "IN",
+      "Asia/Calcutta": "IN",
+      "America/New_York": "US",
+      "America/Chicago": "US",
+      "America/Denver": "US",
+      "America/Los_Angeles": "US",
+      "America/Toronto": "CA",
+      "Europe/London": "GB",
+      "Europe/Berlin": "DE",
+      "Europe/Paris": "FR",
+      "Europe/Amsterdam": "NL",
+      "Europe/Stockholm": "SE",
+      "Europe/Oslo": "NO",
+      "Europe/Copenhagen": "DK",
+      "Europe/Zurich": "CH",
+      "Asia/Dubai": "AE",
+      "Asia/Singapore": "SG",
+      "Asia/Tokyo": "JP",
+      "Asia/Seoul": "KR",
+      "Asia/Shanghai": "CN",
+      "Asia/Hong_Kong": "HK",
+      "Australia/Sydney": "AU",
+      "Pacific/Auckland": "NZ",
+    };
+    const country = timezoneCountry[timezone];
+    if (country && supported.has(country)) return country;
+  } catch {
+    // Continue with locale detection.
+  }
+
+  // If timezone is unavailable, use an explicitly supplied locale region.
+  const locales = navigator.languages?.length ? navigator.languages : [navigator.language];
+  for (const language of locales) {
+    try {
+      const region = new Intl.Locale(language).region?.toUpperCase();
+      if (region && supported.has(region)) return region as PhoneCountryCode;
+    } catch {
+      // Continue with the next locale.
+    }
+  }
+
+  return "IN";
+};
+
+type ParkingDelivery = "digital" | "physical";
 
 type FormState = {
   name: string;
   phone: string;
+  phoneCountry: PhoneCountryCode;
   email: string;
   vehicle: string;
   theme: ParkingTheme;
+  delivery: ParkingDelivery;
 };
 
 const initialForm: FormState = {
   name: "",
   phone: "",
+  phoneCountry: "IN",
   email: "",
   vehicle: "",
   theme: "dark",
+  delivery: "digital",
 };
 
 declare global {
@@ -46,23 +122,33 @@ const createStickerDataUrl = async (theme: ParkingTheme, qr: string) =>
     })
   );
 
-const isValidPhone = (value: string) => value.replace(/\D/g, "").length >= 10;
+const isValidPhone = (value: string) => {
+  const digits = value.replace(/\D/g, "");
+  return digits.length >= 7 && digits.length <= 15;
+};
+
+const countryFlag = (code: string) =>
+  code.replace(/[A-Z]/g, (letter) => String.fromCodePoint(letter.charCodeAt(0) + 127397));
+
 const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 
 export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
-  const [form, setForm] = useState<FormState>(initialForm);
+  const [form, setForm] = useState<FormState>(() => ({ ...initialForm, phoneCountry: getBrowserCountry() }));
   const [qrDataUrl, setQrDataUrl] = useState("");
   const [stickerDataUrl, setStickerDataUrl] = useState("");
   const [previewPayload, setPreviewPayload] = useState<ParkingPayload | null>(null);
   const [error, setError] = useState("");
   const [paymentComplete, setPaymentComplete] = useState(false);
   const [finalOrderId, setFinalOrderId] = useState("");
+  const [touched, setTouched] = useState({ phone: false, email: false });
 
   const canPreview =
     form.name.trim().length >= 2 &&
     isValidPhone(form.phone) &&
-    isValidEmail(form.email) &&
     form.vehicle.trim().length >= 2;
+
+  const phoneError = touched.phone && !isValidPhone(form.phone) ? "Enter a valid phone number (7–15 digits)." : "";
+  const emailError = touched.email && form.email.trim() && !isValidEmail(form.email) ? "Enter a valid email address." : "";
 
   const update = (field: keyof FormState, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
@@ -84,7 +170,7 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
         createdAt,
         expiresAt: createdAt + 24 * 60 * 60 * 1000,
         name: form.name.trim(),
-        phone: form.phone.trim(),
+        phone: `${PHONE_COUNTRIES.find(([code]) => code === form.phoneCountry)?.[2] ?? "+91"}${form.phone.replace(/\D/g, "")}`,
         ...(form.email.trim() ? { email: form.email.trim() } : {}),
         vehicle: form.vehicle.trim().toUpperCase(),
         theme: form.theme,
@@ -188,6 +274,7 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
   }, []);
 
   const startCheckout = () => {
+    if (form.delivery === "physical") return;
     if (!previewPayload || !checkoutUrl) {
       setError("Checkout is not configured yet. Add the Lemon Squeezy parking checkout URL to the site environment.");
       return;
@@ -256,24 +343,43 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
 
               <label className="block">
                 <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Phone size={15} /> Phone *</span>
-                <input
-                  value={form.phone}
-                  onChange={(event) => update("phone", event.target.value)}
-                  inputMode="tel"
-                  placeholder="+91 98765 43210"
-                  className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none transition focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50"
-                />
+                <div className="flex gap-2">
+                  <select
+                    value={form.phoneCountry}
+                    onChange={(event) => update("phoneCountry", event.target.value as PhoneCountryCode)}
+                    aria-label="Country calling code"
+                    className="w-[88px] shrink-0 rounded-2xl border border-[#dbe2ec] bg-white px-2 py-3 text-sm outline-none transition focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50"
+                  >
+                    {PHONE_COUNTRIES.map(([code, , dialCode]) => (
+                      <option key={code} value={code}>{countryFlag(code)} {dialCode}</option>
+                    ))}
+                  </select>
+                  <input
+                    value={form.phone}
+                    onBlur={() => setTouched((current) => ({ ...current, phone: true }))}
+                    onChange={(event) => update("phone", event.target.value.replace(/[^\d\s()-]/g, ""))}
+                    inputMode="tel"
+                    autoComplete="tel-national"
+                    placeholder="98765 43210"
+                    className={`min-w-0 flex-1 rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:ring-4 ${phoneError ? "border-red-300 focus:border-red-500 focus:ring-red-50" : "border-[#dbe2ec] focus:border-[#00b968] focus:ring-emerald-50"}`}
+                    aria-invalid={Boolean(phoneError)}
+                  />
+                </div>
+                {phoneError && <p className="mt-2 text-xs text-red-600">{phoneError}</p>}
               </label>
 
               <label className="block">
-                <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Mail size={15} /> Email *</span>
+                <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Mail size={15} /> Email <span className="font-normal text-[#8b95aa]">(optional)</span></span>
                 <input
                   value={form.email}
                   onChange={(event) => update("email", event.target.value)}
+                  onBlur={() => setTouched((current) => ({ ...current, email: true }))}
                   type="email"
                   placeholder="you@example.com"
-                  className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none transition focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50"
+                  className={`w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:ring-4 ${emailError ? "border-red-300 focus:border-red-500 focus:ring-red-50" : "border-[#dbe2ec] focus:border-[#00b968] focus:ring-emerald-50"}`}
+                  aria-invalid={Boolean(emailError)}
                 />
+                {emailError && <p className="mt-2 text-xs text-red-600">{emailError}</p>}
               </label>
 
               <label className="block">
@@ -288,32 +394,55 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
 
               <div>
                 <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Palette size={15} /> Sticker style</div>
-                <div className="grid grid-cols-2 gap-3">
-                  {(["dark", "light"] as const).map((theme) => (
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  {(["dark", "light", "physical"] as const).map((theme) => (
                     <button
                       key={theme}
                       type="button"
                       onClick={() => update("theme", theme)}
                       className={`rounded-2xl border p-3 text-left transition ${form.theme === theme ? "border-[#00b968] ring-4 ring-emerald-50" : "border-[#dbe2ec]"}`}
                     >
-                      <div className={`relative h-20 overflow-hidden rounded-xl ${theme === "dark" ? "bg-[#03121d]" : "bg-white border border-slate-200"}`}>
-                        <div className={`absolute inset-0 ${theme === "dark" ? "bg-[radial-gradient(circle_at_85%_10%,rgba(0,217,120,.35),transparent_40%)]" : "bg-[radial-gradient(circle_at_90%_5%,rgba(0,217,120,.18),transparent_42%)]"}`} />
-                        <div className="relative flex h-full items-center gap-2 px-2">
-                          <div className="min-w-0 flex-1">
-                            <div className={`text-[10px] font-black leading-none ${theme === "dark" ? "text-white" : "text-[#071421]"}`}>SCAN TO</div>
-                            <div className="text-[10px] font-black leading-none text-[#00d978]">CONTACT</div>
-                            <div className={`text-[10px] font-black leading-none ${theme === "dark" ? "text-white" : "text-[#071421]"}`}>OWNER</div>
-                          </div>
-                          <div className="h-14 w-14 shrink-0 rounded-md border-[3px] border-[#00d978] bg-white p-1">
-                            <div className="grid h-full w-full grid-cols-4 gap-0.5 bg-[#071421] opacity-90">
-                              {Array.from({ length: 16 }).map((_, index) => (
-                                <span key={index} className={index % 3 === 0 || index % 5 === 0 ? "bg-white" : "bg-[#071421]"} />
-                              ))}
+                      {theme === "physical" ? (
+                        <div className="relative h-20 overflow-hidden rounded-xl border border-slate-200 bg-white">
+                          <img src={physicalTemplateUrl} alt="" className="h-full w-full object-cover" />
+                        </div>
+                      ) : (
+                        <div className={`relative h-20 overflow-hidden rounded-xl ${theme === "dark" ? "bg-[#03121d]" : "bg-white border border-slate-200"}`}>
+                          <div className={`absolute inset-0 ${theme === "dark" ? "bg-[radial-gradient(circle_at_85%_10%,rgba(0,217,120,.35),transparent_40%)]" : "bg-[radial-gradient(circle_at_90%_5%,rgba(0,217,120,.18),transparent_42%)]"}`} />
+                          <div className="relative flex h-full items-center gap-2 px-2">
+                            <div className="min-w-0 flex-1">
+                              <div className={`text-[10px] font-black leading-none ${theme === "dark" ? "text-white" : "text-[#071421]"}`}>SCAN TO</div>
+                              <div className="text-[10px] font-black leading-none text-[#00d978]">CONTACT</div>
+                              <div className={`text-[10px] font-black leading-none ${theme === "dark" ? "text-white" : "text-[#071421]"}`}>OWNER</div>
+                            </div>
+                            <div className="h-14 w-14 shrink-0 rounded-md border-[3px] border-[#00d978] bg-white p-1">
+                              <div className="grid h-full w-full grid-cols-4 gap-0.5 bg-[#071421] opacity-90">
+                                {Array.from({ length: 16 }).map((_, index) => (
+                                  <span key={index} className={index % 3 === 0 || index % 5 === 0 ? "bg-white" : "bg-[#071421]"} />
+                                ))}
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                      <div className="mt-2 text-sm font-semibold capitalize text-[#0f1523]">{theme}</div>
+                      )}
+                      <div className="mt-2 text-sm font-semibold text-[#0f1523]">{theme === "physical" ? "Clean" : theme === "dark" ? "Dark" : "Light"}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <div className="mb-2 text-sm font-semibold text-[#33405a]">How do you want it?</div>
+                <div className="grid grid-cols-2 gap-3">
+                  {(["digital", "physical"] as const).map((delivery) => (
+                    <button
+                      key={delivery}
+                      type="button"
+                      onClick={() => update("delivery", delivery)}
+                      className={"rounded-2xl border p-4 text-left transition " + (form.delivery === delivery ? "border-[#00b968] bg-[#eefaf3] ring-4 ring-emerald-50" : "border-[#dbe2ec] bg-white")}
+                    >
+                      <div className="text-sm font-bold text-[#0f1523]">{delivery === "digital" ? "Downloadable" : "Physical sticker"}</div>
+                      <div className="mt-1 text-xs text-[#6b7a99]">{delivery === "digital" ? "₹199 · SVG download" : "Coming soon"}</div>
                     </button>
                   ))}
                 </div>
@@ -368,15 +497,25 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
                       Your final sticker gets a permanent QR payload after successful checkout.
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={startCheckout}
-                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#00b968] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-100"
-                  >
-                    <ShoppingCart size={16} /> Get yours
-                  </button>
+                  {form.delivery === "physical" ? (
+                    <button
+                      type="button"
+                      disabled
+                      className="inline-flex shrink-0 cursor-not-allowed items-center justify-center gap-2 rounded-2xl bg-[#d9dfea] px-5 py-3 text-sm font-bold text-[#7a8498]"
+                    >
+                      Coming soon
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={startCheckout}
+                      className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#00b968] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-100"
+                    >
+                      <ShoppingCart size={16} /> Buy now
+                    </button>
+                  )}
                 </div>
-                {!checkoutUrl && (
+                {form.delivery === "digital" && !checkoutUrl && (
                   <p className="mt-3 text-xs text-[#7a6651]">
                     Checkout URL is not configured yet. The UI is ready for the Lemon Squeezy product checkout URL.
                   </p>
@@ -386,24 +525,27 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
 
             {paymentComplete && (
               <div className="mt-5 rounded-3xl border border-emerald-200 bg-[#eefaf3] p-5">
-                <div className="text-sm font-bold text-[#0f1523]">Your sticker is ready 🎉</div>
+                <div className="text-sm font-bold text-[#0f1523]">{form.delivery === "physical" ? "Physical sticker ordered 🎉" : "Your sticker is ready 🎉"}</div>
                 <p className="mt-1 text-xs leading-5 text-[#527060]">
-                  Payment completed. The final QR is now marked as a purchased sticker.
+                  {form.delivery === "physical"
+                    ? "Payment completed. Your permanent QR is ready for the physical sticker order."
+                    : "Payment completed. The final QR is now marked as a purchased sticker."}
                 </p>
-                <button
-                  type="button"
-                  onClick={downloadSticker}
-                  disabled={!stickerDataUrl}
-                  className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-[#071421] px-5 py-3 text-sm font-bold text-white disabled:opacity-50"
-                >
-                  <Download size={16} /> Download sticker
-                </button>
+                {form.delivery === "digital" && (
+                  <button
+                    type="button"
+                    onClick={downloadSticker}
+                    disabled={!stickerDataUrl}
+                    className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-[#071421] px-5 py-3 text-sm font-bold text-white disabled:opacity-50"
+                  >
+                    <Download size={16} /> Download sticker
+                  </button>
+                )}
               </div>
             )}
 
-            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {[
-                ["Browser generated", "No backend or database required."],
                 ["Encrypted QR", "AES-GCM payload with tamper detection."],
                 ["Direct contact", "Phone and email become tappable after scan."],
               ].map(([title, description]) => (

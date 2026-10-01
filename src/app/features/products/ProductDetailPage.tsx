@@ -2,6 +2,7 @@ import { ArrowLeft, Check, FileText, ShieldCheck, Sparkles, ArrowRight, Phone, Q
 import type { Product } from "./types";
 import lightTemplateUrl from "../parking/assets/parking-template-light.svg?url";
 import darkTemplateUrl from "../parking/assets/parking-template-dark.svg?url";
+import physicalTemplateUrl from "../parking/assets/parking-template-physical.svg?url";
 
 import option2CarUrl from "./assets/option2-car-hero.webp?url";
 
@@ -18,7 +19,7 @@ const parkingDetails = {
     "A personalized QR parking sticker that gives someone a simple way to contact you without printing your phone number directly on the sticker.",
   highlights: [
     "Personalized QR code linked to your contact details",
-    "Light and Dark sticker designs",
+    "Light and Dark digital designs plus a physical sticker option",
     "One-tap call and email from the contact page",
     "Free 24-hour personalized preview before purchase",
     "Downloadable SVG ready for printing",
@@ -169,19 +170,20 @@ export function ProductDetailPage({
               <div>
                 <div className="text-xs font-mono uppercase tracking-widest text-[#008d50]">Choose your design</div>
                 <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#0f1523] sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Stylish. Clear. Effective.</h2>
-                <p className="mt-3 max-w-md text-sm leading-6 text-[#6b7a99]">Pick a design that matches your style. Both designs use the same personalized QR experience.</p>
+                <p className="mt-3 max-w-md text-sm leading-6 text-[#6b7a99]">Choose the design that fits your style. You can select your preferred version when you create your sticker.</p>
                 <button type="button" onClick={onPrimaryAction} className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-[#008d50] hover:text-[#006e3e] cursor-pointer">
-                  Create my sticker <ArrowRight size={15} />
+                  Create your sticker <ArrowRight size={15} />
                 </button>
               </div>
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {[
                   { src: darkTemplateUrl, label: "Dark Design" },
                   { src: lightTemplateUrl, label: "Light Design" },
+                  { src: physicalTemplateUrl, label: "Clean Design" },
                 ].map((item) => (
                   <div key={item.label} className="overflow-hidden rounded-3xl border border-[#dfe7e3] bg-white p-3 shadow-sm">
                     <div className="overflow-hidden rounded-2xl bg-slate-100">
-                      <img src={item.src} alt={"Smart Parking Sticker — " + item.label} className="block aspect-[3/2] w-full object-cover" />
+                      <img src={item.src} alt={"Smart Parking Sticker — " + item.label} className="block h-auto w-full object-contain" />
                     </div>
                     <div className="px-2 pb-1 pt-3 text-sm font-semibold text-[#33405a]">{item.label}</div>
                   </div>
@@ -254,8 +256,8 @@ export function ProductDetailPage({
               {[
                 ["Can I preview it before buying?", "Yes. Your personalized preview works for 24 hours, so you can see the design and scan the QR before purchasing."],
                 ["Do I need an app?", "No. The QR opens the contact page in a normal mobile browser."],
-                ["Can I choose the design?", "Yes. Choose between the Light and Dark sticker designs in the builder."],
-                ["What do I receive after purchase?", "A personalized sticker with your permanent QR, downloadable as an SVG for printing."],
+                ["Can I choose the design?", "Yes. Every design is available as a downloadable SVG or as a printed physical sticker. Choose your design and version in the builder."],
+                ["What do I receive after purchase?", "You can choose a downloadable sticker or a printed physical sticker when you create your order."],
               ].map(([question, answer]) => (
                 <div key={question}>
                   <h3 className="text-sm font-bold text-[#0f1523]">{question}</h3>

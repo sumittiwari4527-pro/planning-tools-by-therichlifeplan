@@ -1,7 +1,8 @@
 import lightTemplateUrl from "./assets/parking-template-light.svg?url";
 import darkTemplateUrl from "./assets/parking-template-dark.svg?url";
+import physicalTemplateUrl from "./assets/parking-template-physical.svg?url";
 
-export type ParkingTemplateTheme = "dark" | "light";
+export type ParkingTemplateTheme = "dark" | "light" | "physical";
 
 type TemplateOptions = {
   theme: ParkingTemplateTheme;
@@ -11,6 +12,7 @@ type TemplateOptions = {
 const templateUrls: Record<ParkingTemplateTheme, string> = {
   light: lightTemplateUrl,
   dark: darkTemplateUrl,
+  physical: physicalTemplateUrl,
 };
 
 const templateCache = new Map<ParkingTemplateTheme, Promise<string>>();
@@ -44,10 +46,10 @@ export const buildParkingTemplateSvg = async ({ theme, qrDataUrl }: TemplateOpti
   const qrMarkup = `
     <image
       href="${qrDataUrl}"
-      x="827"
-      y="106"
-      width="526"
-      height="526"
+      x="${theme === "physical" ? 352 : 827}"
+      y="${theme === "physical" ? 332 : 106}"
+      width="${theme === "physical" ? 544 : 526}"
+      height="${theme === "physical" ? 544 : 526}"
       preserveAspectRatio="xMidYMid meet"
     />
   `;
