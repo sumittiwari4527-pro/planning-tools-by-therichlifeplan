@@ -491,6 +491,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                 </div>
               </div>
 
+              {!activationMode && (
               <div>
                 <div className="mb-2 text-sm font-semibold text-[#33405a]">How do you want it?</div>
                 <div className="grid grid-cols-2 gap-3">
@@ -507,6 +508,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                   ))}
                 </div>
               </div>
+              )}
 
               <button
                 type="button"
