@@ -139,18 +139,24 @@ export function ProductDetailPage({
                   Preview your personalized sticker before you buy.
                 </p>
 
-                {onAlreadyPurchased && (
-                  <button
-                    type="button"
-                    onClick={onAlreadyPurchased}
-                    className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-white/90 underline decoration-white/30 underline-offset-4 hover:text-white hover:decoration-white/70 cursor-pointer"
-                  >
-                    Already purchased? Get your QR sticker <ArrowRight size={15} />
-                  </button>
-                )}
               </div>
             </div>
           </section>
+
+          {onAlreadyPurchased && (
+            <section className="border-b border-[#e6eee9] bg-white px-5 py-5 sm:px-8">
+              <div className="mx-auto flex max-w-7xl flex-col items-center justify-center gap-2 text-center sm:flex-row sm:gap-3">
+                <span className="text-sm text-[#6b7a99]">Already purchased a sticker?</span>
+                <button
+                  type="button"
+                  onClick={onAlreadyPurchased}
+                  className="inline-flex items-center gap-1.5 text-sm font-bold text-[#008d50] hover:text-[#006e3e] cursor-pointer"
+                >
+                  Get your QR sticker <ArrowRight size={15} />
+                </button>
+              </div>
+            </section>
+          )}
 
           <section className="grid grid-cols-2 overflow-hidden rounded-b-[1.75rem] bg-white shadow-sm lg:grid-cols-4">
             {[
