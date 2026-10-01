@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Download, Mail, Palette, Phone, QrCode, ShoppingCart, Sparkles } from "lucide-react";
+import { ArrowLeft, Download, Mail, Palette, Phone, QrCode, ShoppingCart, Sparkles, CheckCircle2 } from "lucide-react";
 import QRCode from "qrcode";
 import {
   encryptParkingPayload,
@@ -132,7 +132,7 @@ const countryFlag = (code: string) =>
 
 const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 
-export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
+export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBack: () => void; activationMode?: boolean }) {
   const [form, setForm] = useState<FormState>(() => ({ ...initialForm, phoneCountry: getBrowserCountry() }));
   const [qrDataUrl, setQrDataUrl] = useState("");
   const [stickerDataUrl, setStickerDataUrl] = useState("");
@@ -140,20 +140,28 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
   const [error, setError] = useState("");
   const [paymentComplete, setPaymentComplete] = useState(false);
   const [finalOrderId, setFinalOrderId] = useState("");
-  const [touched, setTouched] = useState({ phone: false, email: false });
+  const [touched, setTouched] = useState({ phone: false, email: false, orderId: false });
+  const [orderId, setOrderId] = useState("");
+  const [requestSubmitted, setRequestSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const canPreview =
     form.name.trim().length >= 2 &&
     isValidPhone(form.phone) &&
-    form.vehicle.trim().length >= 2;
+    form.vehicle.trim().length >= 2 &&
+    (!activationMode || (orderId.trim().length >= 2 && Boolean(form.email.trim()) && isValidEmail(form.email)));
+
+  const canSubmitRequest = Boolean(previewPayload) && !submitting && Boolean(orderId.trim()) && Boolean(form.email.trim()) && isValidEmail(form.email);
 
   const phoneError = touched.phone && !isValidPhone(form.phone) ? "Enter a valid phone number (7–15 digits)." : "";
-  const emailError = touched.email && form.email.trim() && !isValidEmail(form.email) ? "Enter a valid email address." : "";
+  const emailError = touched.email && (activationMode ? !form.email.trim() || !isValidEmail(form.email) : Boolean(form.email.trim()) && !isValidEmail(form.email)) ? "Enter a valid email address." : "";
+  const orderIdError = touched.orderId && activationMode && !orderId.trim() ? "Enter your Lemon Squeezy order number." : "";
 
   const update = (field: keyof FormState, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
     setPaymentComplete(false);
     setFinalOrderId("");
+    setRequestSubmitted(false);
   };
 
   const generatePreview = async () => {
@@ -273,6 +281,41 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
     };
   }, []);
 
+  const submitRequest = async () => {
+    if (!activationMode || !canSubmitRequest) return;
+    const endpoint = import.meta.env.VITE_PARKING_REQUEST_FORM_ENDPOINT as string | undefined;
+    if (!endpoint) {
+      setError("Request submission is not configured yet. Add the parking request form endpoint to the site environment.");
+      return;
+    }
+    setSubmitting(true);
+    setError("");
+    try {
+      const dialCode = PHONE_COUNTRIES.find(([code]) => code === form.phoneCountry)?.[2] ?? "+91";
+      const payload = {
+        orderId: orderId.trim(),
+        name: form.name.trim(),
+        email: form.email.trim(),
+        phone: dialCode + form.phone.replace(/\D/g, ""),
+        vehicle: form.vehicle.trim().toUpperCase(),
+        stickerStyle: form.theme === "physical" ? "Clean" : form.theme === "dark" ? "Dark" : "Light",
+        requestType: "Smart Parking Sticker activation",
+        submittedAt: new Date().toISOString(),
+        previewType: "temporary",
+      };
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) throw new Error("Request failed");
+      setRequestSubmitted(true);
+    } catch {
+      setError("Unable to submit your request. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
   const startCheckout = () => {
     if (form.delivery === "physical") return;
     if (!previewPayload || !checkoutUrl) {
@@ -315,11 +358,12 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
             <Sparkles size={12} /> Smart parking
           </div>
           <h1 className="text-4xl font-bold tracking-tight text-[#0f1523] sm:text-5xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-            Create your Smart Parking Sticker
+            {activationMode ? "Get your Smart Parking Sticker" : "Create your Smart Parking Sticker"}
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-7 text-[#6b7a99]">
-            Add your contact details, choose a sticker style and see a live QR preview before you buy.
-            Your preview QR is temporary; the purchased sticker gets a permanent QR.
+            {activationMode
+              ? "Already purchased? Enter your Lemon Squeezy order number and add your sticker details. Preview your temporary QR, then submit your request for verification."
+              : "Add your contact details, choose a sticker style and see a live QR preview before you buy. Your preview QR is temporary; the purchased sticker gets a permanent QR."}
           </p>
         </div>
 
@@ -331,6 +375,19 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
             </div>
 
             <div className="space-y-5">
+              <label className="block">
+                <span className="mb-2 block text-sm font-semibold text-[#33405a]">Lemon Squeezy Order Number *</span>
+                <input
+                  value={orderId}
+                  onChange={(event) => { setOrderId(event.target.value); setRequestSubmitted(false); }}
+                  onBlur={() => setTouched((current) => ({ ...current, orderId: true }))}
+                  placeholder="e.g. 123456"
+                  autoComplete="off"
+                  className={"w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:ring-4 " + (orderIdError ? "border-red-300 focus:border-red-500 focus:ring-red-50" : "border-[#dbe2ec] focus:border-[#00b968] focus:ring-emerald-50")}
+                  aria-invalid={Boolean(orderIdError)}
+                />
+                {orderIdError ? <p className="mt-2 text-xs text-red-600">{orderIdError}</p> : <p className="mt-2 text-xs text-[#8b95aa]">Find this in your Lemon Squeezy purchase confirmation email.</p>}
+              </label>
               <label className="block">
                 <span className="mb-2 block text-sm font-semibold text-[#33405a]">Name *</span>
                 <input
@@ -369,12 +426,13 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
               </label>
 
               <label className="block">
-                <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Mail size={15} /> Email <span className="font-normal text-[#8b95aa]">(optional)</span></span>
+                <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Mail size={15} /> Email {activationMode ? "*" : <span className="font-normal text-[#8b95aa]">(optional)</span>}</span>
                 <input
                   value={form.email}
                   onChange={(event) => update("email", event.target.value)}
                   onBlur={() => setTouched((current) => ({ ...current, email: true }))}
                   type="email"
+                  required={activationMode}
                   placeholder="you@example.com"
                   className={`w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:ring-4 ${emailError ? "border-red-300 focus:border-red-500 focus:ring-red-50" : "border-[#dbe2ec] focus:border-[#00b968] focus:ring-emerald-50"}`}
                   aria-invalid={Boolean(emailError)}
@@ -488,7 +546,32 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
               )}
             </div>
 
-            {previewPayload && !paymentComplete && (
+            {previewPayload && activationMode && !requestSubmitted && (
+              <div className="mt-5 rounded-3xl border border-emerald-100 bg-[#eefaf3] p-5">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <div className="text-sm font-bold text-[#0f1523]">Ready to submit?</div>
+                    <p className="mt-1 text-xs leading-5 text-[#527060]">We will verify your Lemon Squeezy order before preparing your final sticker.</p>
+                  </div>
+                  <button type="button" onClick={submitRequest} disabled={!canSubmitRequest} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#00b968] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-100 disabled:cursor-not-allowed disabled:opacity-50">
+                    <Mail size={16} /> {submitting ? "Submitting..." : "Submit Request"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {requestSubmitted && (
+              <div className="mt-5 rounded-3xl border border-emerald-200 bg-[#eefaf3] p-6">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="mt-0.5 shrink-0 text-[#00a961]" size={22} />
+                  <div>
+                    <div className="text-base font-bold text-[#0f1523]">Request submitted successfully</div>
+                    <p className="mt-1 text-sm leading-6 text-[#527060]">We have received your details for order <span className="font-semibold">{orderId.trim()}</span>. We will verify your purchase and send your QR sticker to <span className="font-semibold">{form.email.trim()}</span> within 24 hours after verification.</p>
+                  </div>
+                </div>
+              </div>
+            )}
+            {previewPayload && !activationMode && !paymentComplete && (
               <div className="mt-5 rounded-3xl border border-emerald-100 bg-[#eefaf3] p-5">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div>
@@ -515,7 +598,7 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
                     </button>
                   )}
                 </div>
-                {form.delivery === "digital" && !checkoutUrl && (
+                {!activationMode && form.delivery === "digital" && !checkoutUrl && (
                   <p className="mt-3 text-xs text-[#7a6651]">
                     Checkout URL is not configured yet. The UI is ready for the Lemon Squeezy product checkout URL.
                   </p>
@@ -523,7 +606,7 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
               </div>
             )}
 
-            {paymentComplete && (
+            {!activationMode && paymentComplete && (
               <div className="mt-5 rounded-3xl border border-emerald-200 bg-[#eefaf3] p-5">
                 <div className="text-sm font-bold text-[#0f1523]">{form.delivery === "physical" ? "Physical sticker ordered 🎉" : "Your sticker is ready 🎉"}</div>
                 <p className="mt-1 text-xs leading-5 text-[#527060]">

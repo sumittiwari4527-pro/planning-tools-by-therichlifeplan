@@ -62,6 +62,7 @@ export function ProductDetailPage({
   product: Product;
   onBack: () => void;
   onPrimaryAction?: () => void;
+  onAlreadyPurchased?: () => void;
 }) {
   const isParking = product.slug === "smart-parking-sticker";
   const detail = isParking ? parkingDetails : productDetails[product.slug] ?? {
@@ -136,6 +137,16 @@ export function ProductDetailPage({
                   <Eye size={21} className="flex-shrink-0 text-emerald-200" />
                   Preview your personalized sticker before you buy.
                 </p>
+
+                {onAlreadyPurchased && (
+                  <button
+                    type="button"
+                    onClick={onAlreadyPurchased}
+                    className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-white/90 underline decoration-white/30 underline-offset-4 hover:text-white hover:decoration-white/70 cursor-pointer"
+                  >
+                    Already purchased? Get your QR sticker <ArrowRight size={15} />
+                  </button>
+                )}
               </div>
             </div>
           </section>
