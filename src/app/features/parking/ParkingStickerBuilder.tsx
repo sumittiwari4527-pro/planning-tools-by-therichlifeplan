@@ -393,6 +393,20 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                 {orderIdError ? <p className="mt-2 text-xs text-red-600">{orderIdError}</p> : <p className="mt-2 text-xs text-[#8b95aa]">Find this in your Lemon Squeezy purchase confirmation email.</p>}
               </label>
             )}
+              {activationMode && (
+                <label className="block">
+                  <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Mail size={15} /> Delivery email *</span>
+                  <input
+                    value={deliveryEmail}
+                    onChange={(event) => { setDeliveryEmail(event.target.value); setRequestSubmitted(false); }}
+                    type="email"
+                    required
+                    placeholder="you@example.com"
+                    className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none transition focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50"
+                  />
+                  <p className="mt-2 text-xs leading-5 text-[#8b95aa]">Used to verify your purchase and send your completed QR sticker. It will not be added to the sticker unless you enter it below.</p>
+                </label>
+              )}
               <label className="block">
                 <span className="mb-2 block text-sm font-semibold text-[#33405a]">Name *</span>
                 <input
@@ -430,20 +444,6 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                 {phoneError && <p className="mt-2 text-xs text-red-600">{phoneError}</p>}
               </label>
 
-              {activationMode && (
-                <label className="block">
-                  <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Mail size={15} /> Delivery email *</span>
-                  <input
-                    value={deliveryEmail}
-                    onChange={(event) => { setDeliveryEmail(event.target.value); setRequestSubmitted(false); }}
-                    type="email"
-                    required
-                    placeholder="you@example.com"
-                    className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none transition focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50"
-                  />
-                  <p className="mt-2 text-xs leading-5 text-[#8b95aa]">Used to verify your purchase and send your completed QR sticker. It will not be added to the sticker unless you enter it below.</p>
-                </label>
-              )}
               <label className="block">
                 <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Mail size={15} /> Email on sticker {activationMode ? <span className="font-normal text-[#8b95aa]">(optional)</span> : <span className="font-normal text-[#8b95aa]">(optional)</span>}</span>
                 <input
