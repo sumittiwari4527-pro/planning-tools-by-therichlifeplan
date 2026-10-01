@@ -587,7 +587,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                   <CheckCircle2 className="mt-0.5 shrink-0 text-[#00a961]" size={22} />
                   <div>
                     <div className="text-base font-bold text-[#0f1523]">Request submitted successfully</div>
-                    <p className="mt-1 text-sm leading-6 text-[#527060]">We have received your details for order <span className="font-semibold">{orderId.trim()}</span>. We will verify your purchase and send your QR sticker to <span className="font-semibold">{form.email.trim()}</span> within 24 hours after verification.</p>
+                    <p className="mt-1 text-sm leading-6 text-[#527060]">We have received your details for order <span className="font-semibold">{orderId.trim()}</span>. We will verify your purchase and send your QR sticker to <span className="font-semibold">{deliveryEmail.trim()}</span> within 24 hours after verification.</p>
                   </div>
                 </div>
               </div>
