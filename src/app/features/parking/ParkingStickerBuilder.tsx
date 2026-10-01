@@ -375,7 +375,8 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
             </div>
 
             <div className="space-y-5">
-              <label className="block">
+              {activationMode && (
+            <label className="block">
                 <span className="mb-2 block text-sm font-semibold text-[#33405a]">Lemon Squeezy Order Number *</span>
                 <input
                   value={orderId}
@@ -388,6 +389,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                 />
                 {orderIdError ? <p className="mt-2 text-xs text-red-600">{orderIdError}</p> : <p className="mt-2 text-xs text-[#8b95aa]">Find this in your Lemon Squeezy purchase confirmation email.</p>}
               </label>
+            )}
               <label className="block">
                 <span className="mb-2 block text-sm font-semibold text-[#33405a]">Name *</span>
                 <input
