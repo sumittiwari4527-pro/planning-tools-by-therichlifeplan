@@ -148,15 +148,20 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
   const canPreview =
     form.name.trim().length >= 2 &&
     isValidPhone(form.phone) &&
-    form.vehicle.trim().length >= 2;
+    form.vehicle.trim().length >= 2 &&
+    (!activationMode || (orderId.trim().length >= 2 && Boolean(form.email.trim()) && isValidEmail(form.email)));
+
+  const canSubmitRequest = Boolean(previewPayload) && !submitting && Boolean(orderId.trim()) && Boolean(form.email.trim()) && isValidEmail(form.email);
 
   const phoneError = touched.phone && !isValidPhone(form.phone) ? "Enter a valid phone number (7–15 digits)." : "";
-  const emailError = touched.email && form.email.trim() && !isValidEmail(form.email) ? "Enter a valid email address." : "";
+  const emailError = touched.email && (activationMode ? !form.email.trim() || !isValidEmail(form.email) : Boolean(form.email.trim()) && !isValidEmail(form.email)) ? "Enter a valid email address." : "";
+  const orderIdError = touched.orderId && activationMode && !orderId.trim() ? "Enter your Lemon Squeezy order number." : "";
 
   const update = (field: keyof FormState, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
     setPaymentComplete(false);
     setFinalOrderId("");
+    setRequestSubmitted(false);
   };
 
   const generatePreview = async () => {
