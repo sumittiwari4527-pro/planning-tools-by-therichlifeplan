@@ -281,6 +281,41 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
     };
   }, []);
 
+  const submitRequest = async () => {
+    if (!activationMode || !canSubmitRequest) return;
+    const endpoint = import.meta.env.VITE_PARKING_REQUEST_FORM_ENDPOINT as string | undefined;
+    if (!endpoint) {
+      setError("Request submission is not configured yet. Add the parking request form endpoint to the site environment.");
+      return;
+    }
+    setSubmitting(true);
+    setError("");
+    try {
+      const dialCode = PHONE_COUNTRIES.find(([code]) => code === form.phoneCountry)?.[2] ?? "+91";
+      const payload = {
+        orderId: orderId.trim(),
+        name: form.name.trim(),
+        email: form.email.trim(),
+        phone: dialCode + form.phone.replace(/\D/g, ""),
+        vehicle: form.vehicle.trim().toUpperCase(),
+        stickerStyle: form.theme === "physical" ? "Clean" : form.theme === "dark" ? "Dark" : "Light",
+        requestType: "Smart Parking Sticker activation",
+        submittedAt: new Date().toISOString(),
+        previewType: "temporary",
+      };
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) throw new Error("Request failed");
+      setRequestSubmitted(true);
+    } catch {
+      setError("Unable to submit your request. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
   const startCheckout = () => {
     if (form.delivery === "physical") return;
     if (!previewPayload || !checkoutUrl) {
