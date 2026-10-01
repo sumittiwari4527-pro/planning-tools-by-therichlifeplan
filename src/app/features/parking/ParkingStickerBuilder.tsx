@@ -455,7 +455,6 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                   className={`w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:ring-4 ${emailError ? "border-red-300 focus:border-red-500 focus:ring-red-50" : "border-[#dbe2ec] focus:border-[#00b968] focus:ring-emerald-50"}`}
                   aria-invalid={Boolean(emailError)}
                 />
-                <p className="mt-2 text-xs leading-5 text-[#8b95aa]">Optional. This email can be available to people who scan your sticker.</p>
                 {emailError && <p className="mt-2 text-xs text-red-600">{emailError}</p>}
               </label>
 
