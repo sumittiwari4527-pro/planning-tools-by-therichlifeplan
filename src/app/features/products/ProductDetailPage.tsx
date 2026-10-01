@@ -58,6 +58,7 @@ export function ProductDetailPage({
   product,
   onBack,
   onPrimaryAction,
+  onAlreadyPurchased,
 }: {
   product: Product;
   onBack: () => void;
