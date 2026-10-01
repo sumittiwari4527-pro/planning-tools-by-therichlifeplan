@@ -398,12 +398,17 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                   <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Mail size={15} /> Delivery email *</span>
                   <input
                     value={deliveryEmail}
-                    onChange={(event) => { setDeliveryEmail(event.target.value); setRequestSubmitted(false); }}
+                    onChange={(event) => { setDeliveryEmail(event.target.value); setTouched((current) => ({ ...current, email: false })); setRequestSubmitted(false); }}
+                    onBlur={() => setTouched((current) => ({ ...current, email: true }))}
                     type="email"
                     required
                     placeholder="you@example.com"
-                    className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none transition focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50"
+                    className={`w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:ring-4 ${touched.email && (!deliveryEmail.trim() || !isValidEmail(deliveryEmail)) ? "border-red-300 focus:border-red-500 focus:ring-red-50" : "border-[#dbe2ec] focus:border-[#00b968] focus:ring-emerald-50"}`}
+                    aria-invalid={touched.email && (!deliveryEmail.trim() || !isValidEmail(deliveryEmail))}
                   />
+                  {touched.email && (!deliveryEmail.trim() || !isValidEmail(deliveryEmail)) && (
+                    <p className="mt-2 text-xs text-red-600">Enter a valid email address.</p>
+                  )}
                   <p className="mt-2 text-xs leading-5 text-[#8b95aa]">Used to verify your purchase and send your completed QR sticker. It will not be added to the sticker unless you enter it below.</p>
                 </label>
               )}
