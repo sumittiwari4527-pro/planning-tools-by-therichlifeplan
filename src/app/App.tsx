@@ -353,7 +353,7 @@ export default function App() {
         {page === "parking" && <ParkingScanPage encryptedPayload={parkingEncryptedPayload} />}
         {parkingActivationMode && <ParkingStickerBuilder activationMode onBack={() => routerNavigate(productPath("smart-parking-sticker"))} />}
 
-        {page === "products" && <ProductsPage onOpenProduct={(product) => routerNavigate(productPath(product.slug))} />}
+        {page === "products" && <ProductsPage onOpenProduct={(product) => routerNavigate(product.href || productPath(product.slug))} />}
 
         {page === "product" && parkingBuilderMode && <ParkingStickerBuilder onBack={() => routerNavigate(productPath("smart-parking-sticker"))} />}
 
