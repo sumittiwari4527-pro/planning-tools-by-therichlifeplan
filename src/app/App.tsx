@@ -5,7 +5,7 @@ import { useLocation, useNavigate as useRouterNavigate } from "react-router";
 // ─── Constants & Types ───────────────────────────────────────────
 import { SITE_NAME, CurrencyCode, CURRENCY_OPTIONS } from "./utils/constants";
 import { useSEO } from "./hooks/useSEO";
-import { articlePathById, pathForTool, toolIdByPath, ToolId, PRODUCTS_ROUTE, productPath, productSlugFromPath } from "./utils/routes";
+import { articlePathById, pathForTool, toolIdByPath, ToolId, PRODUCTS_ROUTE, PARKING_ACTIVATION_ROUTE, productPath, productSlugFromPath } from "./utils/routes";
 
 // ─── Features ────────────────────────────────────────────────────
 import { FIRECalculator } from "./features/fire-calculator/FIRECalculator";
@@ -24,7 +24,7 @@ import { getProductBySlug } from "./data/products/products";
 import { articles } from "./data/articles";
 
 // ─── Types ──────────────────────────────────────────────────────
-type Page = "home" | "tools" | "blog" | "article" | "products" | "product" | "parking";
+type Page = "home" | "tools" | "blog" | "article" | "products" | "product" | "parking" | "parking-activation";
 
 // ─── Tool Definitions ───────────────────────────────────────────
 const tools = [
@@ -39,6 +39,7 @@ const pageFromPath = (path: string): Page => {
   if (path === "/blog") return "blog";
   if (path.startsWith("/blog/")) return "article";
   if (path === "/parking") return "parking";
+  if (path === PARKING_ACTIVATION_ROUTE) return "parking-activation";
   if (path === PRODUCTS_ROUTE) return "products";
   if (path.startsWith(`${PRODUCTS_ROUTE}/`)) return "product";
   return "tools";
@@ -55,6 +56,7 @@ export default function App() {
   const routeProduct = productSlug ? getProductBySlug(productSlug) : undefined;
   const parkingBuilderMode = routeProduct?.slug === "smart-parking-sticker" && new URLSearchParams(location.search).get("mode") === "builder";
   const parkingEncryptedPayload = new URLSearchParams(location.search).get("data");
+  const parkingActivationMode = page === "parking-activation";
   const [currency, setCurrency] = useState<CurrencyCode>("USD");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedTool, setSelectedTool] = useState<string>(() => toolIdByPath.get(path) || "fire");
@@ -100,6 +102,11 @@ export default function App() {
       title: "Smart Parking",
       description: "Smart Parking Sticker contact page.",
       url: "/parking",
+    },
+    "parking-activation": {
+      title: "Get Your Smart Parking Sticker",
+      description: "Submit your Smart Parking Sticker order details and personalized QR information.",
+      url: PARKING_ACTIVATION_ROUTE,
     },
     product: routeProduct
       ? {
@@ -344,13 +351,14 @@ export default function App() {
 
         {/* PRODUCTS PAGE */}
         {page === "parking" && <ParkingScanPage encryptedPayload={parkingEncryptedPayload} />}
+        {parkingActivationMode && <ParkingStickerBuilder activationMode onBack={() => routerNavigate(productPath("smart-parking-sticker"))} />}
 
         {page === "products" && <ProductsPage onOpenProduct={(product) => routerNavigate(productPath(product.slug))} />}
 
         {page === "product" && parkingBuilderMode && <ParkingStickerBuilder onBack={() => routerNavigate(productPath("smart-parking-sticker"))} />}
 
         {page === "product" && routeProduct && !parkingBuilderMode && (
-          <ProductDetailPage product={routeProduct} onBack={() => routerNavigate(PRODUCTS_ROUTE)} onPrimaryAction={routeProduct.slug === "smart-parking-sticker" ? () => routerNavigate(`${productPath(routeProduct.slug)}?mode=builder`) : undefined} />
+          <ProductDetailPage product={routeProduct} onBack={() => routerNavigate(PRODUCTS_ROUTE)} onPrimaryAction={routeProduct.slug === "smart-parking-sticker" ? () => routerNavigate(`${productPath(routeProduct.slug)}?mode=builder`) : undefined} onAlreadyPurchased={routeProduct.slug === "smart-parking-sticker" ? () => routerNavigate(PARKING_ACTIVATION_ROUTE) : undefined} />
         )}
 
         {page === "product" && !routeProduct && (
