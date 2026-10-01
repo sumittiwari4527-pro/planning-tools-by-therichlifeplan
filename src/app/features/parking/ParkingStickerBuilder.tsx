@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Download, Mail, Palette, Phone, QrCode, ShoppingCart, Sparkles } from "lucide-react";
+import { ArrowLeft, Download, Mail, Palette, Phone, QrCode, ShoppingCart, Sparkles, CheckCircle2 } from "lucide-react";
 import QRCode from "qrcode";
 import {
   encryptParkingPayload,
@@ -132,7 +132,7 @@ const countryFlag = (code: string) =>
 
 const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 
-export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
+export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBack: () => void; activationMode?: boolean }) {
   const [form, setForm] = useState<FormState>(() => ({ ...initialForm, phoneCountry: getBrowserCountry() }));
   const [qrDataUrl, setQrDataUrl] = useState("");
   const [stickerDataUrl, setStickerDataUrl] = useState("");
@@ -140,7 +140,10 @@ export function ParkingStickerBuilder({ onBack }: { onBack: () => void }) {
   const [error, setError] = useState("");
   const [paymentComplete, setPaymentComplete] = useState(false);
   const [finalOrderId, setFinalOrderId] = useState("");
-  const [touched, setTouched] = useState({ phone: false, email: false });
+  const [touched, setTouched] = useState({ phone: false, email: false, orderId: false });
+  const [orderId, setOrderId] = useState("");
+  const [requestSubmitted, setRequestSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const canPreview =
     form.name.trim().length >= 2 &&
