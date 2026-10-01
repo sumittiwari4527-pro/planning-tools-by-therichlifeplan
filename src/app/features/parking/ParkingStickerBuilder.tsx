@@ -358,11 +358,12 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
             <Sparkles size={12} /> Smart parking
           </div>
           <h1 className="text-4xl font-bold tracking-tight text-[#0f1523] sm:text-5xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-            Create your Smart Parking Sticker
+            {activationMode ? "Get your Smart Parking Sticker" : "Create your Smart Parking Sticker"}
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-7 text-[#6b7a99]">
-            Add your contact details, choose a sticker style and see a live QR preview before you buy.
-            Your preview QR is temporary; the purchased sticker gets a permanent QR.
+            {activationMode
+              ? "Already purchased? Enter your Lemon Squeezy order number and add your sticker details. Preview your temporary QR, then submit your request for verification."
+              : "Add your contact details, choose a sticker style and see a live QR preview before you buy. Your preview QR is temporary; the purchased sticker gets a permanent QR."}
           </p>
         </div>
 
@@ -374,6 +375,19 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
             </div>
 
             <div className="space-y-5">
+              <label className="block">
+                <span className="mb-2 block text-sm font-semibold text-[#33405a]">Lemon Squeezy Order Number *</span>
+                <input
+                  value={orderId}
+                  onChange={(event) => { setOrderId(event.target.value); setRequestSubmitted(false); }}
+                  onBlur={() => setTouched((current) => ({ ...current, orderId: true }))}
+                  placeholder="e.g. 123456"
+                  autoComplete="off"
+                  className={"w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:ring-4 " + (orderIdError ? "border-red-300 focus:border-red-500 focus:ring-red-50" : "border-[#dbe2ec] focus:border-[#00b968] focus:ring-emerald-50")}
+                  aria-invalid={Boolean(orderIdError)}
+                />
+                {orderIdError ? <p className="mt-2 text-xs text-red-600">{orderIdError}</p> : <p className="mt-2 text-xs text-[#8b95aa]">Find this in your Lemon Squeezy purchase confirmation email.</p>}
+              </label>
               <label className="block">
                 <span className="mb-2 block text-sm font-semibold text-[#33405a]">Name *</span>
                 <input
