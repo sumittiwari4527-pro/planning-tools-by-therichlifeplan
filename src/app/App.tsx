@@ -351,11 +351,11 @@ export default function App() {
 
         {/* PRODUCTS PAGE */}
         {page === "parking" && <ParkingScanPage encryptedPayload={parkingEncryptedPayload} />}
-        {parkingActivationMode && <ParkingStickerBuilder activationMode onBack={() => routerNavigate(productPath("smart-parking-sticker"))} />}
+        {parkingActivationMode && <ParkingStickerBuilder key="parking-activation" activationMode onBack={() => routerNavigate(productPath("smart-parking-sticker"))} />}
 
         {page === "products" && <ProductsPage onOpenProduct={(product) => routerNavigate(productPath(product.slug))} />}
 
-        {page === "product" && parkingBuilderMode && <ParkingStickerBuilder onBack={() => routerNavigate(productPath("smart-parking-sticker"))} />}
+        {page === "product" && parkingBuilderMode && <ParkingStickerBuilder key="parking-create" onBack={() => routerNavigate(productPath("smart-parking-sticker"))} />}
 
         {page === "product" && routeProduct && !parkingBuilderMode && (
           <ProductDetailPage product={routeProduct} onBack={() => routerNavigate(PRODUCTS_ROUTE)} onPrimaryAction={routeProduct.slug === "smart-parking-sticker" ? () => routerNavigate(`${productPath(routeProduct.slug)}?mode=builder`) : undefined} onAlreadyPurchased={routeProduct.slug === "smart-parking-sticker" ? () => routerNavigate(PARKING_ACTIVATION_ROUTE) : undefined} />
