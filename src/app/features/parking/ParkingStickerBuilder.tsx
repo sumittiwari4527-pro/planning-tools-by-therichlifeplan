@@ -142,6 +142,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
   const [finalOrderId, setFinalOrderId] = useState("");
   const [touched, setTouched] = useState({ phone: false, email: false, orderId: false });
   const [orderId, setOrderId] = useState("");
+  const [deliveryEmail, setDeliveryEmail] = useState("");
   const [requestSubmitted, setRequestSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -149,12 +150,12 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
     form.name.trim().length >= 2 &&
     isValidPhone(form.phone) &&
     form.vehicle.trim().length >= 2 &&
-    (!activationMode || (orderId.trim().length >= 2 && Boolean(form.email.trim()) && isValidEmail(form.email)));
+    (!activationMode || (orderId.trim().length >= 2 && Boolean(deliveryEmail.trim()) && isValidEmail(deliveryEmail)));
 
-  const canSubmitRequest = Boolean(previewPayload) && !submitting && Boolean(orderId.trim()) && Boolean(form.email.trim()) && isValidEmail(form.email);
+  const canSubmitRequest = Boolean(previewPayload) && !submitting && Boolean(orderId.trim()) && Boolean(deliveryEmail.trim()) && isValidEmail(deliveryEmail);
 
   const phoneError = touched.phone && !isValidPhone(form.phone) ? "Enter a valid phone number (7–15 digits)." : "";
-  const emailError = touched.email && (activationMode ? !form.email.trim() || !isValidEmail(form.email) : Boolean(form.email.trim()) && !isValidEmail(form.email)) ? "Enter a valid email address." : "";
+  const emailError = touched.email && Boolean(form.email.trim()) && !isValidEmail(form.email) ? "Enter a valid email address." : "";
   const orderIdError = touched.orderId && activationMode && !orderId.trim() ? "Enter your Lemon Squeezy order number." : "";
 
   const update = (field: keyof FormState, value: string) => {
@@ -295,13 +296,15 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
       const payload = {
         orderId: orderId.trim(),
         name: form.name.trim(),
-        email: form.email.trim(),
+        email: deliveryEmail.trim(),
         phone: dialCode + form.phone.replace(/\D/g, ""),
         vehicle: form.vehicle.trim().toUpperCase(),
+        stickerEmail: form.email.trim() || "",
         stickerStyle: form.theme === "physical" ? "Clean" : form.theme === "dark" ? "Dark" : "Light",
         requestType: "Smart Parking Sticker activation",
         submittedAt: new Date().toISOString(),
         previewType: "temporary",
+        deliveryEmail: deliveryEmail.trim(),
       };
       const response = await fetch(endpoint, {
         method: "POST",
@@ -427,18 +430,32 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                 {phoneError && <p className="mt-2 text-xs text-red-600">{phoneError}</p>}
               </label>
 
+              {activationMode && (
+                <label className="block">
+                  <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Mail size={15} /> Delivery email *</span>
+                  <input
+                    value={deliveryEmail}
+                    onChange={(event) => { setDeliveryEmail(event.target.value); setRequestSubmitted(false); }}
+                    type="email"
+                    required
+                    placeholder="you@example.com"
+                    className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none transition focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50"
+                  />
+                  <p className="mt-2 text-xs leading-5 text-[#8b95aa]">Used to verify your purchase and send your completed QR sticker. It will not be added to the sticker unless you enter it below.</p>
+                </label>
+              )}
               <label className="block">
-                <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Mail size={15} /> Email {activationMode ? "*" : <span className="font-normal text-[#8b95aa]">(optional)</span>}</span>
+                <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Mail size={15} /> Email on sticker {activationMode ? <span className="font-normal text-[#8b95aa]">(optional)</span> : <span className="font-normal text-[#8b95aa]">(optional)</span>}</span>
                 <input
                   value={form.email}
                   onChange={(event) => update("email", event.target.value)}
                   onBlur={() => setTouched((current) => ({ ...current, email: true }))}
                   type="email"
-                  required={activationMode}
                   placeholder="you@example.com"
                   className={`w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:ring-4 ${emailError ? "border-red-300 focus:border-red-500 focus:ring-red-50" : "border-[#dbe2ec] focus:border-[#00b968] focus:ring-emerald-50"}`}
                   aria-invalid={Boolean(emailError)}
                 />
+                <p className="mt-2 text-xs leading-5 text-[#8b95aa]">Optional. This email can be available to people who scan your sticker.</p>
                 {emailError && <p className="mt-2 text-xs text-red-600">{emailError}</p>}
               </label>
 
