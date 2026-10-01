@@ -426,12 +426,13 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
               </label>
 
               <label className="block">
-                <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Mail size={15} /> Email <span className="font-normal text-[#8b95aa]">(optional)</span></span>
+                <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Mail size={15} /> Email {activationMode ? "*" : <span className="font-normal text-[#8b95aa]">(optional)</span>}</span>
                 <input
                   value={form.email}
                   onChange={(event) => update("email", event.target.value)}
                   onBlur={() => setTouched((current) => ({ ...current, email: true }))}
                   type="email"
+                  required={activationMode}
                   placeholder="you@example.com"
                   className={`w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:ring-4 ${emailError ? "border-red-300 focus:border-red-500 focus:ring-red-50" : "border-[#dbe2ec] focus:border-[#00b968] focus:ring-emerald-50"}`}
                   aria-invalid={Boolean(emailError)}
@@ -545,7 +546,32 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
               )}
             </div>
 
-            {previewPayload && !paymentComplete && (
+            {previewPayload && activationMode && !requestSubmitted && (
+              <div className="mt-5 rounded-3xl border border-emerald-100 bg-[#eefaf3] p-5">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <div className="text-sm font-bold text-[#0f1523]">Ready to submit?</div>
+                    <p className="mt-1 text-xs leading-5 text-[#527060]">We will verify your Lemon Squeezy order before preparing your final sticker.</p>
+                  </div>
+                  <button type="button" onClick={submitRequest} disabled={!canSubmitRequest} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#00b968] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-100 disabled:cursor-not-allowed disabled:opacity-50">
+                    <Mail size={16} /> {submitting ? "Submitting..." : "Submit Request"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {requestSubmitted && (
+              <div className="mt-5 rounded-3xl border border-emerald-200 bg-[#eefaf3] p-6">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="mt-0.5 shrink-0 text-[#00a961]" size={22} />
+                  <div>
+                    <div className="text-base font-bold text-[#0f1523]">Request submitted successfully</div>
+                    <p className="mt-1 text-sm leading-6 text-[#527060]">We have received your details for order <span className="font-semibold">{orderId.trim()}</span>. We will verify your purchase and send your QR sticker to <span className="font-semibold">{form.email.trim()}</span> within 24 hours after verification.</p>
+                  </div>
+                </div>
+              </div>
+            )}
+            {previewPayload && !activationMode && !paymentComplete && (
               <div className="mt-5 rounded-3xl border border-emerald-100 bg-[#eefaf3] p-5">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div>
@@ -572,7 +598,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                     </button>
                   )}
                 </div>
-                {form.delivery === "digital" && !checkoutUrl && (
+                {!activationMode && form.delivery === "digital" && !checkoutUrl && (
                   <p className="mt-3 text-xs text-[#7a6651]">
                     Checkout URL is not configured yet. The UI is ready for the Lemon Squeezy product checkout URL.
                   </p>
@@ -580,7 +606,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
               </div>
             )}
 
-            {paymentComplete && (
+            {!activationMode && paymentComplete && (
               <div className="mt-5 rounded-3xl border border-emerald-200 bg-[#eefaf3] p-5">
                 <div className="text-sm font-bold text-[#0f1523]">{form.delivery === "physical" ? "Physical sticker ordered 🎉" : "Your sticker is ready 🎉"}</div>
                 <p className="mt-1 text-xs leading-5 text-[#527060]">
