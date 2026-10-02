@@ -27,20 +27,28 @@ export function ParkingOrderSuccessPage() {
     }
   }, []);
 
-  const downloadSticker = () => {
+  const downloadSticker = async () => {
     if (!data?.stickerDataUrl) return;
 
     const filename = `richlifetools-smart-parking-${(data.vehicle || "sticker")
       .replace(/[^a-z0-9]+/gi, "-")
       .toLowerCase()}.svg`;
 
-    const link = document.createElement("a");
-    link.href = data.stickerDataUrl;
-    link.download = filename;
-    link.style.display = "none";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+    try {
+      const response = await fetch(data.stickerDataUrl);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      link.style.display = "none";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch {
+      window.open(data.stickerDataUrl, "_blank", "noopener,noreferrer");
+    }
   };
 
   const copyOrderNumber = async () => {
