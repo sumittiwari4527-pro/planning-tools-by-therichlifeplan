@@ -285,35 +285,57 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
           if (event.event !== "Checkout.Success") return;
 
           const findOrderReference = (value: unknown): string | number | undefined => {
+            if (typeof value === "string") {
+              try {
+                return findOrderReference(JSON.parse(value));
+              } catch {
+                return undefined;
+              }
+            }
+
             if (!value || typeof value !== "object") return undefined;
+
+            if (Array.isArray(value)) {
+              for (const item of value) {
+                const reference = findOrderReference(item);
+                if (reference !== undefined) return reference;
+              }
+              return undefined;
+            }
 
             const record = value as Record<string, unknown>;
             const attributes = record.attributes;
 
-            if (attributes && typeof attributes === "object") {
-              const orderNumber = (attributes as Record<string, unknown>).order_number;
-              if (typeof orderNumber === "string" || typeof orderNumber === "number") return orderNumber;
-
-              const identifier = (attributes as Record<string, unknown>).identifier;
-              if (typeof identifier === "string" || typeof identifier === "number") return identifier;
+            if (attributes && typeof attributes === "object" && !Array.isArray(attributes)) {
+              const attrs = attributes as Record<string, unknown>;
+              if (typeof attrs.order_number === "string" || typeof attrs.order_number === "number") {
+                return attrs.order_number;
+              }
+              if (typeof attrs.identifier === "string" || typeof attrs.identifier === "number") {
+                return attrs.identifier;
+              }
             }
 
-            const orderNumber = record.order_number;
-            if (typeof orderNumber === "string" || typeof orderNumber === "number") return orderNumber;
+            if (typeof record.order_number === "string" || typeof record.order_number === "number") {
+              return record.order_number;
+            }
+            if (typeof record.identifier === "string" || typeof record.identifier === "number") {
+              return record.identifier;
+            }
+            if (typeof record.id === "string" || typeof record.id === "number") {
+              return record.id;
+            }
 
-            const identifier = record.identifier;
-            if (typeof identifier === "string" || typeof identifier === "number") return identifier;
-
-            const nestedData = record.data;
-            if (nestedData && nestedData !== value) {
-              const nestedReference = findOrderReference(nestedData);
-              if (nestedReference !== undefined) return nestedReference;
+            for (const nestedValue of Object.values(record)) {
+              const reference = findOrderReference(nestedValue);
+              if (reference !== undefined) return reference;
             }
 
             return undefined;
-          }
+          };
 
           const orderId = findOrderReference(event.data);
+
           if (!orderId) {
             setError("Payment completed, but Lemon Squeezy did not return an order number. Please contact support.");
             return;
