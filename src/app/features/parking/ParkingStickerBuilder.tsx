@@ -334,7 +334,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
             return undefined;
           };
 
-          const orderId = findOrderReference(event.data);
+          const orderId = findOrderReference(event);
 
           if (!orderId) {
             setError("Payment completed, but Lemon Squeezy did not return an order number. Please contact support.");
