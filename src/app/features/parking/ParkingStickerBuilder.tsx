@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
-import { ArrowLeft, Download, Mail, Palette, Phone, QrCode, ShoppingCart, Sparkles, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Download, Mail, Palette, Phone, QrCode, ShoppingCart, Sparkles, CheckCircle2, Loader2 } from "lucide-react";
 import QRCode from "qrcode";
 import {
   encryptParkingPayload,
@@ -414,7 +414,22 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fb] pt-16">
+    <>
+      {paymentComplete && !finalStickerReady && !error && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#071421]/70 px-6 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-3xl bg-white p-8 text-center shadow-2xl">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#eefaf3]">
+              <Loader2 size={28} className="animate-spin text-[#00a961]" />
+            </div>
+            <h2 className="mt-5 text-xl font-bold text-[#0f1523]">Payment successful</h2>
+            <p className="mt-2 text-sm leading-6 text-[#6b7a99]">
+              We’re preparing your permanent QR sticker. Please don’t close this page.
+            </p>
+          </div>
+        </div>
+      )}
+
+      <div className="min-h-screen bg-[#f8f9fb] pt-16">
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
         <button
           type="button"
@@ -733,6 +748,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
           </section>
         </div>
       </main>
-    </div>
+      </div>
+    </>
   );
 }
