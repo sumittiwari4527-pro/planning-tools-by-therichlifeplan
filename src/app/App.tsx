@@ -18,7 +18,8 @@ import { ProductsPage } from "./features/products/ProductsPage";
 import { ProductDetailPage } from "./features/products/ProductDetailPage";
 import { ParkingStickerBuilder } from "./features/parking/ParkingStickerBuilder";
 import { ParkingScanPage } from "./features/parking/ParkingScanPage";
-import { getProductBySlug } from "./data/products/products";
+import { getProductBySlug, products } from "./data/products/products";
+import { ProductCard } from "./features/products/components/ProductCard";
 
 // ─── Data ───────────────────────────────────────────────────────
 import { articles } from "./data/articles";
@@ -254,6 +255,57 @@ export default function App() {
                   );
                 })}
               </div>
+            </section>
+
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+              <div className="flex items-end justify-between mb-10">
+                <div>
+                  <div className="text-[#4f46e5] text-xs font-mono uppercase tracking-widest mb-2">Shop</div>
+                  <h2 className="text-3xl sm:text-4xl font-bold text-[#0f1523]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                    Latest & trending
+                  </h2>
+                  <p className="text-[#6b7a99] text-sm mt-2">Products built to make everyday life easier.</p>
+                </div>
+                <button onClick={() => navigate("products")} className="text-[#6b7a99] text-sm hover:text-[#0f1523] flex items-center gap-1 transition-colors cursor-pointer">
+                  Shop all <ChevronRight size={14} />
+                </button>
+              </div>
+
+              {(() => {
+                const readySlugs = new Set(["smart-parking-sticker"]);
+                const readyProducts = products.filter((product) => readySlugs.has(product.slug));
+                const latestProducts = readyProducts.filter((product) => product.badge === "NEW");
+                const trendingProducts = readyProducts.filter((product) => product.badge === "POPULAR");
+
+                return (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {latestProducts.length > 0 && (
+                      <div>
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-lg font-semibold text-[#0f1523]">Latest</h3>
+                          <span className="text-xs font-mono uppercase tracking-widest text-[#4f46e5]">New</span>
+                        </div>
+                        <ProductCard
+                          product={latestProducts[0]}
+                          onOpen={(product) => routerNavigate(productPath(product.slug))}
+                        />
+                      </div>
+                    )}
+                    {trendingProducts.length > 0 && (
+                      <div>
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-lg font-semibold text-[#0f1523]">Trending</h3>
+                          <span className="text-xs font-mono uppercase tracking-widest text-[#06b6d4]">Popular</span>
+                        </div>
+                        <ProductCard
+                          product={trendingProducts[0]}
+                          onOpen={(product) => routerNavigate(productPath(product.slug))}
+                        />
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
             </section>
 
             <section className="bg-[#4f46e5] mx-4 sm:mx-8 lg:mx-16 rounded-3xl mb-24 px-8 py-10">
