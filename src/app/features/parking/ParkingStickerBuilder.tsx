@@ -107,13 +107,7 @@ const initialForm: FormState = {
 declare global {
   interface Window {
     LemonSqueezy?: {
-      Setup: (options: { eventHandler: (event: { event: string; data?: {
-        id?: string | number;
-        identifier?: string;
-        order_number?: string | number;
-        attributes?: { identifier?: string; order_number?: string | number };
-        data?: { id?: string | number; identifier?: string; attributes?: { identifier?: string; order_number?: string | number } };
-      } }) => void }) => void;
+      Setup: (options: { eventHandler: (event: { event: string; data?: unknown }) => void }) => void;
       Url: { Open: (url: string) => void; Close: () => void };
       Refresh: () => void;
     };
