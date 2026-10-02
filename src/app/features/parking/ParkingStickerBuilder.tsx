@@ -141,7 +141,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
   const [error, setError] = useState("");
   const [paymentComplete, setPaymentComplete] = useState(false);
   const [finalOrderId, setFinalOrderId] = useState("");
-  const [touched, setTouched] = useState({ phone: false, email: false, orderId: false });
+  const [touched, setTouched] = useState({ phone: false, stickerEmail: false, deliveryEmail: false, orderId: false });
   const [orderId, setOrderId] = useState("");
   const [deliveryEmail, setDeliveryEmail] = useState("");
   const [requestSubmitted, setRequestSubmitted] = useState(false);
@@ -156,7 +156,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
   const canSubmitRequest = Boolean(previewPayload) && !submitting && Boolean(orderId.trim()) && Boolean(deliveryEmail.trim()) && isValidEmail(deliveryEmail);
 
   const phoneError = touched.phone && !isValidPhone(form.phone) ? "Enter a valid phone number (7–15 digits)." : "";
-  const emailError = touched.email && Boolean(form.email.trim()) && !isValidEmail(form.email) ? "Enter a valid email address." : "";
+  const emailError = touched.stickerEmail && Boolean(form.email.trim()) && !isValidEmail(form.email) ? "Enter a valid email address." : "";
   const orderIdError = touched.orderId && activationMode && !orderId.trim() ? "Enter your Lemon Squeezy order number." : "";
 
   const update = (field: keyof FormState, value: string) => {
@@ -397,15 +397,15 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                   <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Mail size={15} /> Delivery email *</span>
                   <input
                     value={deliveryEmail}
-                    onChange={(event) => { setDeliveryEmail(event.target.value); setTouched((current) => ({ ...current, email: false })); setRequestSubmitted(false); }}
-                    onBlur={() => setTouched((current) => ({ ...current, email: true }))}
+                    onChange={(event) => { setDeliveryEmail(event.target.value); setTouched((current) => ({ ...current, deliveryEmail: false })); setRequestSubmitted(false); }}
+                    onBlur={() => setTouched((current) => ({ ...current, deliveryEmail: true }))}
                     type="email"
                     required
                     placeholder="you@example.com"
-                    className={`w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:ring-4 ${touched.email && (!deliveryEmail.trim() || !isValidEmail(deliveryEmail)) ? "border-red-300 focus:border-red-500 focus:ring-red-50" : "border-[#dbe2ec] focus:border-[#00b968] focus:ring-emerald-50"}`}
-                    aria-invalid={touched.email && (!deliveryEmail.trim() || !isValidEmail(deliveryEmail))}
+                    className={`w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:ring-4 ${touched.deliveryEmail && (!deliveryEmail.trim() || !isValidEmail(deliveryEmail)) ? "border-red-300 focus:border-red-500 focus:ring-red-50" : "border-[#dbe2ec] focus:border-[#00b968] focus:ring-emerald-50"}`}
+                    aria-invalid={touched.deliveryEmail && (!deliveryEmail.trim() || !isValidEmail(deliveryEmail))}
                   />
-                  {touched.email && (!deliveryEmail.trim() || !isValidEmail(deliveryEmail)) && (
+                  {touched.deliveryEmail && (!deliveryEmail.trim() || !isValidEmail(deliveryEmail)) && (
                     <p className="mt-2 text-xs text-red-600">Enter a valid email address.</p>
                   )}
                   <p className="mt-2 text-xs leading-5 text-[#8b95aa]">Used to verify your purchase and send your completed QR sticker. It will not be added to the sticker unless you enter it below.</p>
@@ -453,7 +453,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                 <input
                   value={form.email}
                   onChange={(event) => update("email", event.target.value)}
-                  onBlur={() => setTouched((current) => ({ ...current, email: true }))}
+                  onBlur={() => setTouched((current) => ({ ...current, stickerEmail: true }))}
                   type="email"
                   placeholder="you@example.com"
                   className={`w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:ring-4 ${emailError ? "border-red-300 focus:border-red-500 focus:ring-red-50" : "border-[#dbe2ec] focus:border-[#00b968] focus:ring-emerald-50"}`}
