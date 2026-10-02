@@ -1,11 +1,40 @@
 {
   "rewrites": [
-    { "source": "/tools", "destination": "/index.html" },
-    { "source": "/tools/:path*", "destination": "/index.html" },
-    { "source": "/blog", "destination": "/index.html" },
-    { "source": "/blog/:path*", "destination": "/index.html" },
-    { "source": "/products", "destination": "/index.html" },
-    { "source": "/products/:path*", "destination": "/index.html" },
-    { "source": "/parking", "destination": "/index.html" }
+    {
+      "source": "/tools",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/tools/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/blog",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/blog/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/products",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/products/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/parking",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/activate-sticker",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/parking/order-success",
+      "destination": "/index.html"
+    }
   ]
 }
