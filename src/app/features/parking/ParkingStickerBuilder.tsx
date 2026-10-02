@@ -114,7 +114,7 @@ declare global {
         attributes?: { identifier?: string; order_number?: string | number };
         data?: { id?: string | number; identifier?: string; attributes?: { identifier?: string; order_number?: string | number } };
       } }) => void }) => void;
-      Url: { Open: (url: string) => void };
+      Url: { Open: (url: string) => void; Close: () => void };
       Refresh: () => void;
     };
     createLemonSqueezy?: () => void;
@@ -305,9 +305,23 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
             return;
           }
 
+          // Close immediately, then retry briefly because Lemon Squeezy can still be
+          // transitioning from the payment confirmation to its success modal.
+          const closeCheckout = () => {
+            try {
+              window.LemonSqueezy?.Url.Close();
+            } catch {
+              // Ignore close failures; the retry below gives the overlay time to settle.
+            }
+          };
+
+          closeCheckout();
+          window.setTimeout(closeCheckout, 250);
+          window.setTimeout(closeCheckout, 750);
+          window.setTimeout(closeCheckout, 1500);
+
           setFinalOrderId(String(orderId));
           setPaymentComplete(true);
-          window.setTimeout(() => window.LemonSqueezy?.Url.Close(), 150);
         },
       });
       return true;
