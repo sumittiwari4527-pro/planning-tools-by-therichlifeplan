@@ -1,0 +1,23 @@
+{
+  "site": {
+    "name": "RichLifeTools",
+    "url": "https://richlifetools.com",
+    "description": "Free planning tools, calculators, and practical guides for money, goals, productivity, and everyday decisions. No sign-up required."
+  },
+  "tools": [
+    {"id":"fire","path":"/tools/fire-calculator","name":"FIRE Calculator","title":"FIRE Calculator — Financial Independence Calculator","description":"Calculate your FIRE number, estimate when you could reach financial independence, and explore how savings, returns, and spending affect your plan."},
+    {"id":"goal","path":"/tools/goal-planner","name":"Goal Planner","title":"Goal Planner — Financial Goal Planning Tool","description":"Plan multiple financial goals, estimate the savings required, and turn your goals into an actionable savings plan."},
+    {"id":"bmi","path":"/tools/bmi-calculator","name":"BMI Calculator","title":"BMI Calculator — Body Mass Index Calculator","description":"Calculate your Body Mass Index from height and weight and understand the standard BMI categories."},
+    {"id":"unit","path":"/tools/unit-converter","name":"Unit Converter","title":"Unit Converter — Length, Weight & Temperature","description":"Convert common length, weight, and temperature units quickly with a free, simple unit converter."}
+  ],
+  "articles": [
+    {"path":"/blog/the-hidden-cost-of-compound-interest-what-banks-won-t-tell-you","title":"The Hidden Cost of Compound Interest: What Banks Won't Tell You","description":"Understanding how compound interest works against you in debt — and for you in investments — is the single most valuable financial concept most people never learn properly.","author":"Elena Marchetti","date":"2026-06-12","category":"Finance"},
+    {"path":"/blog/metric-vs-imperial-why-the-us-never-switched-and-the-real-cost","title":"Metric vs Imperial: Why the US Never Switched and the Real Cost","description":"The United States is one of three countries that haven't adopted the metric system. We examine the historical decisions, the ongoing cost, and whether a switch is still possible.","author":"David Okafor","date":"2026-06-08","category":"Science"},
+    {"path":"/blog/bmi-is-broken-a-better-framework-for-measuring-health","title":"BMI is Broken: A Better Framework for Measuring Health","description":"Body Mass Index was invented in the 1830s for statistical population studies — not individual health assessment. Here's what modern medicine uses instead.","author":"Dr. Sadia Rahman","date":"2026-06-03","category":"Health"},
+    {"path":"/blog/how-logarithms-changed-navigation-forever","title":"How Logarithms Changed Navigation Forever","description":"Before calculators, sailors used logarithm tables to multiply enormous numbers through addition. This elegant trick made ocean navigation tractable and saved countless lives.","author":"Prof. James Weatherington","date":"2026-05-28","category":"Mathematics"},
+    {"path":"/blog/the-psychology-of-percentage-thinking","title":"The Psychology of Percentage Thinking","description":"Our brains are notoriously bad at understanding percentages in context. Why 20% off a $400 item feels bigger than 20% off a $40 item — even though proportionally they're identical.","author":"Mia Kowalski","date":"2026-05-20","category":"Psychology"},
+    {"path":"/blog/unit-conversion-errors-that-changed-history","title":"Unit Conversion Errors That Changed History","description":"The Mars Climate Orbiter was lost because one team used imperial units while another used metric. A tour of history's most expensive conversion mistakes.","author":"Carlos Ybarra","date":"2026-05-15","category":"Engineering"},
+    {"path":"/blog/how-to-use-chatgpt-plugins-the-right-way-to-automate-your-work","title":"How to Use ChatGPT Plugins the Right Way to Automate Your Work","description":"A practical, beginner-friendly guide to using ChatGPT plugins, connected apps, and clear prompts to turn repetitive work into reliable workflows — while keeping important decisions under your control.","author":"RichLifeTools Editorial","date":"2026-09-06","category":"Productivity"},
+    {"path":"/blog/skills-vs-mcp-vs-rag-vs-memory-what-does-ai-actually-need","title":"Skills vs MCP vs RAG vs Memory: What Does AI Actually Need?","description":"Skills, MCP, RAG, and memory are often discussed together, but they solve very different problems. One simple 500 Internal Server Error shows exactly how each piece fits into an AI workflow.","author":"RichLifeTools Editorial","date":"2026-09-12","category":"AI"}
+  ]
+}
