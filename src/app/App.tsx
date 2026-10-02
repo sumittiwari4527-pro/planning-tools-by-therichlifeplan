@@ -5,7 +5,7 @@ import { useLocation, useNavigate as useRouterNavigate } from "react-router";
 // ─── Constants & Types ───────────────────────────────────────────
 import { SITE_NAME, CurrencyCode, CURRENCY_OPTIONS } from "./utils/constants";
 import { useSEO } from "./hooks/useSEO";
-import { articlePathById, pathForTool, toolIdByPath, ToolId, PRODUCTS_ROUTE, PARKING_ACTIVATION_ROUTE, productPath, productSlugFromPath } from "./utils/routes";
+import { articlePathById, pathForTool, toolIdByPath, ToolId, PRODUCTS_ROUTE, PARKING_ACTIVATION_ROUTE, PARKING_ORDER_SUCCESS_ROUTE, productPath, productSlugFromPath } from "./utils/routes";
 
 // ─── Features ────────────────────────────────────────────────────
 import { FIRECalculator } from "./features/fire-calculator/FIRECalculator";
@@ -17,6 +17,7 @@ import { ArticleView } from "./features/blog/ArticleView";
 import { ProductsPage } from "./features/products/ProductsPage";
 import { ProductDetailPage } from "./features/products/ProductDetailPage";
 import { ParkingStickerBuilder } from "./features/parking/ParkingStickerBuilder";
+import { ParkingOrderSuccessPage } from "./features/parking/ParkingOrderSuccessPage";
 import { ParkingScanPage } from "./features/parking/ParkingScanPage";
 import { getProductBySlug, products } from "./data/products/products";
 import { ProductCard } from "./features/products/components/ProductCard";
@@ -25,7 +26,7 @@ import { ProductCard } from "./features/products/components/ProductCard";
 import { articles } from "./data/articles";
 
 // ─── Types ──────────────────────────────────────────────────────
-type Page = "home" | "tools" | "blog" | "article" | "products" | "product" | "parking" | "parking-activation";
+type Page = "home" | "tools" | "blog" | "article" | "products" | "product" | "parking" | "parking-activation" | "parking-success";
 
 // ─── Tool Definitions ───────────────────────────────────────────
 const tools = [
@@ -41,6 +42,7 @@ const pageFromPath = (path: string): Page => {
   if (path.startsWith("/blog/")) return "article";
   if (path === "/parking") return "parking";
   if (path === PARKING_ACTIVATION_ROUTE) return "parking-activation";
+  if (path === PARKING_ORDER_SUCCESS_ROUTE) return "parking-success";
   if (path === PRODUCTS_ROUTE) return "products";
   if (path.startsWith(`${PRODUCTS_ROUTE}/`)) return "product";
   return "tools";
@@ -112,6 +114,11 @@ export default function App() {
       title: "Get Your Smart Parking Sticker",
       description: "Submit your Smart Parking Sticker order details and personalized QR information.",
       url: PARKING_ACTIVATION_ROUTE,
+    },
+    "parking-success": {
+      title: "Thank You for Your Smart Parking Sticker Order",
+      description: "Your Smart Parking Sticker order is confirmed and ready to download.",
+      url: PARKING_ORDER_SUCCESS_ROUTE,
     },
     product: routeProduct
       ? {
@@ -395,6 +402,7 @@ export default function App() {
 
         {/* PRODUCTS PAGE */}
         {page === "parking" && <ParkingScanPage encryptedPayload={parkingEncryptedPayload} />}
+        {page === "parking-success" && <ParkingOrderSuccessPage />}
         {parkingActivationMode && <ParkingStickerBuilder key="parking-activation" activationMode onBack={() => routerNavigate(productPath("smart-parking-sticker"))} />}
 
         {page === "products" && <ProductsPage onOpenProduct={(product) => routerNavigate(productPath(product.slug))} />}
