@@ -190,46 +190,54 @@ export default function App() {
             <section className="relative min-h-[88vh] flex items-center overflow-hidden bg-[#f8f9fb]">
               <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-indigo-100/60 rounded-full blur-3xl pointer-events-none -translate-y-1/4 translate-x-1/4" />
               <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cyan-100/40 rounded-full blur-3xl pointer-events-none" />
-              <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-28 w-full">
-                <div className="max-w-4xl">
-                  <div className="inline-flex items-center gap-2 bg-[#eef0fd] border border-indigo-100 rounded-full px-4 py-1.5 mb-8">
+              <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 lg:py-28 w-full">
+                <div className="max-w-6xl">
+                  <div className="inline-flex items-center gap-2 bg-white/80 border border-[#e4e8f0] rounded-full px-4 py-1.5 mb-7 shadow-sm">
                     <div className="w-1.5 h-1.5 bg-[#4f46e5] rounded-full animate-pulse" />
-                    <span className="text-[#4f46e5] text-xs font-mono uppercase tracking-widest">Tools · Products · Knowledge</span>
+                    <span className="text-[#4f46e5] text-xs font-mono uppercase tracking-widest">Tools · Products · Ideas</span>
                   </div>
-                  <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-[#0f1523] leading-[1.02] tracking-tight mb-6"
+                  <h1 className="text-5xl sm:text-6xl lg:text-8xl font-bold text-[#0f1523] leading-[0.98] tracking-tight mb-7 max-w-5xl"
                     style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                    Everything you need<br /><span className="text-[#4f46e5]">for a richer life.</span>
+                    Make life a little<br /><span className="text-[#4f46e5]">smarter.</span>
                   </h1>
-                  <p className="text-[#6b7a99] text-lg sm:text-xl leading-relaxed mb-10 max-w-2xl">
-                    Useful tools, practical products, and ideas that help you make better decisions and get more done.
+                  <p className="text-[#6b7a99] text-lg sm:text-xl leading-relaxed mb-9 max-w-2xl">
+                    Tools to figure things out. Products to make things easier. Ideas to help you move forward.
                   </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-3xl">
-                    <button onClick={() => navigate("tools")}
-                      className="bg-white border border-[#e4e8f0] rounded-2xl p-4 text-left hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-50 transition-all group cursor-pointer">
-                      <div className="w-9 h-9 rounded-xl bg-[#eef0fd] text-[#4f46e5] flex items-center justify-center mb-3">
-                        <Flame size={17} />
-                      </div>
-                      <div className="text-[#0f1523] font-semibold text-sm">Tools</div>
-                      <div className="text-[#6b7a99] text-xs mt-1">Calculate, plan & convert</div>
-                      <div className="text-[#4f46e5] text-xs font-semibold mt-3 flex items-center gap-1">Explore Tools <ArrowRight size={12} /></div>
+                  <div className="flex flex-wrap items-center gap-x-7 gap-y-3 mb-14 text-sm">
+                    <button onClick={() => navigate("tools")} className="group flex items-center gap-2 text-[#0f1523] font-semibold cursor-pointer">
+                      <span className="text-[#4f46e5]">01</span> Explore Tools <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                     </button>
-                    <button onClick={() => navigate("products")}
-                      className="bg-white border border-[#e4e8f0] rounded-2xl p-4 text-left hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-50 transition-all group cursor-pointer">
-                      <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-3">
-                        <ShoppingBag size={17} />
-                      </div>
-                      <div className="text-[#0f1523] font-semibold text-sm">Products</div>
-                      <div className="text-[#6b7a99] text-xs mt-1">Practical products for everyday life</div>
-                      <div className="text-emerald-600 text-xs font-semibold mt-3 flex items-center gap-1">Shop Products <ArrowRight size={12} /></div>
+                    <button onClick={() => navigate("products")} className="group flex items-center gap-2 text-[#0f1523] font-semibold cursor-pointer">
+                      <span className="text-emerald-600">02</span> Shop Products <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                     </button>
-                    <button onClick={() => navigate("blog")}
-                      className="bg-white border border-[#e4e8f0] rounded-2xl p-4 text-left hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-50 transition-all group cursor-pointer">
-                      <div className="w-9 h-9 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center mb-3">
-                        <BookOpen size={17} />
+                    <button onClick={() => navigate("blog")} className="group flex items-center gap-2 text-[#0f1523] font-semibold cursor-pointer">
+                      <span className="text-cyan-600">03</span> Read Articles <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 max-w-5xl">
+                    <button onClick={() => navigate("tools")} className="group bg-white/90 border border-[#e4e8f0] rounded-2xl p-5 text-left hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-100/50 transition-all cursor-pointer">
+                      <div className="flex items-center justify-between mb-6">
+                        <span className="text-[#4f46e5] text-xs font-mono uppercase tracking-widest">Tools</span>
+                        <Flame size={17} className="text-[#4f46e5]" />
                       </div>
-                      <div className="text-[#0f1523] font-semibold text-sm">Articles</div>
-                      <div className="text-[#6b7a99] text-xs mt-1">Learn, explore & discover</div>
-                      <div className="text-cyan-600 text-xs font-semibold mt-3 flex items-center gap-1">Read Articles <ArrowRight size={12} /></div>
+                      <div className="text-[#0f1523] text-2xl font-semibold tracking-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Figure it out.</div>
+                      <div className="text-[#6b7a99] text-sm mt-1">Calculators, planners & converters.</div>
+                    </button>
+                    <button onClick={() => navigate("products")} className="group bg-white/90 border border-[#e4e8f0] rounded-2xl p-5 text-left hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-100/50 transition-all cursor-pointer">
+                      <div className="flex items-center justify-between mb-6">
+                        <span className="text-emerald-600 text-xs font-mono uppercase tracking-widest">Products</span>
+                        <ShoppingBag size={17} className="text-emerald-600" />
+                      </div>
+                      <div className="text-[#0f1523] text-2xl font-semibold tracking-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Make it easier.</div>
+                      <div className="text-[#6b7a99] text-sm mt-1">Practical products for everyday life.</div>
+                    </button>
+                    <button onClick={() => navigate("blog")} className="group bg-white/90 border border-[#e4e8f0] rounded-2xl p-5 text-left hover:-translate-y-1 hover:shadow-xl hover:shadow-cyan-100/50 transition-all cursor-pointer">
+                      <div className="flex items-center justify-between mb-6">
+                        <span className="text-cyan-600 text-xs font-mono uppercase tracking-widest">Ideas</span>
+                        <BookOpen size={17} className="text-cyan-600" />
+                      </div>
+                      <div className="text-[#0f1523] text-2xl font-semibold tracking-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Move forward.</div>
+                      <div className="text-[#6b7a99] text-sm mt-1">Articles, insights & useful ideas.</div>
                     </button>
                   </div>
                 </div>
