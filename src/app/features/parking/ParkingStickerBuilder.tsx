@@ -289,6 +289,775 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
       window.LemonSqueezy.Setup({
         eventHandler: (event) => {
           if (event.event !== "Checkout.Success") return;
+
+          const findOrderReference = (value: unknown): string | number | undefined => {
+            if (!value || typeof value !== "object") return undefined;
+
+            const record = value as Record<string, unknown>;
+            const attributes = record.attributes;
+
+            if (attributes && typeof attributes === "object") {
+              const orderNumber = (attributes as Record<string, unknown>).order_number;
+              if (typeof orderNumber === "string" || typeof orderNumber === "number") return orderNumber;
+
+              const identifier = (attributes as Record<string, unknown>).identifier;
+              if (typeof identifier === "string" || typeof identifier === "number") return identifier;
+            }
+
+            const orderNumber = record.order_number;
+            if (typeof orderNumber === "string" || typeof orderNumber === "number") return orderNumber;
+
+            const identifier = record.identifier;
+            if (typeof identifier === "string" || typeof identifier === "number") return identifier;
+
+            const nestedData = record.data;
+            if (nestedData && nestedData !== value) {
+              const nestedReference = findOrderReference(nestedData);
+              if (nestedReference !== undefined) return nestedReference;
+            }
+
+            return undefined;
+          }
+
+          const orderId = findOrderReference(event.data);
+          if (!orderId) {
+            setError("Payment completed, but Lemon Squeezy did not return an order number. Please contact support.");
+            return;
+          }
+
+          // Preserve the short confirmation moment from the original checkout
+          // flow, then close the overlay and continue with sticker generation.
+          setError("");
+          setFinalOrderId(String(orderId));
+          setPaymentComplete(true);
+          window.setTimeout(() => window.LemonSqueezy?.Url.Close(), 150);
+        },
+      });
+      return true;
+    };
+
+    if (setup()) return;
+
+    const retry = window.setInterval(() => {
+      if (setup()) window.clearInterval(retry);
+    }, 250);
+
+    const timeout = window.setTimeout(() => window.clearInterval(retry), 5000);
+
+    return () => {
+      window.clearInterval(retry);
+      window.clearTimeout(timeout);
+    };
+  }, []);
+
+  const submitRequest = async () => {
+    if (!activationMode || !canSubmitRequest) return;
+    const endpoint = parkingRequestFormEndpoint;
+    setSubmitting(true);
+    setError("");
+    try {
+      const dialCode = PHONE_COUNTRIES.find(([code]) => code === form.phoneCountry)?.[2] ?? "+91";
+      const payload = {
+        orderId: orderId.trim(),
+        name: form.name.trim(),
+        email: deliveryEmail.trim(),
+        phone: dialCode + form.phone.replace(/\D/g, ""),
+        vehicle: form.vehicle.trim().toUpperCase(),
+        stickerEmail: form.email.trim() || "",
+        stickerStyle: form.theme === "physical" ? "Clean" : form.theme === "dark" ? "Dark" : "Light",
+        requestType: "Smart Parking Sticker activation",
+        submittedAt: new Date().toISOString(),
+        previewType: "temporary",
+        deliveryEmail: deliveryEmail.trim(),
+        _subject: `Smart Parking Sticker – Activation Request #${orderId.trim()}`,
+        _template: "table",
+      };
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) throw new Error("Request failed");
+      setRequestSubmitted(true);
+    } catch {
+      setError("Unable to submit your request. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+  const startCheckout = () => {
+    if (form.delivery === "physical") return;
+    if (!previewPayload || !checkoutUrl) {
+      setError("Checkout is not configured yet. Add the Lemon Squeezy parking checkout URL to the site environment.");
+      return;
+    }
+
+    const url = new URL(checkoutUrl);
+    if (form.email.trim()) {
+      url.searchParams.set("checkout[email]", form.email.trim());
+    }
+    if (form.name.trim()) {
+      url.searchParams.set("checkout[name]", form.name.trim());
+    }
+
+    if (window.LemonSqueezy) {
+      window.LemonSqueezy.Url.Open(url.toString());
+    } else {
+      window.open(url.toString(), "_blank", "noopener,noreferrer");
+    }
+  };
+
+  const downloadSticker = async () => {
+    if (!stickerDataUrl) return;
+
+    const filename = `richlifetools-smart-parking-${(form.vehicle || "sticker").replace(/[^a-z0-9]+/gi, "-").toLowerCase()}.svg`;
+
+    try {
+      const response = await fetch(stickerDataUrl);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      link.style.display = "none";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch {
+      window.open(stickerDataUrl, "_blank", "noopener,noreferrer");
+    }
+  };
+
+  return (
+    <>
+      {paymentComplete && !finalStickerReady && !error && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#071421]/70 px-6 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-3xl bg-white p-8 text-center shadow-2xl">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#eefaf3]">
+              <Loader2 size={28} className="animate-spin text-[#00a961]" />
+            </div>
+            <h2 className="mt-5 text-xl font-bold text-[#0f1523]">Payment successful</h2>
+            <p className="mt-2 text-sm leading-6 text-[#6b7a99]">
+              We’re preparing your permanent QR sticker. Please don’t close this page.
+            </p>
+          </div>
+        </div>
+      )}
+
+      <div className="min-h-screen bg-[#f8f9fb] pt-16">
+        <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+        <button
+          type="button"
+          onClick={onBack}
+          className="mb-5 inline-flex items-center gap-2 text-sm font-medium text-[#6b7a99] hover:text-[#0f1523] cursor-pointer"
+        >
+          <ArrowLeft size={15} /> Back to product
+        </button>
+        <div className="mb-10 max-w-3xl">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-[#eefaf3] px-4 py-1.5 text-xs font-mono uppercase tracking-widest text-[#008d50]">
+            <Sparkles size={12} /> Smart parking
+          </div>
+          <h1 className="text-4xl font-bold tracking-tight text-[#0f1523] sm:text-5xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+            {activationMode ? "Get your Smart Parking Sticker" : "Create your Smart Parking Sticker"}
+          </h1>
+          <p className="mt-4 max-w-2xl text-base leading-7 text-[#6b7a99]">
+            {activationMode
+              ? "Already purchased? Enter your Lemon Squeezy order number and add your sticker details. Preview your temporary QR, then submit your request for verification."
+              : "Add your contact details, choose a sticker style and see a live QR preview before you buy. Your preview QR is temporary; the purchased sticker gets a permanent QR."}
+          </p>
+        </div>
+
+        <div className="grid gap-8 lg:grid-cols-[420px_1fr] lg:items-start">
+          <section className="rounded-3xl border border-[#e4e8f0] bg-white p-6 shadow-sm">
+            <div className="mb-6">
+              <h2 className="text-xl font-bold text-[#0f1523]">Your details</h2>
+              <p className="mt-1 text-sm text-[#6b7a99]">These details are encoded into the QR.</p>
+            </div>
+
+            <div className="space-y-5">
+              {activationMode && (
+            <label className="block">
+                <span className="mb-2 block text-sm font-semibold text-[#33405a]">Lemon Squeezy Order Number *</span>
+                <input
+                  value={orderId}
+                  onChange={(event) => { setOrderId(event.target.value); setRequestSubmitted(false); }}
+                  onBlur={() => setTouched((current) => ({ ...current, orderId: true }))}
+                  placeholder="e.g. 123456"
+                  autoComplete="off"
+                  className={"w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:ring-4 " + (orderIdError ? "border-red-300 focus:border-red-500 focus:ring-red-50" : "border-[#dbe2ec] focus:border-[#00b968] focus:ring-emerald-50")}
+                  aria-invalid={Boolean(orderIdError)}
+                />
+                {orderIdError ? <p className="mt-2 text-xs text-red-600">{orderIdError}</p> : <p className="mt-2 text-xs text-[#8b95aa]">Find this in your Lemon Squeezy purchase confirmation email.</p>}
+              </label>
+            )}
+              {activationMode && (
+                <label className="block">
+                  <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Mail size={15} /> Delivery email *</span>
+                  <input
+                    value={deliveryEmail}
+                    onChange={(event) => { setDeliveryEmail(event.target.value); setTouched((current) => ({ ...current, deliveryEmail: false })); setRequestSubmitted(false); }}
+                    onBlur={() => setTouched((current) => ({ ...current, deliveryEmail: true }))}
+                    type="email"
+                    required
+                    placeholder="you@example.com"
+                    className={`w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:ring-4 ${touched.deliveryEmail && (!deliveryEmail.trim() || !isValidEmail(deliveryEmail)) ? "border-red-300 focus:border-red-500 focus:ring-red-50" : "border-[#dbe2ec] focus:border-[#00b968] focus:ring-emerald-50"}`}
+                    aria-invalid={touched.deliveryEmail && (!deliveryEmail.trim() || !isValidEmail(deliveryEmail))}
+                  />
+                  {touched.deliveryEmail && (!deliveryEmail.trim() || !isValidEmail(deliveryEmail)) && (
+                    <p className="mt-2 text-xs text-red-600">Enter a valid email address.</p>
+                  )}
+                  <p className="mt-2 text-xs leading-5 text-[#8b95aa]">Used to verify your purchase and send your completed QR sticker. It will not be added to the sticker unless you enter it below.</p>
+                </label>
+              )}
+              <label className="block">
+                <span className="mb-2 block text-sm font-semibold text-[#33405a]">Name *</span>
+                <input
+                  value={form.name}
+                  onChange={(event) => update("name", event.target.value)}
+                  placeholder="e.g. Sumit Tiwari"
+                  className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none transition focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50"
+                />
+              </label>
+
+              <label className="block">
+                <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Phone size={15} /> Phone *</span>
+                <div className="flex gap-2">
+                  <select
+                    value={form.phoneCountry}
+                    onChange={(event) => update("phoneCountry", event.target.value as PhoneCountryCode)}
+                    aria-label="Country calling code"
+                    className="w-[88px] shrink-0 rounded-2xl border border-[#dbe2ec] bg-white px-2 py-3 text-sm outline-none transition focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50"
+                  >
+                    {PHONE_COUNTRIES.map(([code, , dialCode]) => (
+                      <option key={code} value={code}>{countryFlag(code)} {dialCode}</option>
+                    ))}
+                  </select>
+                  <input
+                    value={form.phone}
+                    onBlur={() => setTouched((current) => ({ ...current, phone: true }))}
+                    onChange={(event) => update("phone", event.target.value.replace(/[^\d\s()-]/g, ""))}
+                    inputMode="tel"
+                    autoComplete="tel-national"
+                    placeholder="98765 43210"
+                    className={`min-w-0 flex-1 rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:ring-4 ${phoneError ? "border-red-300 focus:border-red-500 focus:ring-red-50" : "border-[#dbe2ec] focus:border-[#00b968] focus:ring-emerald-50"}`}
+                    aria-invalid={Boolean(phoneError)}
+                  />
+                </div>
+                {phoneError && <p className="mt-2 text-xs text-red-600">{phoneError}</p>}
+              </label>
+
+              <label className="block">
+                <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Mail size={15} /> Email on sticker {activationMode ? <span className="font-normal text-[#8b95aa]">(optional)</span> : <span className="font-normal text-[#8b95aa]">(optional)</span>}</span>
+                <input
+                  value={form.email}
+                  onChange={(event) => update("email", event.target.value)}
+                  onBlur={() => setTouched((current) => ({ ...current, stickerEmail: true }))}
+                  type="email"
+                  placeholder="you@example.com"
+                  className={`w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:ring-4 ${emailError ? "border-red-300 focus:border-red-500 focus:ring-red-50" : "border-[#dbe2ec] focus:border-[#00b968] focus:ring-emerald-50"}`}
+                  aria-invalid={Boolean(emailError)}
+                />
+                {emailError && <p className="mt-2 text-xs text-red-600">{emailError}</p>}
+              </label>
+
+              <label className="block">
+                <span className="mb-2 block text-sm font-semibold text-[#33405a]">Vehicle number *</span>
+                <input
+                  value={form.vehicle}
+                  onChange={(event) => update("vehicle", event.target.value.toUpperCase())}
+                  placeholder="DL01AB1234"
+                  className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm font-medium uppercase outline-none transition focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50"
+                />
+              </label>
+
+              <div>
+                <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Palette size={15} /> Sticker style</div>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  {(["dark", "light", "physical"] as const).map((theme) => (
+                    <button
+                      key={theme}
+                      type="button"
+                      onClick={() => update("theme", theme)}
+                      className={`rounded-2xl border p-3 text-left transition ${form.theme === theme ? "border-[#00b968] ring-4 ring-emerald-50" : "border-[#dbe2ec]"}`}
+                    >
+                      {theme === "physical" ? (
+                        <div className="relative h-20 overflow-hidden rounded-xl border border-slate-200 bg-white">
+                          <img src={physicalTemplateUrl} alt="" className="h-full w-full object-cover" />
+                        </div>
+                      ) : (
+                        <div className={`relative h-20 overflow-hidden rounded-xl ${theme === "dark" ? "bg-[#03121d]" : "bg-white border border-slate-200"}`}>
+                          <div className={`absolute inset-0 ${theme === "dark" ? "bg-[radial-gradient(circle_at_85%_10%,rgba(0,217,120,.35),transparent_40%)]" : "bg-[radial-gradient(circle_at_90%_5%,rgba(0,217,120,.18),transparent_42%)]"}`} />
+                          <div className="relative flex h-full items-center gap-2 px-2">
+                            <div className="min-w-0 flex-1">
+                              <div className={`text-[10px] font-black leading-none ${theme === "dark" ? "text-white" : "text-[#071421]"}`}>SCAN TO</div>
+                              <div className="text-[10px] font-black leading-none text-[#00d978]">CONTACT</div>
+                              <div className={`text-[10px] font-black leading-none ${theme === "dark" ? "text-white" : "text-[#071421]"}`}>OWNER</div>
+                            </div>
+                            <div className="h-14 w-14 shrink-0 rounded-md border-[3px] border-[#00d978] bg-white p-1">
+                              <div className="grid h-full w-full grid-cols-4 gap-0.5 bg-[#071421] opacity-90">
+                                {Array.from({ length: 16 }).map((_, index) => (
+                                  <span key={index} className={index % 3 === 0 || index % 5 === 0 ? "bg-white" : "bg-[#071421]"} />
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      <div className="mt-2 text-sm font-semibold text-[#0f1523]">{theme === "physical" ? "Clean" : theme === "dark" ? "Dark" : "Light"}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {!activationMode && (
+              <div>
+                <div className="mb-2 text-sm font-semibold text-[#33405a]">How do you want it?</div>
+                <div className="grid grid-cols-2 gap-3">
+                  {(["digital", "physical"] as const).map((delivery) => (
+                    <button
+                      key={delivery}
+                      type="button"
+                      onClick={() => update("delivery", delivery)}
+                      className={"rounded-2xl border p-4 text-left transition " + (form.delivery === delivery ? "border-[#00b968] bg-[#eefaf3] ring-4 ring-emerald-50" : "border-[#dbe2ec] bg-white")}
+                    >
+                      <div className="text-sm font-bold text-[#0f1523]">{delivery === "digital" ? "Downloadable" : "Physical sticker"}</div>
+                      <div className="mt-1 text-xs text-[#6b7a99]">{delivery === "digital" ? "₹199 · SVG download" : "Coming soon"}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+              )}
+
+              <button
+                type="button"
+                onClick={generatePreview}
+                disabled={!canPreview}
+                className="w-full rounded-2xl bg-[#071421] px-5 py-3.5 text-sm font-bold text-white transition hover:bg-[#102331] disabled:cursor-not-allowed disabled:bg-[#d9dfea]"
+              >
+                <span className="inline-flex items-center gap-2"><QrCode size={16} /> Preview your sticker</span>
+              </button>
+
+              {error && <p className="rounded-2xl bg-red-50 p-3 text-sm text-red-700">{error}</p>}
+            </div>
+          </section>
+
+          <section className="rounded-3xl border border-[#e4e8f0] bg-white p-4 shadow-sm sm:p-6">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <div>
+                <div className="text-xs font-mono uppercase tracking-widest text-[#008d50]">Live preview</div>
+                <h2 className="mt-1 text-xl font-bold text-[#0f1523]">Your sticker</h2>
+              </div>
+              {previewPayload && (
+                <span className="rounded-full bg-[#eefaf3] px-3 py-1 text-xs font-semibold text-[#008d50]">
+                  Preview QR
+                </span>
+              )}
+            </div>
+
+            <div className="overflow-hidden rounded-2xl border border-[#e4e8f0] bg-[#eef1f4] p-2 sm:p-4">
+              {stickerDataUrl ? (
+                <img src={stickerDataUrl} alt="Smart Parking Sticker preview" className="w-full rounded-xl" />
+              ) : (
+                <div className="flex min-h-[420px] items-center justify-center rounded-xl bg-[#f6f8fb] text-center">
+                  <div className="max-w-sm px-6">
+                    <QrCode className="mx-auto text-[#b5becd]" size={48} />
+                    <p className="mt-4 text-sm font-semibold text-[#45516a]">Enter your details to preview the live sticker.</p>
+                    <p className="mt-2 text-xs leading-5 text-[#8b95aa]">The QR is generated in your browser and points to your RichLifeTools parking page. Your purchased sticker gets a permanent QR.</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {previewPayload && activationMode && !requestSubmitted && (
+              <div className="mt-5 rounded-3xl border border-emerald-100 bg-[#eefaf3] p-5">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <div className="text-sm font-bold text-[#0f1523]">Ready to submit?</div>
+                    <p className="mt-1 text-xs leading-5 text-[#527060]">We will verify your Lemon Squeezy order before preparing your final sticker.</p>
+                  </div>
+                  <button type="button" onClick={submitRequest} disabled={!canSubmitRequest} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#00b968] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-100 disabled:cursor-not-allowed disabled:opacity-50">
+                    <Mail size={16} /> {submitting ? "Submitting..." : "Submit Request"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {requestSubmitted && (
+              <div className="mt-5 rounded-3xl border border-emerald-200 bg-[#eefaf3] p-6">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="mt-0.5 shrink-0 text-[#00a961]" size={22} />
+                  <div>
+                    <div className="text-base font-bold text-[#0f1523]">Request submitted successfully</div>
+                    <p className="mt-1 text-sm leading-6 text-[#527060]">We have received your details for order <span className="font-semibold">{orderId.trim()}</span>. We will verify your purchase and send your QR sticker to <span className="font-semibold">{deliveryEmail.trim()}</span> within 24 hours after verification.</p>
+                  </div>
+                </div>
+              </div>
+            )}
+            {previewPayload && !activationMode && !paymentComplete && (
+              <div className="mt-5 rounded-3xl border border-emerald-100 bg-[#eefaf3] p-5">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <div className="text-sm font-bold text-[#0f1523]">Like the preview?</div>
+                    <p className="mt-1 text-xs leading-5 text-[#527060]">
+                      Your final sticker gets a permanent QR payload after successful checkout.
+                    </p>
+                  </div>
+                  {form.delivery === "physical" ? (
+                    <button
+                      type="button"
+                      disabled
+                      className="inline-flex shrink-0 cursor-not-allowed items-center justify-center gap-2 rounded-2xl bg-[#d9dfea] px-5 py-3 text-sm font-bold text-[#7a8498]"
+                    >
+                      Coming soon
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={startCheckout}
+                      className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#00b968] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-100"
+                    >
+                      <ShoppingCart size={16} /> Buy now
+                    </button>
+                  )}
+                </div>
+                {!activationMode && form.delivery === "digital" && !checkoutUrl && (
+                  <p className="mt-3 text-xs text-[#7a6651]">
+                    Checkout URL is not configured yet. The UI is ready for the Lemon Squeezy product checkout URL.
+                  </p>
+                )}
+              </div>
+            )}
+
+            {!activationMode && paymentComplete && (
+              <div className="mt-5 rounded-3xl border border-emerald-200 bg-[#eefaf3] p-5">
+                <div className="text-sm font-bold text-[#0f1523]">{form.delivery === "physical" ? "Physical sticker ordered 🎉" : "Your sticker is ready 🎉"}</div>
+                <p className="mt-1 text-xs leading-5 text-[#527060]">
+                  {form.delivery === "physical"
+                    ? "Payment completed. Your permanent QR is ready for the physical sticker order."
+                    : "Payment completed. The final QR is now marked as a purchased sticker."}
+                </p>
+                {form.delivery === "digital" && (
+                  <button
+                    type="button"
+                    onClick={downloadSticker}
+                    disabled={!stickerDataUrl}
+                    className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-[#071421] px-5 py-3 text-sm font-bold text-white disabled:opacity-50"
+                  >
+                    <Download size={16} /> Download sticker
+                  </button>
+                )}
+              </div>
+            )}
+
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              {[
+                ["Encrypted QR", "AES-GCM payload with tamper detection."],
+                ["Direct contact", "Phone and email become tappable after scan."],
+              ].map(([title, description]) => (
+                <div key={title} className="rounded-2xl bg-[#f6f8fb] p-4">
+                  <div className="text-xs font-semibold uppercase tracking-wider text-[#45516a]">{title}</div>
+                  <div className="mt-1 text-xs leading-5 text-[#8b95aa]">{description}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+        </main>
+      </div>
+    </>
+  );
+}      eventHandler: (event: { event: string; data?: unknown }) => void }) => void;, useState } from "react";
+import { useNavigate } from "react-router";
+import { ArrowLeft, Download, Mail, Palette, Phone, QrCode, ShoppingCart, Sparkles, CheckCircle2, Loader2 } from "lucide-react";
+import QRCode from "qrcode";
+import {
+  encryptParkingPayload,
+  svgToDataUrl,
+  type ParkingPayload,
+  type ParkingTheme,
+} from "./parking";
+import { buildParkingTemplateSvg } from "./parkingTemplates";
+import physicalTemplateUrl from "./assets/parking-template-physical.svg?url";
+import { PARKING_ORDER_SUCCESS_ROUTE } from "../../utils/routes";
+import { PARKING_ORDER_SUCCESS_STORAGE_KEY } from "./ParkingOrderSuccessPage";
+
+const PHONE_COUNTRIES = [
+  ["IN", "India", "+91"], ["US", "United States", "+1"], ["CA", "Canada", "+1"], ["GB", "United Kingdom", "+44"],
+  ["AU", "Australia", "+61"], ["NZ", "New Zealand", "+64"], ["DE", "Germany", "+49"], ["FR", "France", "+33"],
+  ["NL", "Netherlands", "+31"], ["SE", "Sweden", "+46"], ["NO", "Norway", "+47"], ["DK", "Denmark", "+45"],
+  ["CH", "Switzerland", "+41"], ["AT", "Austria", "+43"], ["BE", "Belgium", "+32"], ["IE", "Ireland", "+353"],
+  ["ES", "Spain", "+34"], ["IT", "Italy", "+39"], ["PT", "Portugal", "+351"], ["PL", "Poland", "+48"],
+  ["FI", "Finland", "+358"], ["IS", "Iceland", "+354"], ["CZ", "Czechia", "+420"], ["RO", "Romania", "+40"],
+  ["HU", "Hungary", "+36"], ["GR", "Greece", "+30"], ["AE", "United Arab Emirates", "+971"], ["SA", "Saudi Arabia", "+966"],
+  ["QA", "Qatar", "+974"], ["SG", "Singapore", "+65"], ["MY", "Malaysia", "+60"], ["TH", "Thailand", "+66"],
+  ["ID", "Indonesia", "+62"], ["PH", "Philippines", "+63"], ["JP", "Japan", "+81"], ["KR", "South Korea", "+82"],
+  ["CN", "China", "+86"], ["HK", "Hong Kong", "+852"], ["TW", "Taiwan", "+886"], ["BR", "Brazil", "+55"],
+  ["MX", "Mexico", "+52"], ["ZA", "South Africa", "+27"], ["NG", "Nigeria", "+234"], ["KE", "Kenya", "+254"],
+] as const;
+
+type PhoneCountryCode = (typeof PHONE_COUNTRIES)[number][0];
+
+const getBrowserCountry = (): PhoneCountryCode => {
+  const supported = new Set(PHONE_COUNTRIES.map(([code]) => code));
+
+  // On iOS Safari, navigator.language can be "en-US" even when the device is
+  // configured for India. Prefer the browser timezone because it reflects the
+  // device's regional configuration more reliably in that case.
+  try {
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const timezoneCountry: Record<string, PhoneCountryCode> = {
+      "Asia/Kolkata": "IN",
+      "Asia/Calcutta": "IN",
+      "America/New_York": "US",
+      "America/Chicago": "US",
+      "America/Denver": "US",
+      "America/Los_Angeles": "US",
+      "America/Toronto": "CA",
+      "Europe/London": "GB",
+      "Europe/Berlin": "DE",
+      "Europe/Paris": "FR",
+      "Europe/Amsterdam": "NL",
+      "Europe/Stockholm": "SE",
+      "Europe/Oslo": "NO",
+      "Europe/Copenhagen": "DK",
+      "Europe/Zurich": "CH",
+      "Asia/Dubai": "AE",
+      "Asia/Singapore": "SG",
+      "Asia/Tokyo": "JP",
+      "Asia/Seoul": "KR",
+      "Asia/Shanghai": "CN",
+      "Asia/Hong_Kong": "HK",
+      "Australia/Sydney": "AU",
+      "Pacific/Auckland": "NZ",
+    };
+    const country = timezoneCountry[timezone];
+    if (country && supported.has(country)) return country;
+  } catch {
+    // Continue with locale detection.
+  }
+
+  // If timezone is unavailable, use an explicitly supplied locale region.
+  const locales = navigator.languages?.length ? navigator.languages : [navigator.language];
+  for (const language of locales) {
+    try {
+      const region = new Intl.Locale(language).region?.toUpperCase();
+      if (region && supported.has(region)) return region as PhoneCountryCode;
+    } catch {
+      // Continue with the next locale.
+    }
+  }
+
+  return "IN";
+};
+
+type ParkingDelivery = "digital" | "physical";
+
+type FormState = {
+  name: string;
+  phone: string;
+  phoneCountry: PhoneCountryCode;
+  email: string;
+  vehicle: string;
+  theme: ParkingTheme;
+  delivery: ParkingDelivery;
+};
+
+const initialForm: FormState = {
+  name: "",
+  phone: "",
+  phoneCountry: "IN",
+  email: "",
+  vehicle: "",
+  theme: "dark",
+  delivery: "digital",
+};
+
+declare global {
+  interface Window {
+    LemonSqueezy?: {
+      Setup: (options: { eventHandler: (event: { event: string; data?: {
+        id?: string | number;
+        identifier?: string;
+        order_number?: string | number;
+        attributes?: { identifier?: string; order_number?: string | number };
+        data?: { id?: string | number; identifier?: string; attributes?: { identifier?: string; order_number?: string | number } };
+      } }) => void }) => void;
+      Url: { Open: (url: string) => void; Close: () => void };
+      Refresh: () => void;
+    };
+    createLemonSqueezy?: () => void;
+  }
+}
+
+const checkoutUrl = import.meta.env.VITE_LEMON_SQUEEZY_PARKING_CHECKOUT_URL as string | undefined;
+const parkingRequestFormEndpoint = (import.meta.env.VITE_PARKING_REQUEST_FORM_ENDPOINT as string | undefined)?.trim() || "https://formsubmit.co/ajax/richlifetools.support@gmail.com";
+
+const createStickerDataUrl = async (theme: ParkingTheme, qr: string) =>
+  svgToDataUrl(
+    await buildParkingTemplateSvg({
+      theme,
+      qrDataUrl: qr,
+    })
+  );
+
+const isValidPhone = (value: string) => {
+  const digits = value.replace(/\D/g, "");
+  return digits.length >= 7 && digits.length <= 15;
+};
+
+const countryFlag = (code: string) =>
+  code.replace(/[A-Z]/g, (letter) => String.fromCodePoint(letter.charCodeAt(0) + 127397));
+
+const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+
+export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBack: () => void; activationMode?: boolean }) {
+  const routerNavigate = useNavigate();
+  const [form, setForm] = useState<FormState>(() => ({ ...initialForm, phoneCountry: getBrowserCountry() }));
+  const [qrDataUrl, setQrDataUrl] = useState("");
+  const [stickerDataUrl, setStickerDataUrl] = useState("");
+  const [previewPayload, setPreviewPayload] = useState<ParkingPayload | null>(null);
+  const [error, setError] = useState("");
+  const [paymentComplete, setPaymentComplete] = useState(false);
+  const [finalOrderId, setFinalOrderId] = useState("");
+  const [finalStickerReady, setFinalStickerReady] = useState(false);
+  const [touched, setTouched] = useState({ phone: false, stickerEmail: false, deliveryEmail: false, orderId: false });
+  const [orderId, setOrderId] = useState("");
+  const [deliveryEmail, setDeliveryEmail] = useState("");
+  const [requestSubmitted, setRequestSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const canPreview =
+    form.name.trim().length >= 2 &&
+    isValidPhone(form.phone) &&
+    form.vehicle.trim().length >= 2 &&
+    (!form.email.trim() || isValidEmail(form.email)) &&
+    (!activationMode || (orderId.trim().length >= 2 && Boolean(deliveryEmail.trim()) && isValidEmail(deliveryEmail)));
+
+  const canSubmitRequest = Boolean(previewPayload) && !submitting && Boolean(orderId.trim()) && Boolean(deliveryEmail.trim()) && isValidEmail(deliveryEmail);
+
+  const phoneError = touched.phone && !isValidPhone(form.phone) ? "Enter a valid phone number (7–15 digits)." : "";
+  const emailError = touched.stickerEmail && Boolean(form.email.trim()) && !isValidEmail(form.email) ? "Enter a valid email address." : "";
+  const orderIdError = touched.orderId && activationMode && !orderId.trim() ? "Enter your Lemon Squeezy order number." : "";
+
+  const update = (field: keyof FormState, value: string) => {
+    setForm((current) => ({ ...current, [field]: value }));
+    setPaymentComplete(false);
+    setFinalOrderId("");
+    setRequestSubmitted(false);
+  };
+
+  const generatePreview = async () => {
+    if (!canPreview) return;
+
+    setError("");
+
+    try {
+      const createdAt = Date.now();
+      const payload: ParkingPayload = {
+        v: 1,
+        type: "parking",
+        test: true,
+        createdAt,
+        expiresAt: createdAt + 24 * 60 * 60 * 1000,
+        name: form.name.trim(),
+        phone: `${PHONE_COUNTRIES.find(([code]) => code === form.phoneCountry)?.[2] ?? "+91"}${form.phone.replace(/\D/g, "")}`,
+        ...(form.email.trim() ? { email: form.email.trim() } : {}),
+        vehicle: form.vehicle.trim().toUpperCase(),
+        theme: form.theme,
+      };
+
+      const encrypted = await encryptParkingPayload(payload);
+      const url = `${window.location.origin}/parking?data=${encodeURIComponent(encrypted)}`;
+      const qr = await QRCode.toDataURL(url, {
+        errorCorrectionLevel: "H",
+        margin: 2,
+        width: 720,
+        color: {
+          dark: "#071421",
+          light: "#ffffff",
+        },
+      });
+
+      setPreviewPayload(payload);
+      setQrDataUrl(qr);
+      setStickerDataUrl(await createStickerDataUrl(payload.theme, qr));
+    } catch {
+      setError("We couldn't generate the preview. Please try again.");
+    }
+  };
+
+  const finalPayload = useMemo<ParkingPayload | null>(() => {
+    if (!previewPayload || !paymentComplete || !finalOrderId) return null;
+    return {
+      ...previewPayload,
+      test: false,
+      expiresAt: undefined,
+      orderId: finalOrderId,
+      createdAt: Date.now(),
+    };
+  }, [previewPayload, paymentComplete, finalOrderId]);
+
+  useEffect(() => {
+    if (!finalPayload) return;
+
+    setFinalStickerReady(false);
+    let active = true;
+
+    encryptParkingPayload(finalPayload)
+      .then((encrypted) => {
+        const url = `${window.location.origin}/parking?data=${encodeURIComponent(encrypted)}`;
+        return QRCode.toDataURL(url, {
+          errorCorrectionLevel: "H",
+          margin: 2,
+          width: 720,
+          color: {
+            dark: "#071421",
+            light: "#ffffff",
+          },
+        });
+      })
+      .then(async (qr) => {
+        if (!active) return;
+        setQrDataUrl(qr);
+        setStickerDataUrl(await createStickerDataUrl(finalPayload.theme, qr));
+        setFinalStickerReady(true);
+      })
+      .catch(() => {
+        if (active) setError("Payment completed, but we couldn't prepare the final sticker. Please retry.");
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [finalPayload]);
+
+  useEffect(() => {
+    if (!paymentComplete || !finalOrderId || !finalStickerReady || !stickerDataUrl) return;
+
+    try {
+      sessionStorage.setItem(
+        PARKING_ORDER_SUCCESS_STORAGE_KEY,
+        JSON.stringify({
+          orderId: finalOrderId,
+          stickerDataUrl,
+          vehicle: form.vehicle.trim(),
+        })
+      );
+      routerNavigate(PARKING_ORDER_SUCCESS_ROUTE, { replace: true });
+    } catch {
+      setError("Payment completed, but we couldn't open the confirmation page. Please try again.");
+    }
+  }, [paymentComplete, finalOrderId, finalStickerReady, stickerDataUrl, form.vehicle, routerNavigate]);
+
+  useEffect(() => {
+    if (!checkoutUrl) return;
+
+    const setup = () => {
+      if (!window.LemonSqueezy) return false;
+      window.LemonSqueezy.Setup({
+        eventHandler: (event) => {
+          if (event.event !== "Checkout.Success") return;
           // Lemon.js documents Checkout.Success as returning an Order object.
           // The current payload shape exposes order_number under data.attributes.
           const orderId =
