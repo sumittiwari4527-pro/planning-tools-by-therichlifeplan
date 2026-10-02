@@ -4,6 +4,17 @@ import { productPath } from "../../utils/routes";
 
 export const PARKING_ORDER_SUCCESS_STORAGE_KEY = "richlifetools_parking_order_success";
 
+declare global {
+  interface Window {
+    LemonSqueezy?: {
+      Url: {
+        Close: () => void;
+      };
+    };
+  }
+}
+
+
 type SuccessData = {
   orderId: string;
   stickerDataUrl: string;
@@ -15,6 +26,21 @@ export function ParkingOrderSuccessPage() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
+    // The success event can navigate here while Lemon Squeezy is still
+    // transitioning its confirmation modal. Close it again from the destination
+    // page so navigation cannot leave the overlay behind.
+    const closeCheckout = () => {
+      try {
+        window.LemonSqueezy?.Url.Close();
+      } catch {
+        // Lemon.js may not be ready yet; a later retry handles that case.
+      }
+    };
+
+    closeCheckout();
+    const retryDelays = [250, 750, 1500];
+    const timers = retryDelays.map((delay) => window.setTimeout(closeCheckout, delay));
+
     try {
       const stored = sessionStorage.getItem(PARKING_ORDER_SUCCESS_STORAGE_KEY);
       if (!stored) return;
@@ -25,6 +51,8 @@ export function ParkingOrderSuccessPage() {
     } catch {
       // Ignore invalid or unavailable session storage.
     }
+
+    return () => timers.forEach((timer) => window.clearTimeout(timer));
   }, []);
 
   const downloadSticker = async () => {
