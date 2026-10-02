@@ -107,7 +107,13 @@ const initialForm: FormState = {
 declare global {
   interface Window {
     LemonSqueezy?: {
-      Setup: (options: { eventHandler: (event: { event: string; data?: { id?: string | number; identifier?: string; attributes?: { identifier?: string } } }) => void }) => void;
+      Setup: (options: { eventHandler: (event: { event: string; data?: {
+        id?: string | number;
+        identifier?: string;
+        order_number?: string | number;
+        attributes?: { identifier?: string; order_number?: string | number };
+        data?: { id?: string | number; identifier?: string; attributes?: { identifier?: string; order_number?: string | number } };
+      } }) => void }) => void;
       Url: { Open: (url: string) => void };
       Refresh: () => void;
     };
@@ -212,12 +218,12 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
   };
 
   const finalPayload = useMemo<ParkingPayload | null>(() => {
-    if (!previewPayload || !paymentComplete) return null;
+    if (!previewPayload || !paymentComplete || !finalOrderId) return null;
     return {
       ...previewPayload,
       test: false,
       expiresAt: undefined,
-      orderId: finalOrderId || "paid",
+      orderId: finalOrderId,
       createdAt: Date.now(),
     };
   }, [previewPayload, paymentComplete, finalOrderId]);
@@ -283,10 +289,21 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
         eventHandler: (event) => {
           if (event.event !== "Checkout.Success") return;
           const orderId =
-            event.data?.attributes?.identifier ??
+            event.data?.order_number ??
+            event.data?.attributes?.order_number ??
+            event.data?.data?.attributes?.order_number ??
             event.data?.identifier ??
+            event.data?.attributes?.identifier ??
+            event.data?.data?.identifier ??
+            event.data?.data?.attributes?.identifier ??
             event.data?.id ??
-            "paid";
+            event.data?.data?.id;
+
+          if (!orderId) {
+            setError("Payment completed, but Lemon Squeezy did not return an order number. Please contact support.");
+            return;
+          }
+
           setFinalOrderId(String(orderId));
           setPaymentComplete(true);
           window.setTimeout(() => window.LemonSqueezy?.Url.Close(), 150);
