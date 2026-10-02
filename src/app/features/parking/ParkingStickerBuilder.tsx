@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router";
 import { ArrowLeft, Download, Mail, Palette, Phone, QrCode, ShoppingCart, Sparkles, CheckCircle2 } from "lucide-react";
 import QRCode from "qrcode";
 import {
@@ -9,6 +10,8 @@ import {
 } from "./parking";
 import { buildParkingTemplateSvg } from "./parkingTemplates";
 import physicalTemplateUrl from "./assets/parking-template-physical.svg?url";
+import { PARKING_ORDER_SUCCESS_ROUTE } from "../../utils/routes";
+import { PARKING_ORDER_SUCCESS_STORAGE_KEY } from "./ParkingOrderSuccessPage";
 
 const PHONE_COUNTRIES = [
   ["IN", "India", "+91"], ["US", "United States", "+1"], ["CA", "Canada", "+1"], ["GB", "United Kingdom", "+44"],
@@ -134,6 +137,7 @@ const countryFlag = (code: string) =>
 const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 
 export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBack: () => void; activationMode?: boolean }) {
+  const routerNavigate = useNavigate();
   const [form, setForm] = useState<FormState>(() => ({ ...initialForm, phoneCountry: getBrowserCountry() }));
   const [qrDataUrl, setQrDataUrl] = useState("");
   const [stickerDataUrl, setStickerDataUrl] = useState("");
@@ -141,6 +145,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
   const [error, setError] = useState("");
   const [paymentComplete, setPaymentComplete] = useState(false);
   const [finalOrderId, setFinalOrderId] = useState("");
+  const [finalStickerReady, setFinalStickerReady] = useState(false);
   const [touched, setTouched] = useState({ phone: false, stickerEmail: false, deliveryEmail: false, orderId: false });
   const [orderId, setOrderId] = useState("");
   const [deliveryEmail, setDeliveryEmail] = useState("");
@@ -220,6 +225,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
   useEffect(() => {
     if (!finalPayload) return;
 
+    setFinalStickerReady(false);
     let active = true;
 
     encryptParkingPayload(finalPayload)
@@ -239,6 +245,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
         if (!active) return;
         setQrDataUrl(qr);
         setStickerDataUrl(await createStickerDataUrl(finalPayload.theme, qr));
+        setFinalStickerReady(true);
       })
       .catch(() => {
         if (active) setError("Payment completed, but we couldn't prepare the final sticker. Please retry.");
@@ -248,6 +255,24 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
       active = false;
     };
   }, [finalPayload]);
+
+  useEffect(() => {
+    if (!paymentComplete || !finalOrderId || !finalStickerReady || !stickerDataUrl) return;
+
+    try {
+      sessionStorage.setItem(
+        PARKING_ORDER_SUCCESS_STORAGE_KEY,
+        JSON.stringify({
+          orderId: finalOrderId,
+          stickerDataUrl,
+          vehicle: form.vehicle.trim(),
+        })
+      );
+      routerNavigate(PARKING_ORDER_SUCCESS_ROUTE, { replace: true });
+    } catch {
+      setError("Payment completed, but we couldn't open the confirmation page. Please try again.");
+    }
+  }, [paymentComplete, finalOrderId, finalStickerReady, stickerDataUrl, form.vehicle, routerNavigate]);
 
   useEffect(() => {
     if (!checkoutUrl) return;
