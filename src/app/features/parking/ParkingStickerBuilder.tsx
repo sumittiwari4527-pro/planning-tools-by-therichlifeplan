@@ -264,6 +264,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
             "paid";
           setFinalOrderId(String(orderId));
           setPaymentComplete(true);
+          window.setTimeout(() => window.LemonSqueezy?.Url.Close(), 150);
         },
       });
       return true;
@@ -336,13 +337,26 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
     }
   };
 
-  const downloadSticker = () => {
+  const downloadSticker = async () => {
     if (!stickerDataUrl) return;
 
-    const link = document.createElement("a");
-    link.href = stickerDataUrl;
-    link.download = `richlifetools-smart-parking-${(form.vehicle || "sticker").replace(/[^a-z0-9]+/gi, "-").toLowerCase()}.svg`;
-    link.click();
+    const filename = `richlifetools-smart-parking-${(form.vehicle || "sticker").replace(/[^a-z0-9]+/gi, "-").toLowerCase()}.svg`;
+
+    try {
+      const response = await fetch(stickerDataUrl);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      link.style.display = "none";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch {
+      window.open(stickerDataUrl, "_blank", "noopener,noreferrer");
+    }
   };
 
   return (
