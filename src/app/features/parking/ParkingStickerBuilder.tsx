@@ -289,14 +289,17 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
       window.LemonSqueezy.Setup({
         eventHandler: (event) => {
           if (event.event !== "Checkout.Success") return;
+          // Lemon.js documents Checkout.Success as returning an Order object.
+          // The current payload shape exposes order_number under data.attributes.
           const orderId =
-            event.data?.order_number ??
             event.data?.attributes?.order_number ??
+            event.data?.order_number ??
             event.data?.data?.attributes?.order_number ??
-            event.data?.identifier ??
+            event.data?.data?.order_number ??
             event.data?.attributes?.identifier ??
-            event.data?.data?.identifier ??
+            event.data?.identifier ??
             event.data?.data?.attributes?.identifier ??
+            event.data?.data?.identifier ??
             event.data?.id ??
             event.data?.data?.id;
 
@@ -305,16 +308,12 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
             return;
           }
 
-          // The success event owns the checkout lifecycle: close the overlay
-          // immediately, then let the existing final-sticker flow navigate to
-          // the confirmation page once the purchased QR is ready.
-          window.LemonSqueezy?.Url.Close();
-
-          // Show processing state immediately after checkout closes while the
-          // permanent QR/sticker is generated and the confirmation page is prepared.
+          // Preserve the short confirmation moment from the original checkout
+          // flow, then close the overlay and continue with sticker generation.
           setError("");
           setFinalOrderId(String(orderId));
           setPaymentComplete(true);
+          window.setTimeout(() => window.LemonSqueezy?.Url.Close(), 150);
         },
       });
       return true;
