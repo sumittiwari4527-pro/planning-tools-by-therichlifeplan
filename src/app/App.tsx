@@ -191,54 +191,74 @@ export default function App() {
               <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-indigo-100/60 rounded-full blur-3xl pointer-events-none -translate-y-1/4 translate-x-1/4" />
               <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cyan-100/40 rounded-full blur-3xl pointer-events-none" />
               <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 lg:py-28 w-full">
-                <div className="max-w-6xl">
-                  <div className="inline-flex items-center gap-2 bg-white/80 border border-[#e4e8f0] rounded-full px-4 py-1.5 mb-7 shadow-sm">
-                    <div className="w-1.5 h-1.5 bg-[#4f46e5] rounded-full animate-pulse" />
-                    <span className="text-[#4f46e5] text-xs font-mono uppercase tracking-widest">Tools · Products · Ideas</span>
+                <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-12 lg:gap-16 items-center">
+                  <div className="max-w-2xl">
+                    <div className="inline-flex items-center gap-2 bg-white/80 border border-[#e4e8f0] rounded-full px-4 py-1.5 mb-7 shadow-sm">
+                      <div className="w-1.5 h-1.5 bg-[#4f46e5] rounded-full animate-pulse" />
+                      <span className="text-[#4f46e5] text-xs font-mono uppercase tracking-widest">Tools · Products · Ideas</span>
+                    </div>
+                    <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-[#0f1523] leading-[0.98] tracking-tight mb-7"
+                      style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                      Everything useful.<br /><span className="text-[#4f46e5]">In one place.</span>
+                    </h1>
+                    <p className="text-[#6b7a99] text-lg sm:text-xl leading-relaxed mb-9 max-w-xl">
+                      Smart tools to solve everyday problems, practical products to make life easier, and ideas worth exploring.
+                    </p>
+                    <div className="flex flex-wrap gap-x-7 gap-y-3 text-sm">
+                      <button onClick={() => navigate("tools")} className="group flex items-center gap-2 text-[#0f1523] font-semibold cursor-pointer">
+                        <span className="text-[#4f46e5]">Tools</span> Explore <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                      </button>
+                      <button onClick={() => navigate("products")} className="group flex items-center gap-2 text-[#0f1523] font-semibold cursor-pointer">
+                        <span className="text-emerald-600">Products</span> Shop <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                      </button>
+                      <button onClick={() => navigate("blog")} className="group flex items-center gap-2 text-[#0f1523] font-semibold cursor-pointer">
+                        <span className="text-cyan-600">Articles</span> Read <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                      </button>
+                    </div>
                   </div>
-                  <h1 className="text-5xl sm:text-6xl lg:text-8xl font-bold text-[#0f1523] leading-[0.98] tracking-tight mb-7 max-w-5xl"
-                    style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                    Make life a little<br /><span className="text-[#4f46e5]">smarter.</span>
-                  </h1>
-                  <p className="text-[#6b7a99] text-lg sm:text-xl leading-relaxed mb-9 max-w-2xl">
-                    Tools to figure things out. Products to make things easier. Ideas to help you move forward.
-                  </p>
-                  <div className="flex flex-wrap items-center gap-x-7 gap-y-3 mb-14 text-sm">
-                    <button onClick={() => navigate("tools")} className="group flex items-center gap-2 text-[#0f1523] font-semibold cursor-pointer">
-                      <span className="text-[#4f46e5]">01</span> Explore Tools <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                    </button>
-                    <button onClick={() => navigate("products")} className="group flex items-center gap-2 text-[#0f1523] font-semibold cursor-pointer">
-                      <span className="text-emerald-600">02</span> Shop Products <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                    </button>
-                    <button onClick={() => navigate("blog")} className="group flex items-center gap-2 text-[#0f1523] font-semibold cursor-pointer">
-                      <span className="text-cyan-600">03</span> Read Articles <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                    </button>
+
+                  <div className="relative min-h-[390px] hidden sm:block">
+                    <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-indigo-50 via-white to-cyan-50 border border-[#e4e8f0]" />
+                    <div className="absolute top-8 right-7 w-[78%] rounded-2xl bg-white border border-[#e4e8f0] shadow-xl shadow-indigo-100/60 p-5 rotate-2">
+                      <div className="flex items-center justify-between mb-5">
+                        <div>
+                          <div className="text-[10px] font-mono uppercase tracking-widest text-[#4f46e5]">Tool</div>
+                          <div className="text-[#0f1523] font-semibold mt-1">Smart Goal Planner</div>
+                        </div>
+                        <Target size={18} className="text-[#8b5cf6]" />
+                      </div>
+                      <div className="grid grid-cols-3 gap-2">
+                        <div className="rounded-xl bg-[#f8f9fb] p-3"><div className="text-[10px] text-[#6b7a99]">Monthly</div><div className="text-sm font-semibold text-[#0f1523] mt-1">₹50K</div></div>
+                        <div className="rounded-xl bg-[#f8f9fb] p-3"><div className="text-[10px] text-[#6b7a99]">Goal</div><div className="text-sm font-semibold text-[#0f1523] mt-1">₹10L</div></div>
+                        <div className="rounded-xl bg-[#eef0fd] p-3"><div className="text-[10px] text-[#4f46e5]">Progress</div><div className="text-sm font-semibold text-[#4f46e5] mt-1">68%</div></div>
+                      </div>
+                    </div>
+                    <div className="absolute bottom-10 left-3 w-[58%] rounded-2xl bg-[#0f1523] text-white shadow-xl shadow-slate-300/50 p-5 -rotate-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="text-[10px] font-mono uppercase tracking-widest text-emerald-300">Product</div>
+                          <div className="font-semibold mt-1">Smart Parking Sticker</div>
+                          <div className="text-xs text-slate-400 mt-1">Personalized QR contact sticker</div>
+                        </div>
+                        <ShoppingBag size={20} className="text-emerald-300" />
+                      </div>
+                      <div className="mt-4 h-1.5 rounded-full bg-white/10 overflow-hidden"><div className="h-full w-2/3 bg-emerald-400 rounded-full" /></div>
+                    </div>
+                    <div className="absolute bottom-2 right-0 w-[47%] rounded-2xl bg-white border border-[#e4e8f0] shadow-lg shadow-cyan-100/60 p-4 rotate-3">
+                      <div className="flex items-start gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center shrink-0"><BookOpen size={17} /></div>
+                        <div>
+                          <div className="text-[10px] font-mono uppercase tracking-widest text-cyan-600">Article</div>
+                          <div className="text-sm font-semibold text-[#0f1523] mt-1 leading-snug">Ideas & insights for everyday life</div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 max-w-5xl">
-                    <button onClick={() => navigate("tools")} className="group bg-white/90 border border-[#e4e8f0] rounded-2xl p-5 text-left hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-100/50 transition-all cursor-pointer">
-                      <div className="flex items-center justify-between mb-6">
-                        <span className="text-[#4f46e5] text-xs font-mono uppercase tracking-widest">Tools</span>
-                        <Flame size={17} className="text-[#4f46e5]" />
-                      </div>
-                      <div className="text-[#0f1523] text-2xl font-semibold tracking-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Figure it out.</div>
-                      <div className="text-[#6b7a99] text-sm mt-1">Calculators, planners & converters.</div>
-                    </button>
-                    <button onClick={() => navigate("products")} className="group bg-white/90 border border-[#e4e8f0] rounded-2xl p-5 text-left hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-100/50 transition-all cursor-pointer">
-                      <div className="flex items-center justify-between mb-6">
-                        <span className="text-emerald-600 text-xs font-mono uppercase tracking-widest">Products</span>
-                        <ShoppingBag size={17} className="text-emerald-600" />
-                      </div>
-                      <div className="text-[#0f1523] text-2xl font-semibold tracking-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Make it easier.</div>
-                      <div className="text-[#6b7a99] text-sm mt-1">Practical products for everyday life.</div>
-                    </button>
-                    <button onClick={() => navigate("blog")} className="group bg-white/90 border border-[#e4e8f0] rounded-2xl p-5 text-left hover:-translate-y-1 hover:shadow-xl hover:shadow-cyan-100/50 transition-all cursor-pointer">
-                      <div className="flex items-center justify-between mb-6">
-                        <span className="text-cyan-600 text-xs font-mono uppercase tracking-widest">Ideas</span>
-                        <BookOpen size={17} className="text-cyan-600" />
-                      </div>
-                      <div className="text-[#0f1523] text-2xl font-semibold tracking-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Move forward.</div>
-                      <div className="text-[#6b7a99] text-sm mt-1">Articles, insights & useful ideas.</div>
-                    </button>
+
+                  <div className="sm:hidden grid grid-cols-3 gap-2">
+                    <button onClick={() => navigate("tools")} className="rounded-2xl bg-white border border-[#e4e8f0] p-3 text-left cursor-pointer"><Flame size={16} className="text-[#4f46e5] mb-3" /><div className="text-xs font-semibold">Tools</div></button>
+                    <button onClick={() => navigate("products")} className="rounded-2xl bg-white border border-[#e4e8f0] p-3 text-left cursor-pointer"><ShoppingBag size={16} className="text-emerald-600 mb-3" /><div className="text-xs font-semibold">Products</div></button>
+                    <button onClick={() => navigate("blog")} className="rounded-2xl bg-white border border-[#e4e8f0] p-3 text-left cursor-pointer"><BookOpen size={16} className="text-cyan-600 mb-3" /><div className="text-xs font-semibold">Articles</div></button>
                   </div>
                 </div>
               </div>
