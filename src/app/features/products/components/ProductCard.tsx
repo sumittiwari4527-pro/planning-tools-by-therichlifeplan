@@ -20,13 +20,9 @@ export function ProductCard({ product, onOpen }: { product: Product; onOpen: (pr
               <img
                 src={option2CarUrl}
                 alt="Smart Parking Sticker on a parked car"
-                className="h-full w-full object-cover object-center"
+                className="h-full w-full scale-[1.3] object-cover object-[72%_63%] transition-transform duration-500 group-hover:scale-[1.34]"
               />
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,21,28,0.72)_0%,rgba(3,21,28,0.25)_52%,rgba(3,21,28,0.05)_100%)]" />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#03151c]/80 to-transparent px-5 pb-4 pt-10">
-                <div className="text-sm font-bold text-white sm:text-base">Smart Parking Sticker</div>
-                <div className="mt-1 text-[11px] font-medium uppercase tracking-[0.14em] text-emerald-200">Scan · Contact · Reach You</div>
-              </div>
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent" />
             </div>
           ) : (
             <div
