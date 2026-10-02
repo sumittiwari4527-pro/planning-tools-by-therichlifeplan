@@ -22,8 +22,6 @@ export function ProductCard({ product, onOpen }: { product: Product; onOpen: (pr
                 alt="Smart Parking Sticker on a parked car"
                 className="h-full w-full object-cover object-[78%_58%] transition-transform duration-500 group-hover:scale-[1.03]"
               />
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/10" />
-              <div className="pointer-events-none absolute bottom-[14%] right-[13%] h-20 w-28 rounded-xl border-2 border-white/70 shadow-[0_0_0_6px_rgba(255,255,255,0.12)] sm:h-24 sm:w-36" />
             </div>
           ) : (
             <div
@@ -57,8 +55,8 @@ export function ProductCard({ product, onOpen }: { product: Product; onOpen: (pr
             <span className="text-base font-semibold text-[#0f1523]">
               {product.isFree ? "FREE" : `₹${product.price.toLocaleString("en-IN")}`}
             </span>
-            <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#4f46e5]">
-              View product <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+            <span className="inline-flex items-center gap-2 rounded-full bg-[#4f46e5] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all group-hover:bg-[#4338ca] group-hover:shadow-md">
+              Buy now <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
             </span>
           </div>
         </div>
