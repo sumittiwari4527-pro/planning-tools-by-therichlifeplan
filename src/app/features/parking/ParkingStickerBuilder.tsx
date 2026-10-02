@@ -302,7 +302,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
         submittedAt: new Date().toISOString(),
         previewType: "temporary",
         deliveryEmail: deliveryEmail.trim(),
-        _subject: `Smart Parking Sticker activation - Order ${orderId.trim()}`,
+        _subject: `Smart Parking Sticker – Activation Request #${orderId.trim()}`,
         _template: "table",
       };
       const response = await fetch(endpoint, {
