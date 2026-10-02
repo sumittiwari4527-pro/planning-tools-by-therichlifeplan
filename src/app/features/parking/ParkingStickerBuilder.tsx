@@ -113,6 +113,7 @@ declare global {
 }
 
 const checkoutUrl = import.meta.env.VITE_LEMON_SQUEEZY_PARKING_CHECKOUT_URL as string | undefined;
+const parkingRequestFormEndpoint = (import.meta.env.VITE_PARKING_REQUEST_FORM_ENDPOINT as string | undefined)?.trim() || "https://formsubmit.co/ajax/richlifetools.support@gmail.com";
 
 const createStickerDataUrl = async (theme: ParkingTheme, qr: string) =>
   svgToDataUrl(
@@ -284,11 +285,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
 
   const submitRequest = async () => {
     if (!activationMode || !canSubmitRequest) return;
-    const endpoint = import.meta.env.VITE_PARKING_REQUEST_FORM_ENDPOINT as string | undefined;
-    if (!endpoint) {
-      setError("Request submission is not configured yet. Add the parking request form endpoint to the site environment.");
-      return;
-    }
+    const endpoint = parkingRequestFormEndpoint;
     setSubmitting(true);
     setError("");
     try {
@@ -305,6 +302,8 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
         submittedAt: new Date().toISOString(),
         previewType: "temporary",
         deliveryEmail: deliveryEmail.trim(),
+        _subject: `Smart Parking Sticker activation - Order ${orderId.trim()}`,
+        _template: "table",
       };
       const response = await fetch(endpoint, {
         method: "POST",
