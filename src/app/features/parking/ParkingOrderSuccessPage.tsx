@@ -43,10 +43,11 @@ export function ParkingOrderSuccessPage() {
 
     try {
       const stored = sessionStorage.getItem(PARKING_ORDER_SUCCESS_STORAGE_KEY);
-      if (!stored) return;
-      const parsed = JSON.parse(stored) as SuccessData;
-      if (parsed.orderId && parsed.stickerDataUrl) {
-        setData(parsed);
+      if (stored) {
+        const parsed = JSON.parse(stored) as SuccessData;
+        if (parsed.orderId && parsed.stickerDataUrl) {
+          setData(parsed);
+        }
       }
     } catch {
       // Ignore invalid or unavailable session storage.
