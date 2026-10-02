@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Menu, X, Flame, Target, TrendingUp, Hash, ChevronRight, ArrowRight } from "lucide-react";
+import { Menu, X, Flame, Target, TrendingUp, Hash, ChevronRight, ArrowRight, ShoppingBag, BookOpen } from "lucide-react";
 import { useLocation, useNavigate as useRouterNavigate } from "react-router";
 
 // ─── Constants & Types ───────────────────────────────────────────
@@ -192,25 +192,44 @@ export default function App() {
               <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cyan-100/40 rounded-full blur-3xl pointer-events-none" />
               <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-28 w-full">
                 <div className="max-w-4xl">
-                  <div className="inline-flex items-center gap-2 bg-[#eef0fd] border border-indigo-100 rounded-full px-4 py-1.5 mb-10">
+                  <div className="inline-flex items-center gap-2 bg-[#eef0fd] border border-indigo-100 rounded-full px-4 py-1.5 mb-8">
                     <div className="w-1.5 h-1.5 bg-[#4f46e5] rounded-full animate-pulse" />
-                    <span className="text-[#4f46e5] text-xs font-mono uppercase tracking-widest">Tools + Knowledge</span>
+                    <span className="text-[#4f46e5] text-xs font-mono uppercase tracking-widest">Tools · Products · Knowledge</span>
                   </div>
-                  <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold text-[#0f1523] leading-[1.02] tracking-tight mb-6"
+                  <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-[#0f1523] leading-[1.02] tracking-tight mb-6"
                     style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                    Every tool.<br /><span className="text-[#4f46e5]">Every answer.</span>
+                    Everything you need<br /><span className="text-[#4f46e5]">for a richer life.</span>
                   </h1>
-                  <p className="text-[#6b7a99] text-lg sm:text-xl leading-relaxed mb-12 max-w-2xl">
-                    Precision calculators, converters, and in-depth editorial — built for people who need the right answer, fast.
+                  <p className="text-[#6b7a99] text-lg sm:text-xl leading-relaxed mb-10 max-w-2xl">
+                    Useful tools, practical products, and ideas that help you make better decisions and get more done.
                   </p>
-                  <div className="flex flex-wrap gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-3xl">
                     <button onClick={() => navigate("tools")}
-                      className="bg-[#4f46e5] text-white px-7 py-3.5 rounded-2xl font-semibold text-sm hover:bg-[#4338ca] transition-colors flex items-center gap-2 cursor-pointer shadow-xl shadow-indigo-200">
-                      Open Tools <ArrowRight size={15} />
+                      className="bg-white border border-[#e4e8f0] rounded-2xl p-4 text-left hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-50 transition-all group cursor-pointer">
+                      <div className="w-9 h-9 rounded-xl bg-[#eef0fd] text-[#4f46e5] flex items-center justify-center mb-3">
+                        <Flame size={17} />
+                      </div>
+                      <div className="text-[#0f1523] font-semibold text-sm">Tools</div>
+                      <div className="text-[#6b7a99] text-xs mt-1">Calculate, plan & convert</div>
+                      <div className="text-[#4f46e5] text-xs font-semibold mt-3 flex items-center gap-1">Explore Tools <ArrowRight size={12} /></div>
+                    </button>
+                    <button onClick={() => navigate("products")}
+                      className="bg-white border border-[#e4e8f0] rounded-2xl p-4 text-left hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-50 transition-all group cursor-pointer">
+                      <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-3">
+                        <ShoppingBag size={17} />
+                      </div>
+                      <div className="text-[#0f1523] font-semibold text-sm">Products</div>
+                      <div className="text-[#6b7a99] text-xs mt-1">Practical products for everyday life</div>
+                      <div className="text-emerald-600 text-xs font-semibold mt-3 flex items-center gap-1">Shop Products <ArrowRight size={12} /></div>
                     </button>
                     <button onClick={() => navigate("blog")}
-                      className="bg-white text-[#0f1523] border border-[#e4e8f0] px-7 py-3.5 rounded-2xl font-semibold text-sm hover:border-indigo-200 hover:bg-[#f8f9fb] transition-colors cursor-pointer">
-                      Read Articles
+                      className="bg-white border border-[#e4e8f0] rounded-2xl p-4 text-left hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-50 transition-all group cursor-pointer">
+                      <div className="w-9 h-9 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center mb-3">
+                        <BookOpen size={17} />
+                      </div>
+                      <div className="text-[#0f1523] font-semibold text-sm">Articles</div>
+                      <div className="text-[#6b7a99] text-xs mt-1">Learn, explore & discover</div>
+                      <div className="text-cyan-600 text-xs font-semibold mt-3 flex items-center gap-1">Read Articles <ArrowRight size={12} /></div>
                     </button>
                   </div>
                 </div>
