@@ -430,7 +430,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
       )}
 
       <div className="min-h-screen bg-[#f8f9fb] pt-16">
-      <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+        <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
         <button
           type="button"
           onClick={onBack}
@@ -747,7 +747,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
             </div>
           </section>
         </div>
-      </main>
+        </main>
       </div>
     </>
   );
