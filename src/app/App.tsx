@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Menu, X, Flame, Target, TrendingUp, Hash, ChevronRight, ArrowRight } from "lucide-react";
 import { useLocation, useNavigate as useRouterNavigate } from "react-router";
 
@@ -50,6 +50,10 @@ export default function App() {
   const location = useLocation();
   const routerNavigate = useRouterNavigate();
   const path = location.pathname.replace(/\/+$/, "") || "/";
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [location.pathname, location.search]);
   const page = pageFromPath(path);
   const routeArticle = articles.find((article) => articlePathById.get(article.id) === path);
   const productSlug = productSlugFromPath(path);
