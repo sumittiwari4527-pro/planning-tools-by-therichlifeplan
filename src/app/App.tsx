@@ -262,7 +262,7 @@ export default function App() {
                 <div>
                   <div className="text-[#4f46e5] text-xs font-mono uppercase tracking-widest mb-2">Shop</div>
                   <h2 className="text-3xl sm:text-4xl font-bold text-[#0f1523]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                    Latest & trending
+                    Explore Our Products
                   </h2>
                   <p className="text-[#6b7a99] text-sm mt-2">Products built to make everyday life easier.</p>
                 </div>
