@@ -1,13 +1,19 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { ArrowRight, Sparkles } from "lucide-react";
-import { products } from "../../data/products/products";
+import { products, getFeaturedProducts, getProductsByCategory } from "../../data/products/products";
+import { productCategories } from "../../data/products/categories";
 import type { Product } from "./types";
+import { ProductFilters } from "./components/ProductFilters";
 import { ProductGrid } from "./components/ProductGrid";
 
 export function ProductsPage({ onOpenProduct }: { onOpenProduct: (product: Product) => void }) {
-  const availableProducts = useMemo(
-    () => products.filter((product) => product.slug === "smart-parking-sticker"),
-    []
+  const [activeCategory, setActiveCategory] = useState<(typeof productCategories)[number]["id"]>("all");
+  const readyProductSlugs = new Set(["smart-parking-sticker"]);
+  const featured = getFeaturedProducts().filter((product) => readyProductSlugs.has(product.slug));
+
+  const visibleProducts = useMemo(
+    () => getProductsByCategory(activeCategory).filter((product) => readyProductSlugs.has(product.slug)),
+    [activeCategory]
   );
 
   return (
@@ -32,12 +38,27 @@ export function ProductsPage({ onOpenProduct }: { onOpenProduct: (product: Produ
       </section>
 
       <main className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-18">
-        <section className="mb-16">
-          <div className="mb-8">
-            <div className="mb-2 text-xs font-mono uppercase tracking-widest text-[#4f46e5]">Available now</div>
-            <h2 className="text-3xl font-bold text-[#0f1523]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Products you can buy</h2>
+        {featured.length > 0 && <section className="mb-16">
+          <div className="mb-8 flex items-end justify-between gap-4">
+            <div>
+              <div className="mb-2 text-xs font-mono uppercase tracking-widest text-[#4f46e5]">Handpicked</div>
+              <h2 className="text-3xl font-bold text-[#0f1523]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Featured products</h2>
+            </div>
           </div>
-          <ProductGrid products={availableProducts} onOpen={onOpenProduct} />
+          <ProductGrid products={featured} onOpen={onOpenProduct} />
+        </section>}
+
+        <section>
+          <div className="mb-8">
+            <div className="mb-2 text-xs font-mono uppercase tracking-widest text-[#06b6d4]">Browse the collection</div>
+            <h2 className="mb-6 text-3xl font-bold text-[#0f1523]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>All products</h2>
+            <ProductFilters
+              categories={productCategories}
+              activeCategory={activeCategory}
+              onChange={setActiveCategory}
+            />
+          </div>
+          <ProductGrid products={visibleProducts} onOpen={onOpenProduct} />
         </section>
 
         <section className="mt-16 rounded-3xl border border-indigo-100 bg-[#eef0fd] px-6 py-8 sm:px-10">
