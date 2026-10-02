@@ -1,8 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import type { Product } from "../types";
 import { ProductBadge } from "./ProductBadge";
-import lightTemplateUrl from "../../parking/assets/parking-template-light.svg?url";
-import darkTemplateUrl from "../../parking/assets/parking-template-dark.svg?url";
+import option2CarUrl from "../assets/option2-car-hero.webp?url";
 
 const typeLabels: Record<Product["type"], string> = {
   ebook: "Ebook",
@@ -17,25 +16,16 @@ export function ProductCard({ product, onOpen }: { product: Product; onOpen: (pr
       <button onClick={() => onOpen(product)} className="block w-full text-left cursor-pointer" aria-label={`View ${product.name}`}>
         <div className="relative aspect-[4/3] overflow-hidden bg-[#f3f5f9] p-5">
           {product.slug === "smart-parking-sticker" ? (
-            <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-2xl bg-[#eaf4ef] shadow-lg transition-transform duration-500 group-hover:scale-[1.02]">
-              <div className="absolute -right-12 -top-12 h-36 w-36 rounded-full bg-[#00b968]/10" />
-              <div className="absolute -bottom-14 -left-10 h-40 w-40 rounded-full bg-[#00b968]/10" />
-              <div className="relative flex w-[82%] max-w-[290px] items-center justify-center gap-3 rounded-2xl border border-[#d8e7df] bg-white p-3 shadow-md sm:gap-4 sm:p-4">
-                <img
-                  src={lightTemplateUrl}
-                  alt=""
-                  aria-hidden="true"
-                  className="h-auto w-[48%] max-w-[135px] drop-shadow-sm transition-transform duration-500 group-hover:-translate-y-1"
-                />
-                <img
-                  src={darkTemplateUrl}
-                  alt=""
-                  aria-hidden="true"
-                  className="h-auto w-[48%] max-w-[135px] drop-shadow-sm transition-transform duration-500 group-hover:translate-y-1"
-                />
-              </div>
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full border border-[#bde7d1] bg-white/90 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#008d50] shadow-sm">
-                Choose your design
+            <div className="relative h-full w-full overflow-hidden rounded-2xl bg-[#03151c] shadow-lg transition-transform duration-500 group-hover:scale-[1.02]">
+              <img
+                src={option2CarUrl}
+                alt="Smart Parking Sticker on a parked car"
+                className="h-full w-full object-cover object-center"
+              />
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,21,28,0.72)_0%,rgba(3,21,28,0.25)_52%,rgba(3,21,28,0.05)_100%)]" />
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#03151c]/80 to-transparent px-5 pb-4 pt-10">
+                <div className="text-sm font-bold text-white sm:text-base">Smart Parking Sticker</div>
+                <div className="mt-1 text-[11px] font-medium uppercase tracking-[0.14em] text-emerald-200">Scan · Contact · Reach You</div>
               </div>
             </div>
           ) : (
