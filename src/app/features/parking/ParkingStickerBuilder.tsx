@@ -162,6 +162,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
     form.name.trim().length >= 2 &&
     isValidPhone(form.phone) &&
     form.vehicle.trim().length >= 2 &&
+    (!form.email.trim() || isValidEmail(form.email)) &&
     (!activationMode || (orderId.trim().length >= 2 && Boolean(deliveryEmail.trim()) && isValidEmail(deliveryEmail)));
 
   const canSubmitRequest = Boolean(previewPayload) && !submitting && Boolean(orderId.trim()) && Boolean(deliveryEmail.trim()) && isValidEmail(deliveryEmail);
@@ -369,8 +370,12 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
     }
 
     const url = new URL(checkoutUrl);
-    url.searchParams.set("checkout[email]", form.email.trim());
-    url.searchParams.set("checkout[name]", form.name.trim());
+    if (form.email.trim()) {
+      url.searchParams.set("checkout[email]", form.email.trim());
+    }
+    if (form.name.trim()) {
+      url.searchParams.set("checkout[name]", form.name.trim());
+    }
 
     if (window.LemonSqueezy) {
       window.LemonSqueezy.Url.Open(url.toString());
