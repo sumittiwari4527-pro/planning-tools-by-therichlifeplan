@@ -11,6 +11,7 @@ export type ToolId = keyof typeof TOOL_ROUTES;
 
 export const PRODUCTS_ROUTE = "/products";
 export const PARKING_ACTIVATION_ROUTE = "/activate-sticker";
+export const PARKING_ORDER_SUCCESS_ROUTE = "/parking/order-success";
 export const productPath = (slug: string) => `${PRODUCTS_ROUTE}/${slug}`;
 export const productSlugFromPath = (path: string) => path.startsWith(`${PRODUCTS_ROUTE}/`) ? path.slice(`${PRODUCTS_ROUTE}/`.length).replace(/\/+$/, "") : null;
 
