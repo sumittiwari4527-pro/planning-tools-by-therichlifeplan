@@ -1,6 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import type { Product } from "../types";
 import { ProductBadge } from "./ProductBadge";
+import option2CarUrl from "../assets/option2-car-hero.webp?url";
 
 const typeLabels: Record<Product["type"], string> = {
   ebook: "Ebook",
@@ -14,16 +15,26 @@ export function ProductCard({ product, onOpen }: { product: Product; onOpen: (pr
     <article className="group overflow-hidden rounded-3xl border border-[#e4e8f0] bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-50">
       <button onClick={() => onOpen(product)} className="block w-full text-left cursor-pointer" aria-label={`View ${product.name}`}>
         <div className="relative aspect-[4/3] overflow-hidden bg-[#f3f5f9] p-5">
-          <div
-            className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-2xl px-8 text-center shadow-lg transition-transform duration-500 group-hover:scale-[1.02]"
-            style={{ background: `linear-gradient(145deg, ${product.coverAccent}, #0f1523)` }}
-          >
-            <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-white/10" />
-            <div className="absolute -bottom-12 -left-8 h-36 w-36 rounded-full bg-white/10" />
-            <div className="relative whitespace-pre-line text-2xl font-bold leading-tight tracking-tight text-white sm:text-3xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-              {product.coverLabel}
+          {product.slug === "smart-parking-sticker" ? (
+            <div className="relative h-full w-full overflow-hidden rounded-2xl bg-[#03151c] shadow-lg transition-transform duration-500 group-hover:scale-[1.02]">
+              <img
+                src={option2CarUrl}
+                alt="Smart Parking Sticker on a parked car"
+                className="h-full w-full object-cover object-[78%_58%] transition-transform duration-500 group-hover:scale-[1.03]"
+              />
             </div>
-          </div>
+          ) : (
+            <div
+              className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-2xl px-8 text-center shadow-lg transition-transform duration-500 group-hover:scale-[1.02]"
+              style={{ background: `linear-gradient(145deg, ${product.coverAccent}, #0f1523)` }}
+            >
+              <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-white/10" />
+              <div className="absolute -bottom-12 -left-8 h-36 w-36 rounded-full bg-white/10" />
+              <div className="relative whitespace-pre-line text-2xl font-bold leading-tight tracking-tight text-white sm:text-3xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                {product.coverLabel}
+              </div>
+            </div>
+          )}
           {product.badge && (
             <div className="absolute left-8 top-8">
               <ProductBadge badge={product.badge} />
@@ -44,8 +55,8 @@ export function ProductCard({ product, onOpen }: { product: Product; onOpen: (pr
             <span className="text-base font-semibold text-[#0f1523]">
               {product.isFree ? "FREE" : `₹${product.price.toLocaleString("en-IN")}`}
             </span>
-            <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#4f46e5]">
-              View product <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+            <span className="inline-flex items-center gap-2 rounded-full bg-[#4f46e5] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all group-hover:bg-[#4338ca] group-hover:shadow-md">
+              Buy now <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
             </span>
           </div>
         </div>
