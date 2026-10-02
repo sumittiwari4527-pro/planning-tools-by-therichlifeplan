@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ArrowRight, CheckCircle2, Copy, Download, ShoppingBag } from "lucide-react";
 import { productPath } from "../../utils/routes";
 
-const STORAGE_KEY = "richlifetools_parking_order_success";
+export const PARKING_ORDER_SUCCESS_STORAGE_KEY = "richlifetools_parking_order_success";
 
 type SuccessData = {
   orderId: string;
@@ -16,7 +16,7 @@ export function ParkingOrderSuccessPage() {
 
   useEffect(() => {
     try {
-      const stored = sessionStorage.getItem(STORAGE_KEY);
+      const stored = sessionStorage.getItem(PARKING_ORDER_SUCCESS_STORAGE_KEY);
       if (!stored) return;
       const parsed = JSON.parse(stored) as SuccessData;
       if (parsed.orderId && parsed.stickerDataUrl) {
