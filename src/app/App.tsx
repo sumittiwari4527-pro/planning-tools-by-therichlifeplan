@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Menu, X, Flame, Target, TrendingUp, Hash, ChevronRight, ArrowRight } from "lucide-react";
+import { Menu, X, Flame, Target, TrendingUp, Hash, ChevronRight, ArrowRight, ShoppingBag } from "lucide-react";
 import { useLocation, useNavigate as useRouterNavigate } from "react-router";
 
 // ─── Constants & Types ───────────────────────────────────────────
@@ -203,13 +203,17 @@ export default function App() {
                   <p className="text-[#6b7a99] text-lg sm:text-xl leading-relaxed mb-12 max-w-2xl">
                     Precision calculators, converters, and in-depth editorial — built for people who need the right answer, fast.
                   </p>
-                  <div className="flex flex-wrap gap-4">
+                  <div className="flex flex-wrap gap-3">
                     <button onClick={() => navigate("tools")}
-                      className="bg-[#4f46e5] text-white px-7 py-3.5 rounded-2xl font-semibold text-sm hover:bg-[#4338ca] transition-colors flex items-center gap-2 cursor-pointer shadow-xl shadow-indigo-200">
+                      className="bg-[#4f46e5] text-white px-6 py-3.5 rounded-2xl font-semibold text-sm hover:bg-[#4338ca] transition-colors flex items-center gap-2 cursor-pointer shadow-xl shadow-indigo-200">
                       Open Tools <ArrowRight size={15} />
                     </button>
+                    <button onClick={() => navigate("products")}
+                      className="bg-white text-[#0f1523] border border-[#e4e8f0] px-6 py-3.5 rounded-2xl font-semibold text-sm hover:border-emerald-200 hover:bg-[#f8f9fb] transition-colors flex items-center gap-2 cursor-pointer">
+                      Explore Products <ShoppingBag size={15} />
+                    </button>
                     <button onClick={() => navigate("blog")}
-                      className="bg-white text-[#0f1523] border border-[#e4e8f0] px-7 py-3.5 rounded-2xl font-semibold text-sm hover:border-indigo-200 hover:bg-[#f8f9fb] transition-colors cursor-pointer">
+                      className="bg-white text-[#0f1523] border border-[#e4e8f0] px-6 py-3.5 rounded-2xl font-semibold text-sm hover:border-cyan-200 hover:bg-[#f8f9fb] transition-colors cursor-pointer">
                       Read Articles
                     </button>
                   </div>
