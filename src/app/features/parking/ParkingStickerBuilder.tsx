@@ -305,20 +305,10 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
             return;
           }
 
-          // Close immediately, then retry briefly because Lemon Squeezy can still be
-          // transitioning from the payment confirmation to its success modal.
-          const closeCheckout = () => {
-            try {
-              window.LemonSqueezy?.Url.Close();
-            } catch {
-              // Ignore close failures; the retry below gives the overlay time to settle.
-            }
-          };
-
-          closeCheckout();
-          window.setTimeout(closeCheckout, 250);
-          window.setTimeout(closeCheckout, 750);
-          window.setTimeout(closeCheckout, 1500);
+          // The success event owns the checkout lifecycle: close the overlay
+          // immediately, then let the existing final-sticker flow navigate to
+          // the confirmation page once the purchased QR is ready.
+          window.LemonSqueezy?.Url.Close();
 
           setFinalOrderId(String(orderId));
           setPaymentComplete(true);
