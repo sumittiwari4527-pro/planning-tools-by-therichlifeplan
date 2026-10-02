@@ -310,6 +310,9 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
           // the confirmation page once the purchased QR is ready.
           window.LemonSqueezy?.Url.Close();
 
+          // Show processing state immediately after checkout closes while the
+          // permanent QR/sticker is generated and the confirmation page is prepared.
+          setError("");
           setFinalOrderId(String(orderId));
           setPaymentComplete(true);
         },
