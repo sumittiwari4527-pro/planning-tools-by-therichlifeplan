@@ -1,6 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import App from "./App";
-import { ARTICLE_ROUTES, TOOL_ROUTES, PARKING_ACTIVATION_ROUTE } from "./utils/routes";
+import { ARTICLE_ROUTES, TOOL_ROUTES, PARKING_ACTIVATION_ROUTE, PARKING_ORDER_SUCCESS_ROUTE } from "./utils/routes";
 
 export default function RoutingShell() {
   return (
@@ -15,6 +15,7 @@ export default function RoutingShell() {
         <Route path="/products/:slug" element={<App />} />
         <Route path="/parking" element={<App />} />
         <Route path={PARKING_ACTIVATION_ROUTE} element={<App />} />
+        <Route path={PARKING_ORDER_SUCCESS_ROUTE} element={<App />} />
         <Route path="/blog" element={<App />} />
         {ARTICLE_ROUTES.map((article) => (
           <Route key={article.id} path={article.path} element={<App />} />
