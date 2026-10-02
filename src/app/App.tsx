@@ -49,7 +49,11 @@ const pageFromPath = (path: string): Page => {
 export default function App() {
   const location = useLocation();
   const routerNavigate = useRouterNavigate();
-  const path = location.pathname.replace(/\/+$/, "") || "/";\n\n  useEffect(() => {\n    window.scrollTo({ top: 0, left: 0, behavior: "auto" });\n  }, [location.pathname, location.search]);
+  const path = location.pathname.replace(/\/+$/, "") || "/";
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [location.pathname, location.search]);
   const page = pageFromPath(path);
   const routeArticle = articles.find((article) => articlePathById.get(article.id) === path);
   const productSlug = productSlugFromPath(path);
