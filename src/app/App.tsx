@@ -274,35 +274,19 @@ export default function App() {
               {(() => {
                 const readySlugs = new Set(["smart-parking-sticker"]);
                 const readyProducts = products.filter((product) => readySlugs.has(product.slug));
-                const latestProducts = readyProducts.filter((product) => product.badge === "NEW");
-                const trendingProducts = readyProducts.filter((product) => product.badge === "POPULAR");
 
                 return (
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {latestProducts.length > 0 && (
-                      <div>
-                        <div className="flex items-center justify-between mb-4">
-                          <h3 className="text-lg font-semibold text-[#0f1523]">Latest</h3>
-                          <span className="text-xs font-mono uppercase tracking-widest text-[#4f46e5]">New</span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {readyProducts.map((product) => (
+                      <div key={product.slug} className={readyProducts.length === 1 ? "sm:col-span-2 lg:col-span-3 flex justify-start" : ""}>
+                        <div className={readyProducts.length === 1 ? "w-full max-w-md" : "w-full"}>
+                          <ProductCard
+                            product={product}
+                            onOpen={(product) => routerNavigate(productPath(product.slug))}
+                          />
                         </div>
-                        <ProductCard
-                          product={latestProducts[0]}
-                          onOpen={(product) => routerNavigate(productPath(product.slug))}
-                        />
                       </div>
-                    )}
-                    {trendingProducts.length > 0 && (
-                      <div>
-                        <div className="flex items-center justify-between mb-4">
-                          <h3 className="text-lg font-semibold text-[#0f1523]">Trending</h3>
-                          <span className="text-xs font-mono uppercase tracking-widest text-[#06b6d4]">Popular</span>
-                        </div>
-                        <ProductCard
-                          product={trendingProducts[0]}
-                          onOpen={(product) => routerNavigate(productPath(product.slug))}
-                        />
-                      </div>
-                    )}
+                    ))}
                   </div>
                 );
               })()}
