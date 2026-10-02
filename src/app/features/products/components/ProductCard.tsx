@@ -1,6 +1,8 @@
 import { ArrowRight } from "lucide-react";
 import type { Product } from "../types";
 import { ProductBadge } from "./ProductBadge";
+import lightTemplateUrl from "../../parking/assets/parking-template-light.svg?url";
+import darkTemplateUrl from "../../parking/assets/parking-template-dark.svg?url";
 
 const typeLabels: Record<Product["type"], string> = {
   ebook: "Ebook",
@@ -14,16 +16,40 @@ export function ProductCard({ product, onOpen }: { product: Product; onOpen: (pr
     <article className="group overflow-hidden rounded-3xl border border-[#e4e8f0] bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-50">
       <button onClick={() => onOpen(product)} className="block w-full text-left cursor-pointer" aria-label={`View ${product.name}`}>
         <div className="relative aspect-[4/3] overflow-hidden bg-[#f3f5f9] p-5">
-          <div
-            className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-2xl px-8 text-center shadow-lg transition-transform duration-500 group-hover:scale-[1.02]"
-            style={{ background: `linear-gradient(145deg, ${product.coverAccent}, #0f1523)` }}
-          >
-            <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-white/10" />
-            <div className="absolute -bottom-12 -left-8 h-36 w-36 rounded-full bg-white/10" />
-            <div className="relative whitespace-pre-line text-2xl font-bold leading-tight tracking-tight text-white sm:text-3xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-              {product.coverLabel}
+          {product.slug === "smart-parking-sticker" ? (
+            <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-2xl bg-[#eaf4ef] shadow-lg transition-transform duration-500 group-hover:scale-[1.02]">
+              <div className="absolute -right-12 -top-12 h-36 w-36 rounded-full bg-[#00b968]/10" />
+              <div className="absolute -bottom-14 -left-10 h-40 w-40 rounded-full bg-[#00b968]/10" />
+              <div className="relative flex w-[82%] max-w-[290px] items-center justify-center gap-3 rounded-2xl border border-[#d8e7df] bg-white p-3 shadow-md sm:gap-4 sm:p-4">
+                <img
+                  src={lightTemplateUrl}
+                  alt=""
+                  aria-hidden="true"
+                  className="h-auto w-[48%] max-w-[135px] drop-shadow-sm transition-transform duration-500 group-hover:-translate-y-1"
+                />
+                <img
+                  src={darkTemplateUrl}
+                  alt=""
+                  aria-hidden="true"
+                  className="h-auto w-[48%] max-w-[135px] drop-shadow-sm transition-transform duration-500 group-hover:translate-y-1"
+                />
+              </div>
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full border border-[#bde7d1] bg-white/90 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#008d50] shadow-sm">
+                Choose your design
+              </div>
             </div>
-          </div>
+          ) : (
+            <div
+              className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-2xl px-8 text-center shadow-lg transition-transform duration-500 group-hover:scale-[1.02]"
+              style={{ background: `linear-gradient(145deg, ${product.coverAccent}, #0f1523)` }}
+            >
+              <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-white/10" />
+              <div className="absolute -bottom-12 -left-8 h-36 w-36 rounded-full bg-white/10" />
+              <div className="relative whitespace-pre-line text-2xl font-bold leading-tight tracking-tight text-white sm:text-3xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                {product.coverLabel}
+              </div>
+            </div>
+          )}
           {product.badge && (
             <div className="absolute left-8 top-8">
               <ProductBadge badge={product.badge} />
