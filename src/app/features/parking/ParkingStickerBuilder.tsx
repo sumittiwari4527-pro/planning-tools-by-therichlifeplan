@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { ArrowLeft, Download, Mail, Palette, Phone, QrCode, ShoppingCart, Sparkles, CheckCircle2, Loader2 } from "lucide-react";
 import QRCode from "qrcode";
@@ -150,7 +150,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
   const [orderId, setOrderId] = useState("");
   const [deliveryEmail, setDeliveryEmail] = useState("");
   const [requestSubmitted, setRequestSubmitted] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
+  const [submitting, setSubmitting] = useState(false);\n  const formRef = useRef(form);\n\n  useEffect(() => {\n    formRef.current = form;\n  }, [form]);
 
   const canPreview =
     form.name.trim().length >= 2 &&
