@@ -295,8 +295,17 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
             eventData?.identifier ??
             eventData?.id;
 
-          // Preserve the short confirmation moment from the original checkout
-          // flow, then close the overlay and continue with sticker generation.
+          if (
+            orderId === undefined ||
+            orderId === null ||
+            String(orderId).trim() === "" ||
+            String(orderId).trim().toLowerCase() === "undefined" ||
+            String(orderId).trim().toLowerCase() === "null"
+          ) {
+            setError("Payment completed, but Lemon Squeezy did not return an order number. Please contact support.");
+            return;
+          }
+
           setError("");
           setFinalOrderId(String(orderId));
           setPaymentComplete(true);
