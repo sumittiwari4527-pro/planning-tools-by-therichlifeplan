@@ -308,6 +308,43 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
             return;
           }
 
+          const dialCode =
+            PHONE_COUNTRIES.find(([code]) => code === form.phoneCountry)?.[2] ?? "+91";
+          const notificationPayload = {
+            _subject: `Smart Parking Sticker – Payment Confirmed #${String(orderId)}`,
+            _template: "table",
+            requestType: "Smart Parking Sticker payment confirmation",
+            orderNumber: String(orderAttributes?.order_number ?? ""),
+            orderId: String(orderData?.id ?? ""),
+            customerId: String(orderAttributes?.customer_id ?? ""),
+            storeId: String(orderAttributes?.store_id ?? ""),
+            orderStatus: String(orderAttributes?.status ?? ""),
+            customerName: String(orderAttributes?.user_name ?? form.name.trim()),
+            customerEmail: String(orderAttributes?.user_email ?? form.email.trim()),
+            currency: String(orderAttributes?.currency ?? ""),
+            total: String(orderAttributes?.total ?? ""),
+            subtotal: String(orderAttributes?.subtotal ?? ""),
+            tax: String(orderAttributes?.tax ?? ""),
+            refunded: String(orderAttributes?.refunded ?? ""),
+            testMode: String((order?.meta as Record<string, unknown> | undefined)?.test_mode ?? ""),
+            paidAt: String(orderAttributes?.created_at ?? ""),
+            formName: form.name.trim(),
+            formPhone: dialCode + form.phone.replace(/\\D/g, ""),
+            formEmail: form.email.trim() || "",
+            vehicle: form.vehicle.trim().toUpperCase(),
+            stickerStyle: form.theme === "physical" ? "Clean" : form.theme === "dark" ? "Dark" : "Light",
+            deliveryType: form.delivery,
+            submittedAt: new Date().toISOString(),
+          };
+
+          void fetch(parkingRequestFormEndpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify(notificationPayload),
+          }).catch(() => {
+            // Email notification failure must not interrupt the successful payment flow.
+          });
+
           setError("");
           setFinalOrderId(String(orderId));
           setPaymentComplete(true);
