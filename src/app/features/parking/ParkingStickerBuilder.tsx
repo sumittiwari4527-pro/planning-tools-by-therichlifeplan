@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { ArrowLeft, Download, Mail, Palette, Phone, QrCode, ShoppingCart, Sparkles, CheckCircle2, Loader2 } from "lucide-react";
 import QRCode from "qrcode";
@@ -151,6 +151,11 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
   const [deliveryEmail, setDeliveryEmail] = useState("");
   const [requestSubmitted, setRequestSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const formRef = useRef(form);
+
+  useEffect(() => {
+    formRef.current = form;
+  }, [form]);
 
   const canPreview =
     form.name.trim().length >= 2 &&
@@ -307,6 +312,44 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
             setError("Payment completed, but Lemon Squeezy did not return an order number. Please contact support.");
             return;
           }
+
+          const currentForm = formRef.current;
+          const dialCode =
+            PHONE_COUNTRIES.find(([code]) => code === currentForm.phoneCountry)?.[2] ?? "+91";
+          const notificationPayload = {
+            _subject: `Smart Parking Sticker – Payment Confirmed #${String(orderId)}`,
+            _template: "table",
+            requestType: "Smart Parking Sticker payment confirmation",
+            orderNumber: String(orderAttributes?.order_number ?? ""),
+            orderId: String(orderData?.id ?? ""),
+            customerId: String(orderAttributes?.customer_id ?? ""),
+            storeId: String(orderAttributes?.store_id ?? ""),
+            orderStatus: String(orderAttributes?.status ?? ""),
+            customerName: String(orderAttributes?.user_name ?? currentForm.name.trim()),
+            customerEmail: String(orderAttributes?.user_email ?? currentForm.email.trim()),
+            currency: String(orderAttributes?.currency ?? ""),
+            total: String(orderAttributes?.total_formatted ?? orderAttributes?.total ?? ""),
+            subtotal: String(orderAttributes?.subtotal_formatted ?? orderAttributes?.subtotal ?? ""),
+            tax: String(orderAttributes?.tax_formatted ?? orderAttributes?.tax ?? ""),
+            refunded: String(orderAttributes?.refunded ?? ""),
+            testMode: String((order?.meta as Record<string, unknown> | undefined)?.test_mode ?? ""),
+            paidAt: String(orderAttributes?.created_at ?? ""),
+            formName: currentForm.name.trim(),
+            formPhone: dialCode + currentForm.phone.replace(/\D/g, ""),
+            formEmail: currentForm.email.trim() || "",
+            vehicle: currentForm.vehicle.trim().toUpperCase(),
+            stickerStyle: currentForm.theme === "physical" ? "Clean" : currentForm.theme === "dark" ? "Dark" : "Light",
+            deliveryType: currentForm.delivery,
+            submittedAt: new Date().toISOString(),
+          };
+
+          void fetch(parkingRequestFormEndpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify(notificationPayload),
+          }).catch(() => {
+            // Email notification failure must not interrupt the successful payment flow.
+          });
 
           setError("");
           setFinalOrderId(String(orderId));
