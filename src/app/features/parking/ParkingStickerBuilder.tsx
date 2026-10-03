@@ -150,7 +150,12 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
   const [orderId, setOrderId] = useState("");
   const [deliveryEmail, setDeliveryEmail] = useState("");
   const [requestSubmitted, setRequestSubmitted] = useState(false);
-  const [submitting, setSubmitting] = useState(false);\n  const formRef = useRef(form);\n\n  useEffect(() => {\n    formRef.current = form;\n  }, [form]);
+  const [submitting, setSubmitting] = useState(false);
+  const formRef = useRef(form);
+
+  useEffect(() => {
+    formRef.current = form;
+  }, [form]);
 
   const canPreview =
     form.name.trim().length >= 2 &&
@@ -308,8 +313,9 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
             return;
           }
 
+          const currentForm = formRef.current;
           const dialCode =
-            PHONE_COUNTRIES.find(([code]) => code === form.phoneCountry)?.[2] ?? "+91";
+            PHONE_COUNTRIES.find(([code]) => code === currentForm.phoneCountry)?.[2] ?? "+91";
           const notificationPayload = {
             _subject: `Smart Parking Sticker – Payment Confirmed #${String(orderId)}`,
             _template: "table",
@@ -319,8 +325,8 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
             customerId: String(orderAttributes?.customer_id ?? ""),
             storeId: String(orderAttributes?.store_id ?? ""),
             orderStatus: String(orderAttributes?.status ?? ""),
-            customerName: String(orderAttributes?.user_name ?? form.name.trim()),
-            customerEmail: String(orderAttributes?.user_email ?? form.email.trim()),
+            customerName: String(orderAttributes?.user_name ?? currentForm.name.trim()),
+            customerEmail: String(orderAttributes?.user_email ?? currentForm.email.trim()),
             currency: String(orderAttributes?.currency ?? ""),
             total: String(orderAttributes?.total ?? ""),
             subtotal: String(orderAttributes?.subtotal ?? ""),
@@ -328,12 +334,12 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
             refunded: String(orderAttributes?.refunded ?? ""),
             testMode: String((order?.meta as Record<string, unknown> | undefined)?.test_mode ?? ""),
             paidAt: String(orderAttributes?.created_at ?? ""),
-            formName: form.name.trim(),
-            formPhone: dialCode + form.phone.replace(/\\D/g, ""),
-            formEmail: form.email.trim() || "",
-            vehicle: form.vehicle.trim().toUpperCase(),
-            stickerStyle: form.theme === "physical" ? "Clean" : form.theme === "dark" ? "Dark" : "Light",
-            deliveryType: form.delivery,
+            formName: currentForm.name.trim(),
+            formPhone: dialCode + currentForm.phone.replace(/\D/g, ""),
+            formEmail: currentForm.email.trim() || "",
+            vehicle: currentForm.vehicle.trim().toUpperCase(),
+            stickerStyle: currentForm.theme === "physical" ? "Clean" : currentForm.theme === "dark" ? "Dark" : "Light",
+            deliveryType: currentForm.delivery,
             submittedAt: new Date().toISOString(),
           };
 
