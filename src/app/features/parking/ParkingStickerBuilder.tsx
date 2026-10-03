@@ -284,20 +284,18 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
         eventHandler: (event) => {
           if (event.event !== "Checkout.Success") return;
 
-          // Temporary preview-only diagnostic: show the exact success event
-          // received from Lemon Squeezy so the payload can be inspected on mobile.
-          window.alert(`Checkout.Success response:\n\n${JSON.stringify(event, null, 2)}`);
-
           const eventData = event.data as Record<string, unknown> | undefined;
-          const attributes =
-            eventData?.attributes as Record<string, unknown> | undefined;
+          const order =
+            eventData?.order as Record<string, unknown> | undefined;
+          const orderData =
+            order?.data as Record<string, unknown> | undefined;
+          const orderAttributes =
+            orderData?.attributes as Record<string, unknown> | undefined;
 
           const orderId =
-            attributes?.order_number ??
-            eventData?.order_number ??
-            attributes?.identifier ??
-            eventData?.identifier ??
-            eventData?.id;
+            orderAttributes?.order_number ??
+            orderAttributes?.identifier ??
+            orderData?.id;
 
           if (
             orderId === undefined ||
