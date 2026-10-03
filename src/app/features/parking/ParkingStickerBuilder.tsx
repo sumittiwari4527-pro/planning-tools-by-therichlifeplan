@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
-import { ArrowLeft, Download, Mail, Palette, Phone, QrCode, ShoppingCart, Sparkles, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Download, Mail, Palette, Phone, QrCode, ShoppingCart, Sparkles, CheckCircle2, Loader2 } from "lucide-react";
 import QRCode from "qrcode";
 import {
   encryptParkingPayload,
@@ -107,14 +107,8 @@ const initialForm: FormState = {
 declare global {
   interface Window {
     LemonSqueezy?: {
-      Setup: (options: { eventHandler: (event: { event: string; data?: {
-        id?: string | number;
-        identifier?: string;
-        order_number?: string | number;
-        attributes?: { identifier?: string; order_number?: string | number };
-        data?: { id?: string | number; identifier?: string; attributes?: { identifier?: string; order_number?: string | number } };
-      } }) => void }) => void;
-      Url: { Open: (url: string) => void };
+      Setup: (options: { eventHandler: (event: { event: string; data?: unknown }) => void }) => void;
+      Url: { Open: (url: string) => void; Close: () => void };
       Refresh: () => void;
     };
     createLemonSqueezy?: () => void;
@@ -289,22 +283,32 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
       window.LemonSqueezy.Setup({
         eventHandler: (event) => {
           if (event.event !== "Checkout.Success") return;
-          const orderId =
-            event.data?.order_number ??
-            event.data?.attributes?.order_number ??
-            event.data?.data?.attributes?.order_number ??
-            event.data?.identifier ??
-            event.data?.attributes?.identifier ??
-            event.data?.data?.identifier ??
-            event.data?.data?.attributes?.identifier ??
-            event.data?.id ??
-            event.data?.data?.id;
 
-          if (!orderId) {
+          const eventData = event.data as Record<string, unknown> | undefined;
+          const order =
+            eventData?.order as Record<string, unknown> | undefined;
+          const orderData =
+            order?.data as Record<string, unknown> | undefined;
+          const orderAttributes =
+            orderData?.attributes as Record<string, unknown> | undefined;
+
+          const orderId =
+            orderAttributes?.order_number ??
+            orderAttributes?.identifier ??
+            orderData?.id;
+
+          if (
+            orderId === undefined ||
+            orderId === null ||
+            String(orderId).trim() === "" ||
+            String(orderId).trim().toLowerCase() === "undefined" ||
+            String(orderId).trim().toLowerCase() === "null"
+          ) {
             setError("Payment completed, but Lemon Squeezy did not return an order number. Please contact support.");
             return;
           }
 
+          setError("");
           setFinalOrderId(String(orderId));
           setPaymentComplete(true);
           window.setTimeout(() => window.LemonSqueezy?.Url.Close(), 150);
@@ -407,8 +411,23 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fb] pt-16">
-      <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+    <>
+      {paymentComplete && !finalStickerReady && !error && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#071421]/70 px-6 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-3xl bg-white p-8 text-center shadow-2xl">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#eefaf3]">
+              <Loader2 size={28} className="animate-spin text-[#00a961]" />
+            </div>
+            <h2 className="mt-5 text-xl font-bold text-[#0f1523]">Payment successful</h2>
+            <p className="mt-2 text-sm leading-6 text-[#6b7a99]">
+              We’re preparing your permanent QR sticker. Please don’t close this page.
+            </p>
+          </div>
+        </div>
+      )}
+
+      <div className="min-h-screen bg-[#f8f9fb] pt-16">
+        <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
         <button
           type="button"
           onClick={onBack}
@@ -725,7 +744,8 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
             </div>
           </section>
         </div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </>
   );
 }
