@@ -116,7 +116,6 @@ declare global {
 }
 
 const checkoutUrl = import.meta.env.VITE_LEMON_SQUEEZY_PARKING_CHECKOUT_URL as string | undefined;
-const razorpayPaymentLink = ((import.meta.env.VITE_RAZORPAY_PARKING_PAYMENT_LINK as string | undefined)?.trim() || "https://rzp.io/rzp/sjHvWjkH");
 const parkingRequestFormEndpoint = (import.meta.env.VITE_PARKING_REQUEST_FORM_ENDPOINT as string | undefined)?.trim() || "https://formsubmit.co/ajax/richlifetools.support@gmail.com";
 
 const createStickerDataUrl = async (theme: ParkingTheme, qr: string) =>
@@ -411,31 +410,54 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
       setSubmitting(false);
     }
   };
-  const startCheckout = (method: "razorpay" | "lemonsqueezy") => {
-    if (form.delivery === "physical") return;
-    const targetUrl = method === "razorpay" ? razorpayPaymentLink : checkoutUrl;
-    if (!previewPayload || !targetUrl) {
-      setError(
-        method === "razorpay"
-          ? "Razorpay checkout is not configured yet. Add the Razorpay parking payment link to the site environment."
-          : "Lemon Squeezy checkout is not configured yet. Add the Lemon Squeezy parking checkout URL to the site environment."
-      );
+  const startCheckout = async (method: "razorpay" | "lemonsqueezy") => {
+    if (form.delivery === "physical" || !previewPayload) return;
+
+    if (method === "lemonsqueezy") {
+      if (!checkoutUrl) {
+        setError("Lemon Squeezy checkout is not configured yet. Add the Lemon Squeezy parking checkout URL to the site environment.");
+        return;
+      }
+
+      const url = new URL(checkoutUrl);
+      if (form.email.trim()) url.searchParams.set("checkout[email]", form.email.trim());
+      if (form.name.trim()) url.searchParams.set("checkout[name]", form.name.trim());
+
+      setPaymentMethodOpen(false);
+      if (window.LemonSqueezy) {
+        window.LemonSqueezy.Url.Open(url.toString());
+      } else {
+        window.open(url.toString(), "_blank", "noopener,noreferrer");
+      }
       return;
     }
 
-    const url = new URL(targetUrl);
-    if (form.email.trim()) {
-      url.searchParams.set("checkout[email]", form.email.trim());
-    }
-    if (form.name.trim()) {
-      url.searchParams.set("checkout[name]", form.name.trim());
-    }
-
+    setError("");
     setPaymentMethodOpen(false);
-    if (method === "lemonsqueezy" && window.LemonSqueezy) {
-      window.LemonSqueezy.Url.Open(url.toString());
-    } else {
-      window.open(url.toString(), "_blank", "noopener,noreferrer");
+
+    try {
+      const dialCode = PHONE_COUNTRIES.find(([code]) => code === form.phoneCountry)?.[2] ?? "+91";
+      const response = await fetch("/api/razorpay/create-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          name: form.name.trim(),
+          phone: dialCode + form.phone.replace(/\D/g, ""),
+          email: form.email.trim(),
+          vehicle: form.vehicle.trim().toUpperCase(),
+          theme: form.theme === "light" ? "light" : "dark",
+        }),
+      });
+
+      const result = await response.json();
+      if (!response.ok || !result?.shortUrl) {
+        throw new Error(result?.error || "Unable to start Razorpay checkout.");
+      }
+
+      window.location.assign(result.shortUrl);
+    } catch (checkoutError) {
+      setPaymentMethodOpen(true);
+      setError(checkoutError instanceof Error ? checkoutError.message : "Unable to start Razorpay checkout.");
     }
   };
 
@@ -756,7 +778,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                     </button>
                   )}
                 </div>
-                {!activationMode && form.delivery === "digital" && !checkoutUrl && !razorpayPaymentLink && (
+                {!activationMode && form.delivery === "digital" && !checkoutUrl && (
                   <p className="mt-3 text-xs text-[#7a6651]">
                     Add a Razorpay payment link or Lemon Squeezy checkout URL to enable payment.
                   </p>
@@ -783,7 +805,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                       <div className="mt-5 grid gap-3">
                         <button
                           type="button"
-                          disabled={!razorpayPaymentLink}
+                          disabled={false}
                           onClick={() => startCheckout("razorpay")}
                           className="group flex w-full items-center gap-4 rounded-2xl border border-[#dfe7e3] bg-white p-4 text-left transition hover:border-[#00b968] hover:bg-[#f5fffa] disabled:cursor-not-allowed disabled:opacity-50"
                         >
