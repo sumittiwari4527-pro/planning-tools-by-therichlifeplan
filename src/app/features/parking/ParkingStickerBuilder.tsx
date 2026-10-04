@@ -111,12 +111,38 @@ declare global {
       Url: { Open: (url: string) => void; Close: () => void };
       Refresh: () => void;
     };
+    Razorpay?: new (options: Record<string, unknown>) => {
+      open: () => void;
+      on?: (event: string, handler: (response: any) => void) => void;
+    };
     createLemonSqueezy?: () => void;
   }
 }
 
 const checkoutUrl = import.meta.env.VITE_LEMON_SQUEEZY_PARKING_CHECKOUT_URL as string | undefined;
 const parkingRequestFormEndpoint = (import.meta.env.VITE_PARKING_REQUEST_FORM_ENDPOINT as string | undefined)?.trim() || "https://formsubmit.co/ajax/richlifetools.support@gmail.com";
+
+const loadRazorpayCheckout = () =>
+  new Promise<void>((resolve, reject) => {
+    if (window.Razorpay) {
+      resolve();
+      return;
+    }
+
+    const existing = document.querySelector<HTMLScriptElement>('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
+    if (existing) {
+      existing.addEventListener("load", () => resolve(), { once: true });
+      existing.addEventListener("error", () => reject(new Error("Unable to load Razorpay Checkout.")), { once: true });
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("Unable to load Razorpay Checkout."));
+    document.head.appendChild(script);
+  });
 
 const createStickerDataUrl = async (theme: ParkingTheme, qr: string) =>
   svgToDataUrl(
@@ -437,7 +463,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
 
     try {
       const dialCode = PHONE_COUNTRIES.find(([code]) => code === form.phoneCountry)?.[2] ?? "+91";
-      const response = await fetch("/api/razorpay/create-payment", {
+      const response = await fetch("/api/razorpay/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
@@ -450,11 +476,73 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
       });
 
       const result = await response.json();
-      if (!response.ok || !result?.shortUrl) {
+      if (!response.ok || !result?.orderId || !result?.keyId) {
         throw new Error(result?.error || "Unable to start Razorpay checkout.");
       }
 
-      window.location.assign(result.shortUrl);
+      await loadRazorpayCheckout();
+
+      if (!window.Razorpay) {
+        throw new Error("Razorpay Checkout is unavailable. Please try again.");
+      }
+
+      const razorpay = new window.Razorpay({
+        key: result.keyId,
+        amount: result.amount,
+        currency: result.currency,
+        name: "TheRichLifePlan",
+        description: "Smart Car Parking Sticker",
+        order_id: result.orderId,
+        prefill: {
+          name: form.name.trim(),
+          email: form.email.trim(),
+          contact: dialCode + form.phone.replace(/\D/g, ""),
+        },
+        notes: {
+          product: "smart-parking-sticker",
+          vehicle: form.vehicle.trim().toUpperCase(),
+        },
+        theme: {
+          color: "#071421",
+        },
+        handler: async (paymentResponse: any) => {
+          try {
+            const verifyResponse = await fetch("/api/razorpay/verify-payment", {
+              method: "POST",
+              headers: { "Content-Type": "application/json", Accept: "application/json" },
+              body: JSON.stringify({
+                razorpay_order_id: paymentResponse?.razorpay_order_id,
+                razorpay_payment_id: paymentResponse?.razorpay_payment_id,
+                razorpay_signature: paymentResponse?.razorpay_signature,
+              }),
+            });
+
+            const verifyResult = await verifyResponse.json();
+            if (!verifyResponse.ok || !verifyResult?.paid) {
+              throw new Error(verifyResult?.error || "We couldn't verify the Razorpay payment.");
+            }
+
+            routerNavigate(
+              `${PARKING_ORDER_SUCCESS_ROUTE}?razorpay_order_id=${encodeURIComponent(result.orderId)}`,
+              { replace: true }
+            );
+          } catch (verificationError) {
+            setError(
+              verificationError instanceof Error
+                ? verificationError.message
+                : "Payment completed, but verification failed. Please contact support."
+            );
+            setPaymentMethodOpen(true);
+          }
+        },
+      });
+
+      razorpay.on?.("payment.failed", (failure: any) => {
+        setError(failure?.error?.description || "Razorpay payment failed. Please try again.");
+        setPaymentMethodOpen(true);
+      });
+
+      razorpay.open();
     } catch (checkoutError) {
       setPaymentMethodOpen(true);
       setError(checkoutError instanceof Error ? checkoutError.message : "Unable to start Razorpay checkout.");
