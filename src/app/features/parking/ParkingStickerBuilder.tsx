@@ -116,6 +116,7 @@ declare global {
 }
 
 const checkoutUrl = import.meta.env.VITE_LEMON_SQUEEZY_PARKING_CHECKOUT_URL as string | undefined;
+const razorpayPaymentLink = import.meta.env.VITE_RAZORPAY_PARKING_PAYMENT_LINK as string | undefined;
 const parkingRequestFormEndpoint = (import.meta.env.VITE_PARKING_REQUEST_FORM_ENDPOINT as string | undefined)?.trim() || "https://formsubmit.co/ajax/richlifetools.support@gmail.com";
 
 const createStickerDataUrl = async (theme: ParkingTheme, qr: string) =>
@@ -144,6 +145,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
   const [previewPayload, setPreviewPayload] = useState<ParkingPayload | null>(null);
   const [error, setError] = useState("");
   const [paymentComplete, setPaymentComplete] = useState(false);
+  const [paymentMethodOpen, setPaymentMethodOpen] = useState(false);
   const [finalOrderId, setFinalOrderId] = useState("");
   const [finalStickerReady, setFinalStickerReady] = useState(false);
   const [touched, setTouched] = useState({ phone: false, stickerEmail: false, deliveryEmail: false, orderId: false });
@@ -409,14 +411,19 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
       setSubmitting(false);
     }
   };
-  const startCheckout = () => {
+  const startCheckout = (method: "razorpay" | "lemonsqueezy") => {
     if (form.delivery === "physical") return;
-    if (!previewPayload || !checkoutUrl) {
-      setError("Checkout is not configured yet. Add the Lemon Squeezy parking checkout URL to the site environment.");
+    const targetUrl = method === "razorpay" ? razorpayPaymentLink : checkoutUrl;
+    if (!previewPayload || !targetUrl) {
+      setError(
+        method === "razorpay"
+          ? "Razorpay checkout is not configured yet. Add the Razorpay parking payment link to the site environment."
+          : "Lemon Squeezy checkout is not configured yet. Add the Lemon Squeezy parking checkout URL to the site environment."
+      );
       return;
     }
 
-    const url = new URL(checkoutUrl);
+    const url = new URL(targetUrl);
     if (form.email.trim()) {
       url.searchParams.set("checkout[email]", form.email.trim());
     }
@@ -424,7 +431,8 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
       url.searchParams.set("checkout[name]", form.name.trim());
     }
 
-    if (window.LemonSqueezy) {
+    setPaymentMethodOpen(false);
+    if (method === "lemonsqueezy" && window.LemonSqueezy) {
       window.LemonSqueezy.Url.Open(url.toString());
     } else {
       window.open(url.toString(), "_blank", "noopener,noreferrer");
@@ -738,17 +746,85 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                   ) : (
                     <button
                       type="button"
-                      onClick={startCheckout}
+                      onClick={() => {
+                        setError("");
+                        setPaymentMethodOpen(true);
+                      }}
                       className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#00b968] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-100"
                     >
                       <ShoppingCart size={16} /> Buy now
                     </button>
                   )}
                 </div>
-                {!activationMode && form.delivery === "digital" && !checkoutUrl && (
+                {!activationMode && form.delivery === "digital" && !checkoutUrl && !razorpayPaymentLink && (
                   <p className="mt-3 text-xs text-[#7a6651]">
-                    Checkout URL is not configured yet. The UI is ready for the Lemon Squeezy product checkout URL.
+                    Add a Razorpay payment link or Lemon Squeezy checkout URL to enable payment.
                   </p>
+                )}
+
+                {paymentMethodOpen && (
+                  <div className="fixed inset-0 z-[80] flex items-end justify-center bg-slate-950/50 p-0 sm:items-center sm:p-5">
+                    <div className="w-full max-w-md rounded-t-3xl bg-white p-5 shadow-2xl sm:rounded-3xl">
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <div className="text-lg font-bold text-[#0f1523]">Choose your payment method</div>
+                          <p className="mt-1 text-xs leading-5 text-[#6b7a99]">Pay securely for your Smart Car Parking Sticker.</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setPaymentMethodOpen(false)}
+                          className="rounded-full p-2 text-[#6b7a99] hover:bg-slate-100"
+                          aria-label="Close payment options"
+                        >
+                          <X size={18} />
+                        </button>
+                      </div>
+
+                      <div className="mt-5 grid gap-3">
+                        <button
+                          type="button"
+                          disabled={!razorpayPaymentLink}
+                          onClick={() => startCheckout("razorpay")}
+                          className="group flex w-full items-center gap-4 rounded-2xl border border-[#dfe7e3] bg-white p-4 text-left transition hover:border-[#00b968] hover:bg-[#f5fffa] disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#e7faf1] text-[#00a961]">
+                            <CreditCard size={21} />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2 text-sm font-bold text-[#0f1523]">
+                              Razorpay
+                              <span className="rounded-full bg-[#e7faf1] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#008d50]">India</span>
+                            </div>
+                            <div className="mt-1 text-xs text-[#6b7a99]">UPI · Google Pay · Cards · Net Banking</div>
+                          </div>
+                          <ArrowRight size={17} className="text-[#8b95aa] transition group-hover:translate-x-0.5" />
+                        </button>
+
+                        <button
+                          type="button"
+                          disabled={!checkoutUrl}
+                          onClick={() => startCheckout("lemonsqueezy")}
+                          className="group flex w-full items-center gap-4 rounded-2xl border border-[#dfe7e3] bg-white p-4 text-left transition hover:border-[#4f46e5] hover:bg-[#f8f7ff] disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#eef0fd] text-[#4f46e5]">
+                            <Globe2 size={21} />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2 text-sm font-bold text-[#0f1523]">
+                              Lemon Squeezy
+                              <span className="rounded-full bg-[#eef0fd] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#4f46e5]">International</span>
+                            </div>
+                            <div className="mt-1 text-xs text-[#6b7a99]">International cards and payments</div>
+                          </div>
+                          <ArrowRight size={17} className="text-[#8b95aa] transition group-hover:translate-x-0.5" />
+                        </button>
+                      </div>
+
+                      <p className="mt-4 text-center text-[11px] leading-5 text-[#8b95aa]">
+                        Both options use the same ₹199 sticker and existing personalization flow.
+                      </p>
+                    </div>
+                  </div>
                 )}
               </div>
             )}
