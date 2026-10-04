@@ -70,14 +70,16 @@ export function ParkingOrderSuccessPage() {
   useEffect(() => {
     const verifyRazorpayOrder = async () => {
       const params = new URLSearchParams(window.location.search);
-      if (params.get("razorpay_payment_link_id")) {
+      const razorpayOrderId = params.get("razorpay_order_id");
+      if (razorpayOrderId) {
         setLoading(true);
         setError("");
 
         try {
-          const response = await fetch(`/api/razorpay/verify-payment?${params.toString()}`, {
-            headers: { Accept: "application/json" },
-          });
+          const response = await fetch(
+            `/api/razorpay/verify-order?razorpay_order_id=${encodeURIComponent(razorpayOrderId)}`,
+            { headers: { Accept: "application/json" } }
+          );
           const result = await response.json();
 
           if (!response.ok || !result?.paid) {
