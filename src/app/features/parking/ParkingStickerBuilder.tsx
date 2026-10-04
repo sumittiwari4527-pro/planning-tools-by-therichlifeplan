@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import { ArrowLeft, Download, Mail, Palette, Phone, QrCode, ShoppingCart, Sparkles, CheckCircle2, Loader2, CreditCard, Globe2, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Download, Mail, Palette, Phone, QrCode, ShoppingCart, Sparkles, CheckCircle2, Loader2, CreditCard, Globe2, X } from "lucide-react";
 import QRCode from "qrcode";
 import {
   encryptParkingPayload,
