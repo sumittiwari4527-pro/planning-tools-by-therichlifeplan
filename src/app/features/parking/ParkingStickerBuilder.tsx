@@ -116,7 +116,7 @@ declare global {
 }
 
 const checkoutUrl = import.meta.env.VITE_LEMON_SQUEEZY_PARKING_CHECKOUT_URL as string | undefined;
-const razorpayPaymentLink = import.meta.env.VITE_RAZORPAY_PARKING_PAYMENT_LINK as string | undefined;
+const razorpayPaymentLink = ((import.meta.env.VITE_RAZORPAY_PARKING_PAYMENT_LINK as string | undefined)?.trim() || "https://rzp.io/rzp/sjHvWjkH");
 const parkingRequestFormEndpoint = (import.meta.env.VITE_PARKING_REQUEST_FORM_ENDPOINT as string | undefined)?.trim() || "https://formsubmit.co/ajax/richlifetools.support@gmail.com";
 
 const createStickerDataUrl = async (theme: ParkingTheme, qr: string) =>
