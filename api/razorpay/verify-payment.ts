@@ -16,71 +16,86 @@ const safeEqualHex = (a: string, b: string) => {
   return timingSafeEqual(Buffer.from(a, "hex"), Buffer.from(b, "hex"));
 };
 
+const fetchRazorpay = async (url: string, keyId: string, keySecret: string) => {
+  const auth = Buffer.from(`${keyId}:${keySecret}`).toString("base64");
+  return fetch(url, {
+    headers: {
+      Authorization: `Basic ${auth}`,
+      Accept: "application/json",
+    },
+  });
+};
+
+const getVerifiedOrder = async (orderId: string, paymentId: string, keyId: string, keySecret: string) => {
+  const orderResponse = await fetchRazorpay(
+    `https://api.razorpay.com/v1/orders/${encodeURIComponent(orderId)}`,
+    keyId,
+    keySecret
+  );
+  const order = await orderResponse.json();
+  if (!orderResponse.ok) throw new Error("Unable to fetch the Razorpay order.");
+
+  const paymentResponse = await fetchRazorpay(
+    `https://api.razorpay.com/v1/payments/${encodeURIComponent(paymentId)}`,
+    keyId,
+    keySecret
+  );
+  const payment = await paymentResponse.json();
+  if (!paymentResponse.ok) throw new Error("Unable to fetch the Razorpay payment.");
+
+  const notes = order.notes || {};
+  const valid =
+    order.id === orderId &&
+    order.amount === 19900 &&
+    order.currency === "INR" &&
+    payment.order_id === orderId &&
+    payment.id === paymentId &&
+    payment.amount === 19900 &&
+    payment.currency === "INR" &&
+    payment.status === "captured" &&
+    notes.product === "smart-parking-sticker";
+
+  if (!valid) throw new Error("Razorpay payment has not been captured for this Smart Parking Sticker order.");
+
+  return {
+    paid: true,
+    orderId,
+    paymentId,
+    name: String(notes.name || ""),
+    phone: String(notes.phone || ""),
+    email: String(notes.email || ""),
+    vehicle: String(notes.vehicle || ""),
+    theme: notes.theme === "light" ? "light" : "dark",
+  };
+};
+
 export default async function handler(req: any, res: any) {
-  if (req.method !== "GET") {
-    res.setHeader("Allow", "GET");
+  if (req.method !== "POST") {
+    res.setHeader("Allow", "POST");
     return json(res, 405, { error: "Method not allowed." });
   }
 
-  const query = req.query || {};
-  const paymentId = String(query.razorpay_payment_id || "");
-  const paymentLinkId = String(query.razorpay_payment_link_id || "");
-  const referenceId = String(query.razorpay_payment_link_reference_id || "");
-  const status = String(query.razorpay_payment_link_status || "");
-  const signature = String(query.razorpay_signature || "");
+  const body = req.body || {};
+  const orderId = String(body.razorpay_order_id || "");
+  const paymentId = String(body.razorpay_payment_id || "");
+  const signature = String(body.razorpay_signature || "");
 
-  if (!paymentId || !paymentLinkId || !referenceId || !signature) {
-    return json(res, 400, { error: "Missing Razorpay callback parameters." });
+  if (!orderId || !paymentId || !signature) {
+    return json(res, 400, { error: "Missing Razorpay payment verification parameters." });
   }
 
   try {
     const { keyId, keySecret } = getCredentials();
-    const signedPayload = \`\${paymentLinkId}|\${referenceId}|\${status}|\${paymentId}\`;
-    const expected = createHmac("sha256", keySecret).update(signedPayload).digest("hex");
+    const expected = createHmac("sha256", keySecret).update(`${orderId}|${paymentId}`).digest("hex");
 
     if (!safeEqualHex(expected, signature)) {
-      return json(res, 401, { error: "Invalid Razorpay callback signature." });
+      return json(res, 401, { error: "Invalid Razorpay payment signature." });
     }
 
-    const auth = Buffer.from(\`\${keyId}:\${keySecret}\`).toString("base64");
-    const response = await fetch(
-      \`https://api.razorpay.com/v1/payment_links/\${encodeURIComponent(paymentLinkId)}\`,
-      { headers: { Authorization: \`Basic \${auth}\` } }
-    );
-    const link = await response.json();
-
-    if (!response.ok) return json(res, 502, { error: "Unable to verify the Razorpay payment." });
-
-    const captured = Array.isArray(link.payments)
-      && link.payments.some((payment: any) => payment.payment_id === paymentId && payment.status === "captured");
-
-    if (
-      link.status !== "paid" ||
-      link.amount !== 19900 ||
-      link.amount_paid !== 19900 ||
-      link.reference_id !== referenceId ||
-      !captured
-    ) {
-      return json(res, 402, { error: "Razorpay payment has not been captured." });
-    }
-
-    const notes = link.notes || {};
-    if (notes.product !== "smart-parking-sticker") {
-      return json(res, 400, { error: "Invalid Smart Parking Sticker order." });
-    }
-
-    return json(res, 200, {
-      paid: true,
-      orderId: referenceId,
-      paymentId,
-      name: String(notes.name || ""),
-      phone: String(notes.phone || ""),
-      email: String(notes.email || ""),
-      vehicle: String(notes.vehicle || ""),
-      theme: notes.theme === "light" ? "light" : "dark",
-    });
+    const result = await getVerifiedOrder(orderId, paymentId, keyId, keySecret);
+    return json(res, 200, result);
   } catch (error) {
-    return json(res, 500, {
+    return json(res, 402, {
       error: error instanceof Error ? error.message : "Unable to verify Razorpay payment.",
     });
   }
