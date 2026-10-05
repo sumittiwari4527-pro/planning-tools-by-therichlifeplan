@@ -75,7 +75,7 @@ export default async function handler(req: any, res: any) {
       phone: String(notes.phone || ""),
       email: String(notes.email || ""),
       vehicle: String(notes.vehicle || ""),
-      theme: notes.theme === "light" || notes.theme === "dark" ? notes.theme : "dark",
+      theme: notes.theme === "light" || notes.theme === "dark" || notes.theme === "physical" ? notes.theme : "dark",
     });
   } catch (error) {
     return json(res, 500, {
