@@ -507,7 +507,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
           phone: dialCode + form.phone.replace(/\D/g, ""),
           email: form.email.trim(),
           vehicle: form.vehicle.trim().toUpperCase(),
-          theme: form.theme === "light" ? "light" : "dark",
+          theme: form.theme,
         }),
       });
 
