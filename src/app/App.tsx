@@ -114,17 +114,36 @@ export default function App() {
       title: "Get Your Smart Parking Sticker",
       description: "Submit your Smart Parking Sticker order details and personalized QR information.",
       url: PARKING_ACTIVATION_ROUTE,
+      robots: "noindex, nofollow",
     },
     "parking-success": {
       title: "Thank You for Your Smart Parking Sticker Order",
       description: "Your Smart Parking Sticker order is confirmed and ready to download.",
       url: PARKING_ORDER_SUCCESS_ROUTE,
+      robots: "noindex, nofollow",
     },
     product: routeProduct
       ? {
           title: routeProduct.name,
           description: routeProduct.shortDescription,
           url: productPath(routeProduct.slug),
+          jsonLd: {
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: routeProduct.name,
+            description: routeProduct.shortDescription,
+            brand: {
+              "@type": "Brand",
+              name: SITE_NAME,
+            },
+            offers: {
+              "@type": "Offer",
+              priceCurrency: routeProduct.currency,
+              price: routeProduct.price,
+              availability: "https://schema.org/InStock",
+              url: `https://richlifetools.com${productPath(routeProduct.slug)}`,
+            },
+          },
         }
       : {
           title: "Product Not Found",
