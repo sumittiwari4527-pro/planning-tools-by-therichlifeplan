@@ -207,6 +207,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
   const [paymentComplete, setPaymentComplete] = useState(false);
   const [paymentMethodOpen, setPaymentMethodOpen] = useState(false);
   const [razorpayProcessing, setRazorpayProcessing] = useState(false);
+  const [razorpayOpening, setRazorpayOpening] = useState(false);
   const [finalOrderId, setFinalOrderId] = useState("");
   const [finalStickerReady, setFinalStickerReady] = useState(false);
   const [touched, setTouched] = useState({ phone: false, stickerEmail: false, deliveryEmail: false, orderId: false });
@@ -496,6 +497,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
 
     setError("");
     setPaymentMethodOpen(false);
+    setRazorpayOpening(true);
 
     try {
       const dialCode = PHONE_COUNTRIES.find(([code]) => code === form.phoneCountry)?.[2] ?? "+91";
@@ -584,7 +586,9 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
       });
 
       razorpay.open();
+      setRazorpayOpening(false);
     } catch (checkoutError) {
+      setRazorpayOpening(false);
       setRazorpayProcessing(false);
       setPaymentMethodOpen(true);
       setError(checkoutError instanceof Error ? checkoutError.message : "Unable to start Razorpay checkout.");
@@ -615,6 +619,16 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
 
   return (
     <>
+      {razorpayOpening && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#071421]/40 px-6 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-3xl bg-white p-7 text-center shadow-2xl">
+            <Loader2 className="mx-auto animate-spin text-[#00a961]" size={28} />
+            <h2 className="mt-4 text-lg font-bold text-[#0f1523]">Opening secure checkout</h2>
+            <p className="mt-2 text-sm leading-6 text-[#6b7a99]">Please wait while Razorpay opens.</p>
+          </div>
+        </div>
+      )}
+
       {(razorpayProcessing || (paymentComplete && !finalStickerReady && !error)) && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#071421]/70 px-6 backdrop-blur-sm">
           <div className="w-full max-w-sm rounded-3xl bg-white p-8 text-center shadow-2xl">
@@ -935,7 +949,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                       <div className="mt-5 grid gap-3">
                         <button
                           type="button"
-                          disabled={false}
+                          disabled={razorpayOpening}
                           onClick={() => startCheckout("razorpay")}
                           className="group flex w-full items-center gap-4 rounded-2xl border border-[#dfe7e3] bg-white p-4 text-left transition hover:border-[#00b968] hover:bg-[#f5fffa] disabled:cursor-not-allowed disabled:opacity-50"
                         >
