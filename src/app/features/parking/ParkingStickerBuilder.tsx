@@ -164,33 +164,17 @@ const loadRazorpayCheckout = () =>
       return;
     }
 
-    const scriptSrc = "https://checkout.razorpay.com/v1/checkout.js";
-    const existing = document.querySelector<HTMLScriptElement>(`script[src="${scriptSrc}"]`);
-
+    const existing = document.querySelector<HTMLScriptElement>('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
     if (existing) {
-      const startedAt = Date.now();
-      const checkReady = () => {
-        if (window.Razorpay) {
-          resolve();
-          return;
-        }
-        if (Date.now() - startedAt >= 10000) {
-          reject(new Error("Razorpay Checkout did not finish loading. Please try again."));
-          return;
-        }
-        window.setTimeout(checkReady, 100);
-      };
-      checkReady();
+      existing.addEventListener("load", () => resolve(), { once: true });
+      existing.addEventListener("error", () => reject(new Error("Unable to load Razorpay Checkout.")), { once: true });
       return;
     }
 
     const script = document.createElement("script");
-    script.src = scriptSrc;
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
     script.async = true;
-    script.onload = () => {
-      if (window.Razorpay) resolve();
-      else reject(new Error("Razorpay Checkout loaded but is unavailable. Please try again."));
-    };
+    script.onload = () => resolve();
     script.onerror = () => reject(new Error("Unable to load Razorpay Checkout."));
     document.head.appendChild(script);
   });
@@ -558,6 +542,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
           color: "#071421",
         },
         handler: async (paymentResponse: any) => {
+          setRazorpayProcessing(true);
           try {
             const verifyResponse = await fetch("/api/razorpay/verify-payment", {
               method: "POST",
