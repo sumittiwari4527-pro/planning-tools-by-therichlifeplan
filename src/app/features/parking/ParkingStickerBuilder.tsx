@@ -164,17 +164,33 @@ const loadRazorpayCheckout = () =>
       return;
     }
 
-    const existing = document.querySelector<HTMLScriptElement>('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
+    const scriptSrc = "https://checkout.razorpay.com/v1/checkout.js";
+    const existing = document.querySelector<HTMLScriptElement>(`script[src="${scriptSrc}"]`);
+
     if (existing) {
-      existing.addEventListener("load", () => resolve(), { once: true });
-      existing.addEventListener("error", () => reject(new Error("Unable to load Razorpay Checkout.")), { once: true });
+      const startedAt = Date.now();
+      const checkReady = () => {
+        if (window.Razorpay) {
+          resolve();
+          return;
+        }
+        if (Date.now() - startedAt >= 10000) {
+          reject(new Error("Razorpay Checkout did not finish loading. Please try again."));
+          return;
+        }
+        window.setTimeout(checkReady, 100);
+      };
+      checkReady();
       return;
     }
 
     const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.src = scriptSrc;
     script.async = true;
-    script.onload = () => resolve();
+    script.onload = () => {
+      if (window.Razorpay) resolve();
+      else reject(new Error("Razorpay Checkout loaded but is unavailable. Please try again."));
+    };
     script.onerror = () => reject(new Error("Unable to load Razorpay Checkout."));
     document.head.appendChild(script);
   });
