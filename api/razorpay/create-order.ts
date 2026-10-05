@@ -22,7 +22,7 @@ export default async function handler(req: any, res: any) {
     const cleanPhone = String(phone || "").trim();
     const cleanEmail = String(email || "").trim();
     const cleanVehicle = String(vehicle || "").trim().toUpperCase();
-    const cleanTheme = theme === "light" || theme === "dark" ? theme : "dark";
+    const cleanTheme = theme === "light" || theme === "dark" || theme === "physical" ? theme : "dark";
 
     if (cleanName.length < 2 || cleanName.length > 80) return json(res, 400, { error: "Invalid name." });
     if (!/^\+?[0-9]{7,15}$/.test(cleanPhone.replace(/[\s()-]/g, ""))) return json(res, 400, { error: "Invalid phone number." });
