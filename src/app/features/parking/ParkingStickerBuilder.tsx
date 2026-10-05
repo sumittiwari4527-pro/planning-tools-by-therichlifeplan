@@ -713,7 +713,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                 <input
                   value={form.name}
                   onChange={(event) => update("name", event.target.value)}
-                  placeholder="e.g. Sumit Tiwari"
+                  placeholder="Enter Name"
                   className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none transition focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50"
                 />
               </label>
