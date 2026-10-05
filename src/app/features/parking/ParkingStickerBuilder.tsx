@@ -577,6 +577,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
       });
 
       razorpay.on?.("payment.failed", (failure: any) => {
+        setRazorpayProcessing(false);
         setError(failure?.error?.description || "Razorpay payment failed. Please try again.");
         setPaymentMethodOpen(true);
       });
