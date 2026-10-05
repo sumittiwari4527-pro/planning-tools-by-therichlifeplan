@@ -122,6 +122,41 @@ declare global {
 const checkoutUrl = import.meta.env.VITE_LEMON_SQUEEZY_PARKING_CHECKOUT_URL as string | undefined;
 const parkingRequestFormEndpoint = (import.meta.env.VITE_PARKING_REQUEST_FORM_ENDPOINT as string | undefined)?.trim() || "https://formsubmit.co/ajax/richlifetools.support@gmail.com";
 
+const sendRazorpayPaymentNotification = async (result: Record<string, unknown>) => {
+  const stickerStyle = result.theme === "light" ? "Light" : result.theme === "physical" ? "Clean" : "Dark";
+  const payload = {
+    _subject: `Smart Parking Sticker – Payment Confirmed #${String(result.orderId || "")}`,
+    _template: "table",
+    requestType: "Smart Parking Sticker payment confirmation",
+    orderNumber: String(result.orderId || ""),
+    orderId: String(result.orderId || ""),
+    paymentId: String(result.paymentId || ""),
+    paymentMethod: "Razorpay",
+    orderStatus: "paid",
+    customerName: String(result.name || ""),
+    customerEmail: String(result.email || ""),
+    currency: "INR",
+    total: "₹199",
+    formName: String(result.name || ""),
+    formPhone: String(result.phone || ""),
+    formEmail: String(result.email || ""),
+    vehicle: String(result.vehicle || "").toUpperCase(),
+    stickerStyle,
+    deliveryType: "digital",
+    submittedAt: new Date().toISOString(),
+  };
+
+  try {
+    await fetch(parkingRequestFormEndpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify(payload),
+    });
+  } catch {
+    // Notification failure must not interrupt a verified payment.
+  }
+};
+
 const loadRazorpayCheckout = () =>
   new Promise<void>((resolve, reject) => {
     if (window.Razorpay) {
@@ -171,6 +206,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
   const [error, setError] = useState("");
   const [paymentComplete, setPaymentComplete] = useState(false);
   const [paymentMethodOpen, setPaymentMethodOpen] = useState(false);
+  const [razorpayProcessing, setRazorpayProcessing] = useState(false);
   const [finalOrderId, setFinalOrderId] = useState("");
   const [finalStickerReady, setFinalStickerReady] = useState(false);
   const [touched, setTouched] = useState({ phone: false, stickerEmail: false, deliveryEmail: false, orderId: false });
@@ -460,6 +496,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
 
     setError("");
     setPaymentMethodOpen(false);
+    setRazorpayProcessing(true);
 
     try {
       const dialCode = PHONE_COUNTRIES.find(([code]) => code === form.phoneCountry)?.[2] ?? "+91";
@@ -522,11 +559,14 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
               throw new Error(verifyResult?.error || "We couldn't verify the Razorpay payment.");
             }
 
+            await sendRazorpayPaymentNotification(verifyResult);
+
             routerNavigate(
               `${PARKING_ORDER_SUCCESS_ROUTE}?razorpay_order_id=${encodeURIComponent(result.orderId)}`,
               { replace: true }
             );
           } catch (verificationError) {
+            setRazorpayProcessing(false);
             setError(
               verificationError instanceof Error
                 ? verificationError.message
@@ -544,6 +584,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
 
       razorpay.open();
     } catch (checkoutError) {
+      setRazorpayProcessing(false);
       setPaymentMethodOpen(true);
       setError(checkoutError instanceof Error ? checkoutError.message : "Unable to start Razorpay checkout.");
     }
@@ -573,7 +614,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
 
   return (
     <>
-      {paymentComplete && !finalStickerReady && !error && (
+      {(razorpayProcessing || (paymentComplete && !finalStickerReady && !error)) && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#071421]/70 px-6 backdrop-blur-sm">
           <div className="w-full max-w-sm rounded-3xl bg-white p-8 text-center shadow-2xl">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#eefaf3]">
@@ -581,7 +622,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
             </div>
             <h2 className="mt-5 text-xl font-bold text-[#0f1523]">Payment successful</h2>
             <p className="mt-2 text-sm leading-6 text-[#6b7a99]">
-              We’re preparing your permanent QR sticker. Please don’t close this page.
+              We’re verifying your payment and preparing your permanent QR sticker. Please don’t close this page.
             </p>
           </div>
         </div>
