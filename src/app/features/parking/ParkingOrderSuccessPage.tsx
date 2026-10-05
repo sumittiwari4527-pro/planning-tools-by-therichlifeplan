@@ -91,7 +91,7 @@ export function ParkingOrderSuccessPage() {
             phone: String(result.phone || ""),
             email: String(result.email || ""),
             vehicle: String(result.vehicle || ""),
-            theme: result.theme === "light" ? "light" : "dark",
+            theme: result.theme === "light" ? "light" : result.theme === "physical" ? "physical" : "dark",
             orderId: String(result.orderId),
           });
 
