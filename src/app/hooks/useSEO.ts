@@ -13,9 +13,10 @@ export interface SEOMeta {
   url?: string;
   type?: "website" | "article";
   jsonLd?: object;
+  robots?: string;
 }
 
-export function useSEO({ title, description, image, url, type = "website", jsonLd }: SEOMeta) {
+export function useSEO({ title, description, image, url, type = "website", jsonLd, robots = "index, follow" }: SEOMeta) {
   useEffect(() => {
     const fullTitle = title === SITE_NAME ? title : `${title} — ${SITE_NAME}`;
     document.title = fullTitle;
@@ -34,7 +35,7 @@ export function useSEO({ title, description, image, url, type = "website", jsonL
     const ogImage = image || SITE_DEFAULT_IMAGE;
 
     setMeta("description", description);
-    setMeta("robots", "index, follow");
+    setMeta("robots", robots);
     setMeta("og:title", fullTitle, "property");
     setMeta("og:description", description, "property");
     setMeta("og:image", ogImage, "property");
@@ -70,5 +71,5 @@ export function useSEO({ title, description, image, url, type = "website", jsonL
         description,
       }
     );
-  }, [title, description, image, url, type, jsonLd]);
+  }, [title, description, image, url, type, jsonLd, robots]);
 }
