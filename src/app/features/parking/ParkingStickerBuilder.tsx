@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import { ArrowLeft, Download, Mail, Palette, Phone, QrCode, ShoppingCart, Sparkles, CheckCircle2, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Download, Mail, Palette, Phone, QrCode, ShoppingCart, Sparkles, CheckCircle2, Loader2, CreditCard, Globe2, X } from "lucide-react";
 import QRCode from "qrcode";
 import {
   encryptParkingPayload,
@@ -111,12 +111,73 @@ declare global {
       Url: { Open: (url: string) => void; Close: () => void };
       Refresh: () => void;
     };
+    Razorpay?: new (options: Record<string, unknown>) => {
+      open: () => void;
+      on?: (event: string, handler: (response: any) => void) => void;
+    };
     createLemonSqueezy?: () => void;
   }
 }
 
 const checkoutUrl = import.meta.env.VITE_LEMON_SQUEEZY_PARKING_CHECKOUT_URL as string | undefined;
 const parkingRequestFormEndpoint = (import.meta.env.VITE_PARKING_REQUEST_FORM_ENDPOINT as string | undefined)?.trim() || "https://formsubmit.co/ajax/richlifetools.support@gmail.com";
+
+const sendRazorpayPaymentNotification = async (result: Record<string, unknown>) => {
+  const stickerStyle = result.theme === "light" ? "Light" : result.theme === "physical" ? "Clean" : "Dark";
+  const payload = {
+    _subject: `Smart Parking Sticker – Payment Confirmed #${String(result.orderId || "")}`,
+    _template: "table",
+    requestType: "Smart Parking Sticker payment confirmation",
+    orderNumber: String(result.orderId || ""),
+    orderId: String(result.orderId || ""),
+    paymentId: String(result.paymentId || ""),
+    paymentMethod: "Razorpay",
+    orderStatus: "paid",
+    customerName: String(result.name || ""),
+    customerEmail: String(result.email || ""),
+    currency: "INR",
+    total: "₹199",
+    formName: String(result.name || ""),
+    formPhone: String(result.phone || ""),
+    formEmail: String(result.email || ""),
+    vehicle: String(result.vehicle || "").toUpperCase(),
+    stickerStyle,
+    deliveryType: "digital",
+    submittedAt: new Date().toISOString(),
+  };
+
+  try {
+    await fetch(parkingRequestFormEndpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify(payload),
+    });
+  } catch {
+    // Notification failure must not interrupt a verified payment.
+  }
+};
+
+const loadRazorpayCheckout = () =>
+  new Promise<void>((resolve, reject) => {
+    if (window.Razorpay) {
+      resolve();
+      return;
+    }
+
+    const existing = document.querySelector<HTMLScriptElement>('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
+    if (existing) {
+      existing.addEventListener("load", () => resolve(), { once: true });
+      existing.addEventListener("error", () => reject(new Error("Unable to load Razorpay Checkout.")), { once: true });
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("Unable to load Razorpay Checkout."));
+    document.head.appendChild(script);
+  });
 
 const createStickerDataUrl = async (theme: ParkingTheme, qr: string) =>
   svgToDataUrl(
@@ -144,6 +205,9 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
   const [previewPayload, setPreviewPayload] = useState<ParkingPayload | null>(null);
   const [error, setError] = useState("");
   const [paymentComplete, setPaymentComplete] = useState(false);
+  const [paymentMethodOpen, setPaymentMethodOpen] = useState(false);
+  const [razorpayProcessing, setRazorpayProcessing] = useState(false);
+  const [razorpayOpening, setRazorpayOpening] = useState(false);
   const [finalOrderId, setFinalOrderId] = useState("");
   const [finalStickerReady, setFinalStickerReady] = useState(false);
   const [touched, setTouched] = useState({ phone: false, stickerEmail: false, deliveryEmail: false, orderId: false });
@@ -409,25 +473,125 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
       setSubmitting(false);
     }
   };
-  const startCheckout = () => {
-    if (form.delivery === "physical") return;
-    if (!previewPayload || !checkoutUrl) {
-      setError("Checkout is not configured yet. Add the Lemon Squeezy parking checkout URL to the site environment.");
+  const startCheckout = async (method: "razorpay" | "lemonsqueezy") => {
+    if (form.delivery === "physical" || !previewPayload) return;
+
+    if (method === "lemonsqueezy") {
+      if (!checkoutUrl) {
+        setError("Lemon Squeezy checkout is not configured yet. Add the Lemon Squeezy parking checkout URL to the site environment.");
+        return;
+      }
+
+      const url = new URL(checkoutUrl);
+      if (form.email.trim()) url.searchParams.set("checkout[email]", form.email.trim());
+      if (form.name.trim()) url.searchParams.set("checkout[name]", form.name.trim());
+
+      setPaymentMethodOpen(false);
+      if (window.LemonSqueezy) {
+        window.LemonSqueezy.Url.Open(url.toString());
+      } else {
+        window.open(url.toString(), "_blank", "noopener,noreferrer");
+      }
       return;
     }
 
-    const url = new URL(checkoutUrl);
-    if (form.email.trim()) {
-      url.searchParams.set("checkout[email]", form.email.trim());
-    }
-    if (form.name.trim()) {
-      url.searchParams.set("checkout[name]", form.name.trim());
-    }
+    setError("");
+    setPaymentMethodOpen(false);
+    setRazorpayOpening(true);
 
-    if (window.LemonSqueezy) {
-      window.LemonSqueezy.Url.Open(url.toString());
-    } else {
-      window.open(url.toString(), "_blank", "noopener,noreferrer");
+    try {
+      const dialCode = PHONE_COUNTRIES.find(([code]) => code === form.phoneCountry)?.[2] ?? "+91";
+      const response = await fetch("/api/razorpay/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          name: form.name.trim(),
+          phone: dialCode + form.phone.replace(/\D/g, ""),
+          email: form.email.trim(),
+          vehicle: form.vehicle.trim().toUpperCase(),
+          theme: form.theme,
+        }),
+      });
+
+      const result = await response.json();
+      if (!response.ok || !result?.orderId || !result?.keyId) {
+        throw new Error(result?.error || "Unable to start Razorpay checkout.");
+      }
+
+      await loadRazorpayCheckout();
+
+      if (!window.Razorpay) {
+        throw new Error("Razorpay Checkout is unavailable. Please try again.");
+      }
+
+      const razorpay = new window.Razorpay({
+        key: result.keyId,
+        amount: result.amount,
+        currency: result.currency,
+        name: "TheRichLifePlan",
+        description: "Smart Car Parking Sticker",
+        order_id: result.orderId,
+        prefill: {
+          name: form.name.trim(),
+          email: form.email.trim(),
+          contact: dialCode + form.phone.replace(/\D/g, ""),
+        },
+        notes: {
+          product: "smart-parking-sticker",
+          vehicle: form.vehicle.trim().toUpperCase(),
+        },
+        theme: {
+          color: "#071421",
+        },
+        handler: async (paymentResponse: any) => {
+          setRazorpayProcessing(true);
+          try {
+            const verifyResponse = await fetch("/api/razorpay/verify-payment", {
+              method: "POST",
+              headers: { "Content-Type": "application/json", Accept: "application/json" },
+              body: JSON.stringify({
+                razorpay_order_id: paymentResponse?.razorpay_order_id,
+                razorpay_payment_id: paymentResponse?.razorpay_payment_id,
+                razorpay_signature: paymentResponse?.razorpay_signature,
+              }),
+            });
+
+            const verifyResult = await verifyResponse.json();
+            if (!verifyResponse.ok || !verifyResult?.paid) {
+              throw new Error(verifyResult?.error || "We couldn't verify the Razorpay payment.");
+            }
+
+            await sendRazorpayPaymentNotification(verifyResult);
+
+            routerNavigate(
+              `${PARKING_ORDER_SUCCESS_ROUTE}?razorpay_order_id=${encodeURIComponent(result.orderId)}`,
+              { replace: true }
+            );
+          } catch (verificationError) {
+            setRazorpayProcessing(false);
+            setError(
+              verificationError instanceof Error
+                ? verificationError.message
+                : "Payment completed, but verification failed. Please contact support."
+            );
+            setPaymentMethodOpen(true);
+          }
+        },
+      });
+
+      razorpay.on?.("payment.failed", (failure: any) => {
+        setRazorpayProcessing(false);
+        setError(failure?.error?.description || "Razorpay payment failed. Please try again.");
+        setPaymentMethodOpen(true);
+      });
+
+      razorpay.open();
+      setRazorpayOpening(false);
+    } catch (checkoutError) {
+      setRazorpayOpening(false);
+      setRazorpayProcessing(false);
+      setPaymentMethodOpen(true);
+      setError(checkoutError instanceof Error ? checkoutError.message : "Unable to start Razorpay checkout.");
     }
   };
 
@@ -455,15 +619,25 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
 
   return (
     <>
-      {paymentComplete && !finalStickerReady && !error && (
+      {razorpayOpening && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#071421]/40 px-6 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-3xl bg-white p-7 text-center shadow-2xl">
+            <Loader2 className="mx-auto animate-spin text-[#00a961]" size={28} />
+            <h2 className="mt-4 text-lg font-bold text-[#0f1523]">Opening secure checkout</h2>
+            <p className="mt-2 text-sm leading-6 text-[#6b7a99]">Please wait while Razorpay opens.</p>
+          </div>
+        </div>
+      )}
+
+      {(razorpayProcessing || (paymentComplete && !finalStickerReady && !error)) && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#071421]/70 px-6 backdrop-blur-sm">
           <div className="w-full max-w-sm rounded-3xl bg-white p-8 text-center shadow-2xl">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#eefaf3]">
               <Loader2 size={28} className="animate-spin text-[#00a961]" />
             </div>
-            <h2 className="mt-5 text-xl font-bold text-[#0f1523]">Payment successful</h2>
+            <h2 className="mt-5 text-xl font-bold text-[#0f1523]">Payment received</h2>
             <p className="mt-2 text-sm leading-6 text-[#6b7a99]">
-              We’re preparing your permanent QR sticker. Please don’t close this page.
+              We’re verifying your payment and preparing your permanent QR sticker. Please don’t close this page.
             </p>
           </div>
         </div>
@@ -738,7 +912,10 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                   ) : (
                     <button
                       type="button"
-                      onClick={startCheckout}
+                      onClick={() => {
+                        setError("");
+                        setPaymentMethodOpen(true);
+                      }}
                       className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#00b968] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-100"
                     >
                       <ShoppingCart size={16} /> Buy now
@@ -747,8 +924,73 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                 </div>
                 {!activationMode && form.delivery === "digital" && !checkoutUrl && (
                   <p className="mt-3 text-xs text-[#7a6651]">
-                    Checkout URL is not configured yet. The UI is ready for the Lemon Squeezy product checkout URL.
+                    Add a Razorpay payment link or Lemon Squeezy checkout URL to enable payment.
                   </p>
+                )}
+
+                {paymentMethodOpen && (
+                  <div className="fixed inset-0 z-[80] flex items-end justify-center bg-slate-950/50 p-0 sm:items-center sm:p-5">
+                    <div className="w-full max-w-md rounded-t-3xl bg-white p-5 shadow-2xl sm:rounded-3xl">
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <div className="text-lg font-bold text-[#0f1523]">Choose your payment method</div>
+                          <p className="mt-1 text-xs leading-5 text-[#6b7a99]">Pay securely for your Smart Car Parking Sticker.</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setPaymentMethodOpen(false)}
+                          className="rounded-full p-2 text-[#6b7a99] hover:bg-slate-100"
+                          aria-label="Close payment options"
+                        >
+                          <X size={18} />
+                        </button>
+                      </div>
+
+                      <div className="mt-5 grid gap-3">
+                        <button
+                          type="button"
+                          disabled={razorpayOpening}
+                          onClick={() => startCheckout("razorpay")}
+                          className="group flex w-full items-center gap-4 rounded-2xl border border-[#dfe7e3] bg-white p-4 text-left transition hover:border-[#00b968] hover:bg-[#f5fffa] disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#e7faf1] text-[#00a961]">
+                            <CreditCard size={21} />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2 text-sm font-bold text-[#0f1523]">
+                              Razorpay
+                              <span className="rounded-full bg-[#e7faf1] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#008d50]">India</span>
+                            </div>
+                            <div className="mt-1 text-xs text-[#6b7a99]">UPI · Google Pay · Cards · Net Banking</div>
+                          </div>
+                          <ArrowRight size={17} className="text-[#8b95aa] transition group-hover:translate-x-0.5" />
+                        </button>
+
+                        <button
+                          type="button"
+                          disabled={!checkoutUrl}
+                          onClick={() => startCheckout("lemonsqueezy")}
+                          className="group flex w-full items-center gap-4 rounded-2xl border border-[#dfe7e3] bg-white p-4 text-left transition hover:border-[#4f46e5] hover:bg-[#f8f7ff] disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#eef0fd] text-[#4f46e5]">
+                            <Globe2 size={21} />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2 text-sm font-bold text-[#0f1523]">
+                              Lemon Squeezy
+                              <span className="rounded-full bg-[#eef0fd] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#4f46e5]">International</span>
+                            </div>
+                            <div className="mt-1 text-xs text-[#6b7a99]">International cards and payments</div>
+                          </div>
+                          <ArrowRight size={17} className="text-[#8b95aa] transition group-hover:translate-x-0.5" />
+                        </button>
+                      </div>
+
+                      <p className="mt-4 text-center text-[11px] leading-5 text-[#8b95aa]">
+                        Both options use the same ₹199 sticker and existing personalization flow.
+                      </p>
+                    </div>
+                  </div>
                 )}
               </div>
             )}

@@ -7,3 +7,6 @@
 
   Run `npm run dev` to start the development server.
   
+  ## Payment integration
+
+  Smart Parking Sticker supports Lemon Squeezy and Razorpay Standard Checkout.
