@@ -65,7 +65,7 @@ const getVerifiedOrder = async (orderId: string, paymentId: string, keyId: strin
     phone: String(notes.phone || ""),
     email: String(notes.email || ""),
     vehicle: String(notes.vehicle || ""),
-    theme: notes.theme === "light" ? "light" : "dark",
+    theme: notes.theme === "light" || notes.theme === "dark" ? notes.theme : "dark",
   };
 };
 
