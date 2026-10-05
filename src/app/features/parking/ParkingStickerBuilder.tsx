@@ -620,7 +620,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#eefaf3]">
               <Loader2 size={28} className="animate-spin text-[#00a961]" />
             </div>
-            <h2 className="mt-5 text-xl font-bold text-[#0f1523]">Payment successful</h2>
+            <h2 className="mt-5 text-xl font-bold text-[#0f1523]">Payment received</h2>
             <p className="mt-2 text-sm leading-6 text-[#6b7a99]">
               We’re verifying your payment and preparing your permanent QR sticker. Please don’t close this page.
             </p>
