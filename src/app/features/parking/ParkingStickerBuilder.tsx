@@ -496,7 +496,6 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
 
     setError("");
     setPaymentMethodOpen(false);
-    setRazorpayProcessing(true);
 
     try {
       const dialCode = PHONE_COUNTRIES.find(([code]) => code === form.phoneCountry)?.[2] ?? "+91";
