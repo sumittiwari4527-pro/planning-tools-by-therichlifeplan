@@ -26,7 +26,7 @@ export function PrivacyPolicyPage() {
 
           <section>
             <h2>2. Scope</h2>
-            <p>This Policy explains what personal data we may collect, why we use it, when it may be shared, how long we generally retain it, and the choices available to you. It applies to information you provide through our website, contact forms, product and sticker flows, and related communications.</p>
+            <p>This Policy is intended for users worldwide. The rights and obligations that apply to you may depend on where you live and on the laws applicable to the particular processing. Where mandatory local law gives you stronger rights or protections, those rights are not limited by this Policy.</p>
           </section>
 
           <section>
@@ -54,7 +54,7 @@ export function PrivacyPolicyPage() {
               <li>complying with legal, tax, accounting, regulatory, and dispute-resolution obligations; and</li>
               <li>protecting our rights, users, property, and services.</li>
             </ul>
-            <p>We do not sell your personal data for money.</p>
+            <p>Where a law such as the GDPR or UK GDPR requires a lawful basis, the basis may include performance of a contract, compliance with a legal obligation, our legitimate interests such as security and service operation, consent where required, or another lawful basis permitted by applicable law. We do not sell personal information for money.</p>
           </section>
 
           <section>
@@ -92,12 +92,12 @@ export function PrivacyPolicyPage() {
 
           <section>
             <h2>10. Security</h2>
-            <p>We use reasonable technical and organizational measures appropriate to the nature of the information we process. No method of transmission or storage over the internet is completely secure, and we cannot guarantee absolute security.</p>
+            <p>We use reasonable technical and organizational measures appropriate to the nature of the information we process. No method of transmission or storage over the internet is completely secure. If a data incident occurs, we will assess it and make notifications to affected individuals, regulators, or authorities where required by applicable law.</p>
           </section>
 
           <section>
             <h2>11. Your rights and choices</h2>
-            <p>Subject to applicable law and any legally permitted exceptions, you may contact us to request access to, correction of, or deletion of personal data we hold about you, or to raise a concern about our processing of your data. Where processing is based on consent, you may also ask us to stop that processing where applicable.</p>
+            <p>Depending on your location and applicable law, you may have rights to be informed, access your personal information, obtain a copy, correct inaccurate information, request deletion, restrict processing, object to certain processing, withdraw consent, request portability, opt out of certain sales/sharing or targeted advertising, and exercise rights relating to automated decision-making. These rights are subject to legal conditions and exceptions.</p><p>For California residents, where applicable privacy law applies to us, this may include rights to know/access, correct, delete, opt out of sale or sharing, limit certain uses of sensitive personal information, and non-discrimination. If a legally required opt-out or preference mechanism applies to our processing, we will provide it.</p>
             <p>To make a request, email <a className="text-[#4f46e5] font-medium" href="mailto:richlifetools.support@gmail.com">richlifetools.support@gmail.com</a> with enough information for us to understand and verify the request. We may need to verify your identity before acting on a request.</p>
           </section>
 
