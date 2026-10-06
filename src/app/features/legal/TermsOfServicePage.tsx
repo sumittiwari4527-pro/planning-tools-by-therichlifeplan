@@ -22,7 +22,7 @@ export function TermsOfServicePage() {
 
           <section><h2>2. Global applicability</h2><p>These Terms are intended for users worldwide. Local consumer, privacy, e-commerce, accessibility, tax, and other mandatory laws may apply based on your location and the transaction. Nothing in these Terms is intended to exclude or restrict a right that cannot legally be excluded or restricted.</p></section>
 
-          <section><h2>3. About RichLifeTools</h2><p>RichLifeTools ("we", "us", or "our") operates the Services. For support, purchases, privacy matters, or legal notices, contact <a className="text-[#4f46e5] font-medium" href="mailto:richlifetools.support@gmail.com">richlifetools.support@gmail.com</a>.</p></section>
+          <section><h2>3. About RichLifeTools</h2><p><strong>Operated by:</strong> Sumit Kumar Tiwari<br /><strong>Address:</strong> Noida, Uttar Pradesh, India</p><p>RichLifeTools ("we", "us", or "our") operates the Services. For support, purchases, privacy matters, or legal notices, contact <a className="text-[#4f46e5] font-medium" href="mailto:richlifetools.support@gmail.com">richlifetools.support@gmail.com</a>.</p></section>
 
           <section><h2>4. Eligibility and acceptable use</h2><p>You may use the Services only in compliance with applicable law and these Terms. You must not misuse the Services, attempt unauthorized access, interfere with security or availability, introduce malicious code, scrape or copy the Services at scale, impersonate another person, submit false information, or use the Services to infringe another person's rights.</p></section>
 
