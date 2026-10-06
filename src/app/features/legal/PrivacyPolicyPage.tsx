@@ -20,12 +20,14 @@ export function PrivacyPolicyPage() {
         <div className="bg-white border border-[#e4e8f0] rounded-3xl p-6 sm:p-10 shadow-sm space-y-10 text-[#334155] leading-7">
           <section>
             <h2>1. Who we are</h2>
+            <p><strong>Operated by:</strong> Sumit Kumar Tiwari<br /><strong>Address:</strong> Noida, Uttar Pradesh, India</p>
             <p>RichLifeTools ("RichLifeTools", "we", "us", or "our") operates <strong>richlifetools.com</strong> and provides online calculators, articles, digital products, and Smart Parking Sticker services.</p>
             <p>For privacy questions or requests concerning your personal data, contact us at <a className="text-[#4f46e5] font-medium" href="mailto:richlifetools.support@gmail.com">richlifetools.support@gmail.com</a>.</p>
           </section>
 
           <section>
             <h2>2. Data controller and representatives</h2>
+            <p><strong>Data controller/operator:</strong> Sumit Kumar Tiwari, Noida, Uttar Pradesh, India.</p>
             <p>RichLifeTools is responsible for the personal information covered by this Policy. Our privacy contact is <a className="text-[#4f46e5] font-medium" href="mailto:richlifetools.support@gmail.com">richlifetools.support@gmail.com</a>. If a local representative or Data Protection Officer is legally required and appointed for a jurisdiction, we will provide the applicable details in this Policy.</p>
           </section>
 
