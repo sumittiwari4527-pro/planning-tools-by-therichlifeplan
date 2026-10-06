@@ -54,9 +54,11 @@ export function TermsOfServicePage() {
 
           <section><h2>17. Privacy</h2><p>Your use of the Services is also subject to our Privacy Policy, which explains how personal information is handled. Mandatory privacy law controls where applicable.</p></section>
 
-          <section><h2>18. Changes to these Terms</h2><p>We may update these Terms from time to time. The revised version will be posted on this page with an updated "Last updated" date. Changes will apply prospectively to use of the Services after the effective date, except where applicable law requires otherwise.</p></section>
+          <section><h2>18. Refunds and cancellations</h2><p>Refunds and cancellations are governed by our Refund & Cancellation Policy. We do not offer discretionary change-of-mind cancellations, subject to any mandatory consumer rights that apply to you.</p></section>
 
-          <section><h2>19. Contact</h2><p>For questions about these Terms, orders, refunds, or legal notices, contact <a className="text-[#4f46e5] font-medium" href="mailto:richlifetools.support@gmail.com">richlifetools.support@gmail.com</a>.</p></section>
+          <section><h2>19. Changes to these Terms</h2><p>We may update these Terms from time to time. The revised version will be posted on this page with an updated "Last updated" date. Changes will apply prospectively to use of the Services after the effective date, except where applicable law requires otherwise.</p></section>
+
+          <section><h2>20. Contact</h2><p>For questions about these Terms, orders, refunds, or legal notices, contact <a className="text-[#4f46e5] font-medium" href="mailto:richlifetools.support@gmail.com">richlifetools.support@gmail.com</a>.</p></section>
 
           <style>{`
             h2 { font-size: 1.25rem; line-height: 1.4; font-weight: 700; color: #0f1523; margin-bottom: 0.75rem; }
