@@ -25,12 +25,17 @@ export function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2>2. Scope</h2>
+            <h2>2. Data controller and representatives</h2>
+            <p>RichLifeTools is responsible for the personal information covered by this Policy. Our privacy contact is <a className="text-[#4f46e5] font-medium" href="mailto:richlifetools.support@gmail.com">richlifetools.support@gmail.com</a>. If a local representative or Data Protection Officer is legally required and appointed for a jurisdiction, we will provide the applicable details in this Policy.</p>
+          </section>
+
+          <section>
+            <h2>3. Scope</h2>
             <p>This Policy is intended for users worldwide. The rights and obligations that apply to you may depend on where you live and on the laws applicable to the particular processing. Where mandatory local law gives you stronger rights or protections, those rights are not limited by this Policy.</p>
           </section>
 
           <section>
-            <h2>3. Information we collect</h2>
+            <h2>4. Information we collect</h2>
             <p>Depending on how you use the site, we may process:</p>
             <ul>
               <li><strong>Contact information:</strong> name, email address, phone number, and the contents of messages you send us.</li>
@@ -42,7 +47,7 @@ export function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2>4. How we use information</h2>
+            <h2>5. How and why we use personal information</h2>
             <p>We use personal data only as reasonably necessary for purposes such as:</p>
             <ul>
               <li>responding to enquiries and providing customer support;</li>
@@ -58,13 +63,13 @@ export function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2>5. Smart Parking Sticker and QR data</h2>
+            <h2>7. Smart Parking Sticker and QR data</h2>
             <p>The Smart Parking Sticker can encode information such as your name, phone number, email address (if supplied), vehicle identifier, and sticker/order information. The QR payload is encrypted before the QR code is generated. However, you should treat the information encoded in a sticker as information that may be viewed by anyone who obtains or scans the sticker.</p>
             <p>We recommend including only information you are comfortable making available to a person who scans the sticker. We do not guarantee that encryption or any internet-connected service can never be compromised.</p>
           </section>
 
           <section>
-            <h2>6. Service providers and sharing</h2>
+            <h2>8. Service providers and sharing</h2>
             <p>We may share the minimum information reasonably necessary with trusted service providers that help us operate the site and fulfil transactions. These may include:</p>
             <ul>
               <li><strong>Razorpay</strong> for payment processing and related transaction services;</li>
@@ -76,48 +81,58 @@ export function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2>7. Payments</h2>
+            <h2>9. Payments</h2>
             <p>Payment details are handled through the payment provider presented at checkout. We do not intentionally store complete card numbers, CVV codes, UPI PINs, or banking passwords on our website servers. Payment providers may collect additional information required to authenticate and process a transaction, prevent fraud, meet regulatory requirements, and issue receipts.</p>
           </section>
 
           <section>
-            <h2>8. Cookies and similar technologies</h2>
+            <h2>10. Cookies and similar technologies</h2>
             <p>RichLifeTools does not intentionally use advertising cookies or sell browsing profiles. The website and its third-party services may nevertheless use cookies, local/session storage, scripts, or similar technologies where necessary for functionality, security, payment checkout, preferences, or service operation. Third-party providers may set their own technologies when you interact with their services.</p>
           </section>
 
           <section>
-            <h2>9. Data retention</h2>
+            <h2>11. Data retention</h2>
             <p>We retain personal data only for as long as reasonably necessary for the purpose for which it was collected, including customer support, order fulfilment, accounting, fraud prevention, legal compliance, and dispute resolution. Retention periods can vary by the type of information and by the requirements of our service providers and applicable law.</p>
           </section>
 
           <section>
-            <h2>10. Security</h2>
+            <h2>12. Security and breach response</h2>
             <p>We use reasonable technical and organizational measures appropriate to the nature of the information we process. No method of transmission or storage over the internet is completely secure. If a data incident occurs, we will assess it and make notifications to affected individuals, regulators, or authorities where required by applicable law.</p>
           </section>
 
           <section>
-            <h2>11. Your rights and choices</h2>
+            <h2>14. Your privacy rights</h2>
             <p>Depending on your location and applicable law, you may have rights to be informed, access your personal information, obtain a copy, correct inaccurate information, request deletion, restrict processing, object to certain processing, withdraw consent, request portability, opt out of certain sales/sharing or targeted advertising, and exercise rights relating to automated decision-making. These rights are subject to legal conditions and exceptions.</p><p>For California residents, where applicable privacy law applies to us, this may include rights to know/access, correct, delete, opt out of sale or sharing, limit certain uses of sensitive personal information, and non-discrimination. If a legally required opt-out or preference mechanism applies to our processing, we will provide it.</p>
             <p>To make a request, email <a className="text-[#4f46e5] font-medium" href="mailto:richlifetools.support@gmail.com">richlifetools.support@gmail.com</a> with enough information for us to understand and verify the request. We may need to verify your identity before acting on a request.</p>
           </section>
 
           <section>
-            <h2>12. Children</h2>
+            <h2>15. Automated decision-making and profiling</h2>
+            <p>We do not intentionally use personal information to make decisions that produce legal or similarly significant effects through solely automated decision-making. Our calculators generate informational outputs based on user inputs and are not intended to determine eligibility for credit, employment, insurance, or essential services.</p>
+          </section>
+
+          <section>
+            <h2>16. Children</h2>
             <p>Our services are not directed to children. We do not knowingly request personal data from children in circumstances where parental consent is required. If you believe a child has provided personal data to us, please contact us so that we can review the information and take appropriate action.</p>
           </section>
 
           <section>
-            <h2>13. International processing</h2>
+            <h2>17. Complaints and supervisory authorities</h2>
+            <p>If you believe we have handled your personal information unlawfully, contact us first. Where applicable law gives you the right to complain to a privacy regulator, you may do so with the authority in your country, state, or region of residence, work, or the place of the alleged infringement.</p>
+          </section>
+
+          <section>
+            <h2>18. International processing</h2>
             <p>Our service providers may process information in countries other than the country in which you live. Where required, we will take steps appropriate under applicable law in relation to such processing.</p>
           </section>
 
           <section>
-            <h2>14. Changes to this Policy</h2>
+            <h2>19. Changes to this Policy</h2>
             <p>We may update this Policy when our services, providers, or legal obligations change. The revised Policy will be posted on this page with an updated "Last updated" date. Your continued use of the website after an update means the revised Policy will apply to future use, to the extent permitted by law.</p>
           </section>
 
           <section>
-            <h2>15. Contact</h2>
+            <h2>20. Contact</h2>
             <p>If you have a privacy question, request, or complaint, contact us:</p>
             <p className="flex items-center gap-2"><Mail size={16} className="text-[#4f46e5]" /><a className="text-[#4f46e5] font-medium" href="mailto:richlifetools.support@gmail.com">richlifetools.support@gmail.com</a></p>
           </section>
