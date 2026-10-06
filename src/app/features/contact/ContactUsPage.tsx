@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { Mail, Send, MessageSquare, CheckCircle2 } from "lucide-react";
 
 const CATEGORIES = [
@@ -17,7 +17,29 @@ const subjectFor = (category: string) =>
 
 export function ContactUsPage() {
   const [category, setCategory] = useState(CATEGORIES[0]);
-  const [submitted, setSubmitted] = useState(() => new URLSearchParams(window.location.search).get("sent") === "1");
+  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSubmitting(true);
+    setError("");
+    try {
+      const formData = new FormData(event.currentTarget);
+      const response = await fetch("https://formsubmit.co/ajax/richlifetools.support@gmail.com", {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body: formData,
+      });
+      if (!response.ok) throw new Error("Unable to send message");
+      setSubmitted(true);
+    } catch {
+      setError("We couldn’t send your message right now. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="pt-16 min-h-screen bg-[#f8f9fb]">
@@ -75,14 +97,13 @@ export function ContactUsPage() {
               </div>
             ) : (
             <form
-                action="https://formsubmit.co/richlifetools.support@gmail.com"
-                method="POST"
+                onSubmit={handleSubmit}
                 className="space-y-5"
               >
                 <input type="hidden" name="_subject" value={subjectFor(category)} />
                 <input type="hidden" name="_captcha" value="false" />
                 <input type="hidden" name="_template" value="table" />
-                <input type="hidden" name="_next" value="https://www.richlifetools.com/contact?sent=1" />
+                {error && <p className="text-sm text-red-600" role="alert">{error}</p>}
 
                 <div>
                   <label htmlFor="contact-name" className="block text-sm font-semibold text-[#0f1523] mb-2">Name</label>
@@ -137,9 +158,10 @@ export function ContactUsPage() {
 
                 <button
                   type="submit"
+                  disabled={submitting}
                   className="w-full rounded-2xl bg-[#4f46e5] px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-indigo-100 transition hover:bg-[#4338ca] flex items-center justify-center gap-2"
                 >
-                  Send Message <Send size={15} />
+                  {submitting ? "Sending..." : "Send Message"} {!submitting && <Send size={15} />}
                 </button>
             </form>
             )}
