@@ -71,7 +71,7 @@ export default function App() {
   const [selectedTool, setSelectedTool] = useState<string>(() => toolIdByPath.get(path) || "fire");
 
   const navigate = (newPage: Page, tool?: ToolId) => {
-    const route = newPage === "home" ? "/" : newPage === "tools" ? (tool ? pathForTool(tool) : "/tools") : newPage === "products" ? PRODUCTS_ROUTE : "/blog";
+    const route = newPage === "home" ? "/" : newPage === "tools" ? (tool ? pathForTool(tool) : "/tools") : newPage === "products" ? PRODUCTS_ROUTE : newPage === "contact" ? "/contact" : "/blog";
     routerNavigate(route);
     setSelectedTool(tool || (newPage === "tools" ? selectedTool : "fire"));
     setMobileMenuOpen(false);
