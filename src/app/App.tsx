@@ -21,12 +21,13 @@ import { ParkingOrderSuccessPage } from "./features/parking/ParkingOrderSuccessP
 import { ParkingScanPage } from "./features/parking/ParkingScanPage";
 import { getProductBySlug, products } from "./data/products/products";
 import { ProductCard } from "./features/products/components/ProductCard";
+import { ContactUsPage } from "./features/contact/ContactUsPage";
 
 // ─── Data ───────────────────────────────────────────────────────
 import { articles } from "./data/articles";
 
 // ─── Types ──────────────────────────────────────────────────────
-type Page = "home" | "tools" | "blog" | "article" | "products" | "product" | "parking" | "parking-activation" | "parking-success";
+type Page = "home" | "tools" | "blog" | "article" | "products" | "product" | "parking" | "parking-activation" | "parking-success" | "contact";
 
 // ─── Tool Definitions ───────────────────────────────────────────
 const tools = [
@@ -39,6 +40,7 @@ const tools = [
 const pageFromPath = (path: string): Page => {
   if (path === "/") return "home";
   if (path === "/blog") return "blog";
+  if (path === "/contact") return "contact";
   if (path.startsWith("/blog/")) return "article";
   if (path === "/parking") return "parking";
   if (path === PARKING_ACTIVATION_ROUTE) return "parking-activation";
@@ -69,7 +71,7 @@ export default function App() {
   const [selectedTool, setSelectedTool] = useState<string>(() => toolIdByPath.get(path) || "fire");
 
   const navigate = (newPage: Page, tool?: ToolId) => {
-    const route = newPage === "home" ? "/" : newPage === "tools" ? (tool ? pathForTool(tool) : "/tools") : newPage === "products" ? PRODUCTS_ROUTE : "/blog";
+    const route = newPage === "home" ? "/" : newPage === "tools" ? (tool ? pathForTool(tool) : "/tools") : newPage === "products" ? PRODUCTS_ROUTE : newPage === "contact" ? "/contact" : "/blog";
     routerNavigate(route);
     setSelectedTool(tool || (newPage === "tools" ? selectedTool : "fire"));
     setMobileMenuOpen(false);
@@ -149,6 +151,7 @@ export default function App() {
     ["tools", "Tools"],
     ["products", "Products"],
     ["blog", "Blog"],
+    ["contact", "Contact"],
   ];
 
   return (
@@ -422,6 +425,9 @@ export default function App() {
 
         {/* BLOG PAGE */}
         {page === "blog" && <Blog onSelectArticle={openArticle} />}
+
+        {/* CONTACT PAGE */}
+        {page === "contact" && <ContactUsPage />}
 
         {/* ARTICLE PAGE */}
         {page === "article" && activeArticleId && (
