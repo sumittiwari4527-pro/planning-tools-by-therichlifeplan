@@ -34,7 +34,6 @@ export function ContactUsPage() {
       });
       if (!response.ok) throw new Error("Unable to send message");
       setSubmitted(true);
-      event.currentTarget.reset();
     } catch {
       setError("We couldn’t send your message right now. Please try again.");
     } finally {
