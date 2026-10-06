@@ -77,301 +77,92 @@ function CareerProductPage({ product, onBack }: { product: Product; onBack: () =
   const available = selectedCountry === "Germany" && selectedJobType === "Software / IT";
 
   return (
-    <div className="min-h-screen bg-[#f7f8fc] pt-16">
+    <div className="min-h-screen bg-[#f8f9fc] pt-16 text-[#111827]">
       <main>
-        <section className="relative overflow-hidden border-b border-[#e4e8f0] bg-white">
-          <div className="absolute -right-32 -top-32 h-[30rem] w-[30rem] rounded-full bg-indigo-100/70 blur-3xl" />
-          <div className="absolute -left-24 bottom-0 h-72 w-72 rounded-full bg-cyan-100/40 blur-3xl" />
-          <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
-            <button onClick={onBack} className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-[#6b7a99] hover:text-[#0f1523] cursor-pointer">
+        <section className="overflow-hidden bg-white">
+          <div className="mx-auto max-w-7xl px-4 pb-14 pt-8 sm:px-6 lg:px-8 lg:pb-20 lg:pt-10">
+            <button onClick={onBack} className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-[#7a8499] hover:text-[#111827] cursor-pointer">
               <ArrowLeft size={15} /> Back to products
             </button>
-
-            <div className="grid items-center gap-12 lg:grid-cols-[1.08fr_0.92fr]">
-              <div className="max-w-3xl">
-                <div className="mb-5 flex flex-wrap items-center gap-2 text-xs font-mono uppercase tracking-[0.16em]">
-                  <span className="rounded-full bg-[#eef0fd] px-3 py-1.5 text-[#4f46e5]">Career</span>
-                  <span className="text-[#c4cad9]">·</span>
-                  <span className="text-[#6b7a99]">Digital toolkit</span>
-                  <span className="text-[#c4cad9]">·</span>
-                  <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-emerald-700">NEW</span>
+            <div className="grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr]">
+              <div>
+                <div className="mb-5 flex items-center gap-2 text-xs font-mono uppercase tracking-[0.16em] text-[#4f46e5]">
+                  <span>Career toolkit</span><span className="text-[#c8cedb]">·</span><span className="rounded-full bg-emerald-50 px-2.5 py-1 text-emerald-700">NEW</span>
                 </div>
-                <h1 className="text-4xl font-bold leading-[1.02] tracking-tight text-[#0f1523] sm:text-5xl lg:text-6xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                  Stop rebuilding your job application from scratch.
+                <h1 className="max-w-xl text-4xl font-bold leading-[1.04] tracking-tight sm:text-5xl lg:text-6xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                  A better job application, without starting from zero.
                 </h1>
-                <p className="mt-6 max-w-2xl text-lg leading-8 text-[#56627b] sm:text-xl">
-                  A practical application kit that helps you create a stronger CV, cover letter and job-search workflow for the market you are targeting.
+                <p className="mt-6 max-w-xl text-base leading-7 text-[#667189] sm:text-lg">
+                  Templates, country guidance and a simple application workflow — built for people applying for tech jobs abroad.
                 </p>
-
-                <div className="mt-8 grid max-w-2xl gap-3 sm:grid-cols-3">
-                  {[
-                    { icon: FileText, title: "CV templates", text: "Editable and practical" },
-                    { icon: Globe2, title: "Country focused", text: "Start with Germany" },
-                    { icon: ListChecks, title: "Application system", text: "Track every application" },
-                  ].map(({ icon: Icon, title, text }) => (
-                    <div key={title} className="rounded-2xl border border-[#e4e8f0] bg-white p-4 shadow-sm">
-                      <Icon size={18} className="text-[#4f46e5]" />
-                      <div className="mt-3 text-sm font-bold text-[#172033]">{title}</div>
-                      <div className="mt-1 text-xs leading-5 text-[#74809a]">{text}</div>
-                    </div>
-                  ))}
+                <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3 text-sm text-[#536078]">
+                  <span className="flex items-center gap-2"><Check size={16} className="text-emerald-600" /> Editable templates</span>
+                  <span className="flex items-center gap-2"><Check size={16} className="text-emerald-600" /> One-time purchase</span>
+                  <span className="flex items-center gap-2"><Check size={16} className="text-emerald-600" /> Start with Germany</span>
                 </div>
               </div>
 
-              <div className="mx-auto w-full max-w-md lg:ml-auto">
-                <div className="rounded-[2rem] border border-[#dfe4ef] bg-[#101827] p-4 shadow-2xl shadow-indigo-100">
-                  <div className="rounded-[1.5rem] bg-white p-5 sm:p-6">
-                    <div className="flex items-center justify-between">
-                      <span className="rounded-full bg-indigo-50 px-3 py-1 text-[10px] font-mono uppercase tracking-widest text-indigo-600">Your kit</span>
-                      <span className="text-xs font-medium text-[#8b95aa]">Digital</span>
-                    </div>
-                    <div className="mt-7 grid grid-cols-2 gap-3">
-                      <div className="rounded-2xl bg-[#f4f5f9] p-4">
-                        <FileText size={20} className="text-[#4f46e5]" />
-                        <div className="mt-8 text-sm font-bold text-[#172033]">CV</div>
-                        <div className="mt-1 text-xs text-[#7c879e]">Editable templates</div>
-                      </div>
-                      <div className="rounded-2xl bg-[#f4f5f9] p-4">
-                        <BriefcaseBusiness size={20} className="text-[#4f46e5]" />
-                        <div className="mt-8 text-sm font-bold text-[#172033]">Cover letter</div>
-                        <div className="mt-1 text-xs text-[#7c879e]">Ready to customize</div>
-                      </div>
-                      <div className="col-span-2 rounded-2xl bg-[#eef0fd] p-4">
-                        <div className="flex items-center gap-3">
-                          <ListChecks size={20} className="text-[#4f46e5]" />
-                          <div>
-                            <div className="text-sm font-bold text-[#172033]">Application workflow</div>
-                            <div className="mt-1 text-xs text-[#68748c]">Checklist · tracker · AI prompts</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mt-5 border-t border-[#e7eaf1] pt-5">
-                      <div className="flex items-end justify-between gap-4">
-                        <div>
-                          <div className="text-xs text-[#8b95aa]">One-time purchase</div>
-                          <div className="mt-1 text-3xl font-bold tracking-tight text-[#111827]">₹699</div>
-                        </div>
-                        <div className="rounded-xl bg-emerald-50 px-3 py-2 text-right">
-                          <div className="text-xs font-bold text-emerald-700">No subscription</div>
-                          <div className="mt-0.5 text-[10px] text-emerald-600">Pay once</div>
-                        </div>
-                      </div>
-                      <button type="button" disabled title="Checkout will be connected in the commerce phase." className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#4f46e5] px-5 py-3.5 text-sm font-bold text-white opacity-60 cursor-not-allowed">
-                        Get the kit — ₹699 <ArrowRight size={16} />
-                      </button>
-                      <div className="mt-3 flex items-center justify-center gap-2 text-[11px] text-[#8b95aa]">
-                        <LockKeyhole size={13} /> Secure checkout coming next
-                      </div>
-                    </div>
-                  </div>
+              <div className="relative mx-auto h-[390px] w-full max-w-xl">
+                <div className="absolute right-2 top-7 h-[310px] w-[78%] rotate-[5deg] rounded-2xl border border-[#dfe4ee] bg-white p-5 shadow-xl">
+                  <div className="flex items-center gap-3 border-b border-[#edf0f5] pb-4"><div className="h-10 w-10 rounded-xl bg-indigo-100" /><div><div className="h-2.5 w-28 rounded bg-[#172033]" /><div className="mt-2 h-2 w-20 rounded bg-[#dce1ea]" /></div></div>
+                  <div className="mt-5 h-3 w-32 rounded bg-indigo-100" />
+                  <div className="mt-3 space-y-2">{["w-11/12","w-10/12","w-8/12","w-9/12"].map((w,i) => <div key={i} className={"h-2 rounded bg-[#edf0f5] " + w} />)}</div>
+                  <div className="mt-7 grid grid-cols-2 gap-3"><div className="h-20 rounded-xl bg-[#f5f6fa]" /><div className="h-20 rounded-xl bg-[#eef0fd]" /></div>
+                </div>
+                <div className="absolute bottom-3 left-3 h-[285px] w-[78%] -rotate-[7deg] rounded-2xl border border-[#dfe4ee] bg-white p-5 shadow-2xl">
+                  <div className="flex justify-between"><div><div className="h-3 w-32 rounded bg-[#172033]" /><div className="mt-2 h-2 w-24 rounded bg-[#dce1ea]" /></div><div className="h-9 w-9 rounded-lg bg-emerald-100" /></div>
+                  <div className="mt-7 h-2.5 w-24 rounded bg-emerald-100" />
+                  <div className="mt-3 space-y-2">{["w-full","w-10/12","w-9/12","w-11/12","w-8/12"].map((w,i) => <div key={i} className={"h-2 rounded bg-[#edf0f5] " + w} />)}</div>
+                  <div className="mt-7 h-16 rounded-xl bg-[#f5f6fa]" />
+                </div>
+                <div className="absolute bottom-1 right-2 rounded-2xl border border-[#dfe4ee] bg-[#111827] p-4 text-white shadow-2xl">
+                  <div className="text-[10px] font-mono uppercase tracking-widest text-indigo-300">Application kit</div>
+                  <div className="mt-1 text-xl font-bold">Germany · IT</div>
+                  <div className="mt-2 text-xs text-slate-400">CV + cover letter + workflow</div>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="border-b border-[#e4e8f0] bg-[#fbfcff]">
-          <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
-            <div className="grid gap-4 text-center sm:grid-cols-3">
-              {[
-                { icon: BadgeCheck, title: "Clear one-time price", text: "₹699 · no recurring fee" },
-                { icon: Download, title: "Digital product", text: "Downloadable, editable resources" },
-                { icon: ShieldCheck, title: "Built for practical use", text: "Focused on real applications" },
-              ].map(({ icon: Icon, title, text }) => (
-                <div key={title} className="flex items-center justify-center gap-3 sm:justify-start sm:text-left">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-[#4f46e5] shadow-sm"><Icon size={17} /></div>
-                  <div>
-                    <div className="text-xs font-bold text-[#263149]">{title}</div>
-                    <div className="mt-0.5 text-[11px] text-[#7b869c]">{text}</div>
-                  </div>
-                </div>
-              ))}
+        <section className="border-y border-[#e4e8f0] bg-[#fbfcff]">
+          <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
+            <div className="flex items-center gap-4"><div><div className="text-xs text-[#8993a8]">One-time price</div><div className="text-2xl font-bold">₹699</div></div><div className="h-9 w-px bg-[#dfe4ec]" /><div className="text-sm text-[#667189]">Digital product · no subscription</div></div>
+            <div className="flex flex-wrap gap-4 text-xs text-[#667189]"><span className="flex items-center gap-1.5"><ShieldCheck size={15} className="text-emerald-600" /> Transparent pricing</span><span className="flex items-center gap-1.5"><Download size={15} className="text-indigo-500" /> Editable resources</span></div>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
+          <div className="mx-auto max-w-3xl text-center"><div className="text-xs font-mono uppercase tracking-[0.16em] text-[#4f46e5]">Choose your version</div><h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Make it relevant to your target.</h2><p className="mt-3 text-sm leading-6 text-[#737e94]">Germany + Software / IT is the first available version. More country and job-type modules can be added later.</p></div>
+          <div className="mx-auto mt-9 max-w-4xl rounded-[1.75rem] border border-[#dfe4ee] bg-white p-5 shadow-sm sm:p-7">
+            <div className="grid gap-8 md:grid-cols-2">
+              <div><div className="mb-3 flex items-center gap-2 text-sm font-bold"><Globe2 size={17} className="text-[#4f46e5]" /> Country</div><div className="flex flex-wrap gap-2">{careerCountries.map(country => { const enabled = country === "Germany"; return <button key={country} type="button" disabled={!enabled} onClick={() => enabled && setSelectedCountry(country)} className={"rounded-xl border px-3 py-2 text-xs font-semibold " + (selectedCountry === country ? "border-[#4f46e5] bg-[#eef0fd] text-[#4f46e5]" : enabled ? "border-[#e1e5ee] text-[#526078] hover:border-indigo-200" : "border-[#eef0f4] bg-[#fafbfc] text-[#a2aaba] cursor-not-allowed")}>{country}{!enabled && <span className="ml-1 text-[9px] font-normal">Soon</span>}</button>; })}</div></div>
+              <div><div className="mb-3 flex items-center gap-2 text-sm font-bold"><BriefcaseBusiness size={17} className="text-[#4f46e5]" /> Job type</div><div className="flex flex-wrap gap-2">{careerJobTypes.map(jobType => { const enabled = jobType === "Software / IT"; return <button key={jobType} type="button" disabled={!enabled} onClick={() => enabled && setSelectedJobType(jobType)} className={"rounded-xl border px-3 py-2 text-xs font-semibold " + (selectedJobType === jobType ? "border-[#4f46e5] bg-[#eef0fd] text-[#4f46e5]" : enabled ? "border-[#e1e5ee] text-[#526078] hover:border-indigo-200" : "border-[#eef0f4] bg-[#fafbfc] text-[#a2aaba] cursor-not-allowed")}>{jobType}{!enabled && <span className="ml-1 text-[9px] font-normal">Soon</span>}</button>; })}</div></div>
+            </div>
+            <div className="mt-7 flex flex-col gap-4 rounded-2xl bg-[#f6f7fb] p-4 sm:flex-row sm:items-center sm:justify-between"><div className="flex items-center gap-3"><div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white shadow-sm"><BadgeCheck size={17} className="text-emerald-600" /></div><div><div className="text-xs text-[#8993a8]">Selected version</div><div className="text-sm font-bold">{selectedCountry} · {selectedJobType}</div></div></div><button type="button" disabled={!available} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#111827] px-5 py-3 text-sm font-bold text-white opacity-50 cursor-not-allowed">Get this version · ₹699 <ArrowRight size={15} /></button></div>
+          </div>
+        </section>
+
+        <section className="border-y border-[#e4e8f0] bg-white">
+          <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
+            <div className="grid items-center gap-12 lg:grid-cols-2">
+              <div><div className="text-xs font-mono uppercase tracking-[0.16em] text-[#4f46e5]">Inside the kit</div><h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Everything you need, in one place.</h2><p className="mt-4 max-w-lg text-sm leading-7 text-[#707b91]">A compact system for turning a job description into a tailored application and keeping track of what you sent.</p><div className="mt-7 space-y-3">{[["CV templates","Editable starting points"],["Cover letters","Structured and ready to customize"],["Country guidance","Practical market-specific guidance"],["Application workflow","Checklist, tracker and AI prompts"]].map(([title,text]) => <div key={title} className="flex gap-3"><Check size={17} className="mt-1 shrink-0 text-emerald-600" /><div><div className="text-sm font-bold">{title}</div><div className="mt-0.5 text-xs leading-5 text-[#7b869b]">{text}</div></div></div>)}</div></div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="rounded-3xl border border-[#dfe4ee] bg-[#f8f9fc] p-4 shadow-sm"><div className="rounded-2xl bg-white p-4 shadow-sm"><div className="h-2 w-20 rounded bg-[#172033]" /><div className="mt-3 h-1.5 w-28 rounded bg-[#dfe4ee]" /><div className="mt-5 h-2 w-14 rounded bg-indigo-100" /><div className="mt-3 space-y-2"><div className="h-1.5 rounded bg-[#edf0f5]" /><div className="h-1.5 w-10/12 rounded bg-[#edf0f5]" /><div className="h-1.5 w-8/12 rounded bg-[#edf0f5]" /></div><div className="mt-5 h-12 rounded-xl bg-[#f1f3f7]" /></div><div className="mt-3 text-xs font-bold">CV template</div></div>
+                <div className="mt-8 rounded-3xl border border-[#dfe4ee] bg-[#f8f9fc] p-4 shadow-sm"><div className="rounded-2xl bg-white p-4 shadow-sm"><div className="h-2 w-24 rounded bg-[#172033]" /><div className="mt-3 h-1.5 w-20 rounded bg-[#dfe4ee]" /><div className="mt-5 space-y-2"><div className="h-1.5 rounded bg-[#edf0f5]" /><div className="h-1.5 w-11/12 rounded bg-[#edf0f5]" /><div className="h-1.5 w-9/12 rounded bg-[#edf0f5]" /><div className="h-1.5 w-10/12 rounded bg-[#edf0f5]" /></div><div className="mt-4 h-8 rounded-xl bg-emerald-50" /></div><div className="mt-3 text-xs font-bold">Cover letter</div></div>
+                <div className="col-span-2 rounded-3xl bg-[#111827] p-5 text-white shadow-lg"><div className="flex items-center gap-3"><ListChecks size={19} className="text-indigo-300" /><div><div className="text-sm font-bold">Application tracker</div><div className="text-xs text-slate-400">Applications · status · next action</div></div></div><div className="mt-4 grid grid-cols-3 gap-2"><div className="rounded-xl bg-white/5 p-2.5 text-[10px] text-slate-300">Applied<div className="mt-2 h-1.5 rounded bg-white/10" /></div><div className="rounded-xl bg-white/5 p-2.5 text-[10px] text-slate-300">Interview<div className="mt-2 h-1.5 rounded bg-white/10" /></div><div className="rounded-xl bg-white/5 p-2.5 text-[10px] text-slate-300">Follow-up<div className="mt-2 h-1.5 rounded bg-white/10" /></div></div></div>
+              </div>
             </div>
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
-          <div className="grid gap-8 lg:grid-cols-[1fr_0.72fr]">
-            <div>
-              <div className="text-xs font-mono uppercase tracking-[0.18em] text-[#4f46e5]">Personalize your kit</div>
-              <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#111827] sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                Tell us where and what you do.
-              </h2>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-[#6f7b92]">
-                The kit is designed around the two things that change your application: the target market and the kind of role you are applying for.
-              </p>
-
-              <div className="mt-8 rounded-[1.75rem] border border-[#dfe4ef] bg-white p-5 shadow-sm sm:p-7">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 text-[#4f46e5]"><Globe2 size={19} /></div>
-                  <div>
-                    <div className="text-sm font-bold text-[#172033]">1. Choose your country</div>
-                    <div className="text-xs text-[#8791a6]">Germany is available in V1</div>
-                  </div>
-                </div>
-                <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
-                  {careerCountries.map((country) => {
-                    const enabled = country === "Germany";
-                    return (
-                      <button
-                        key={country}
-                        type="button"
-                        disabled={!enabled}
-                        onClick={() => enabled && setSelectedCountry(country)}
-                        className={"rounded-xl border px-3 py-2.5 text-xs font-semibold transition " + (selectedCountry === country ? "border-[#4f46e5] bg-[#eef0fd] text-[#4f46e5]" : enabled ? "border-[#e2e6ef] bg-white text-[#526078] hover:border-indigo-200" : "border-[#edf0f4] bg-[#fafbfc] text-[#a0a8b8] cursor-not-allowed")}
-                      >
-                        {country}
-                        {!enabled && <span className="ml-1 text-[9px] font-normal uppercase tracking-wide">Soon</span>}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                <div className="my-7 border-t border-[#edf0f4]" />
-
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 text-[#4f46e5]"><BriefcaseBusiness size={19} /></div>
-                  <div>
-                    <div className="text-sm font-bold text-[#172033]">2. Choose your job type</div>
-                    <div className="text-xs text-[#8791a6]">Software / IT is available in V1</div>
-                  </div>
-                </div>
-                <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
-                  {careerJobTypes.map((jobType) => {
-                    const enabled = jobType === "Software / IT";
-                    return (
-                      <button
-                        key={jobType}
-                        type="button"
-                        disabled={!enabled}
-                        onClick={() => enabled && setSelectedJobType(jobType)}
-                        className={"rounded-xl border px-3 py-2.5 text-xs font-semibold transition " + (selectedJobType === jobType ? "border-[#4f46e5] bg-[#eef0fd] text-[#4f46e5]" : enabled ? "border-[#e2e6ef] bg-white text-[#526078] hover:border-indigo-200" : "border-[#edf0f4] bg-[#fafbfc] text-[#a0a8b8] cursor-not-allowed")}
-                      >
-                        {jobType}
-                        {!enabled && <span className="ml-1 text-[9px] font-normal uppercase tracking-wide">Soon</span>}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                <div className={"mt-6 flex items-center gap-3 rounded-2xl p-4 " + (available ? "bg-emerald-50" : "bg-amber-50")}>
-                  {available ? <BadgeCheck size={18} className="shrink-0 text-emerald-600" /> : <Clock3 size={18} className="shrink-0 text-amber-600" />}
-                  <p className="text-xs leading-5 text-[#657087]">
-                    {available ? <><span className="font-bold text-emerald-700">Your V1 kit:</span> Germany · Software / IT</> : <>This country and role combination is planned for a future version.</>}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <aside className="rounded-[1.75rem] bg-[#111827] p-6 text-white shadow-xl sm:p-7 lg:sticky lg:top-24 lg:h-fit">
-              <div className="text-xs font-mono uppercase tracking-[0.18em] text-indigo-300">What's inside</div>
-              <h3 className="mt-2 text-2xl font-bold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Everything in one place.</h3>
-              <div className="mt-6 space-y-4">
-                {[
-                  "Editable CV templates",
-                  "Cover-letter templates",
-                  "Country-specific guidance",
-                  "Tech role examples",
-                  "Job-description customization",
-                  "Application checklist + tracker",
-                  "Ready-to-use AI prompts",
-                ].map((item) => (
-                  <div key={item} className="flex gap-3 text-sm text-slate-200">
-                    <Check size={16} className="mt-0.5 shrink-0 text-emerald-300" /> {item}
-                  </div>
-                ))}
-              </div>
-              <div className="mt-7 border-t border-white/10 pt-6">
-                <div className="text-xs text-slate-400">One-time purchase</div>
-                <div className="mt-1 text-3xl font-bold">₹699</div>
-                <button type="button" disabled className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3.5 text-sm font-bold text-[#111827] opacity-60 cursor-not-allowed">
-                  Get the kit <ArrowRight size={16} />
-                </button>
-              </div>
-            </aside>
-          </div>
-        </section>
-
-        <section className="bg-white border-y border-[#e4e8f0]">
-          <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
-            <div className="max-w-2xl">
-              <div className="text-xs font-mono uppercase tracking-[0.18em] text-[#06b6d4]">Why this is different</div>
-              <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#111827] sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>One generic CV isn't enough.</h2>
-              <p className="mt-4 text-sm leading-7 text-[#6f7b92]">The goal isn't to give you another collection of pretty templates. It is to give you a repeatable system for adapting your application to the market and role you are targeting.</p>
-            </div>
-            <div className="mt-10 grid gap-4 md:grid-cols-3">
-              {[
-                { icon: Globe2, title: "Country context", text: "Start with guidance built around the target country's application expectations." },
-                { icon: BriefcaseBusiness, title: "Role context", text: "Shape your application around the kind of technology role you actually want." },
-                { icon: ListChecks, title: "Repeatable workflow", text: "Move from job description to tailored application without reinventing the process each time." },
-              ].map(({ icon: Icon, title, text }) => (
-                <div key={title} className="rounded-3xl border border-[#e4e8f0] bg-[#fbfcff] p-6">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-50 text-[#4f46e5]"><Icon size={20} /></div>
-                  <h3 className="mt-5 text-lg font-bold text-[#172033]">{title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-[#6f7b92]">{text}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
-          <div className="text-center">
-            <div className="text-xs font-mono uppercase tracking-[0.18em] text-[#4f46e5]">How it works</div>
-            <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#111827] sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>A simpler application process.</h2>
-          </div>
-          <div className="mx-auto mt-10 grid max-w-5xl gap-4 md:grid-cols-3">
-            {[
-              { n: "01", title: "Pick your target", text: "Choose the country and job type you are targeting." },
-              { n: "02", title: "Customize", text: "Use the templates, guidance and prompts to tailor your application." },
-              { n: "03", title: "Apply & track", text: "Use the checklist and tracker to stay organized across applications." },
-            ].map((step) => (
-              <div key={step.n} className="rounded-3xl border border-[#e4e8f0] bg-white p-6 shadow-sm">
-                <div className="text-sm font-mono font-bold text-[#4f46e5]">{step.n}</div>
-                <h3 className="mt-5 text-lg font-bold text-[#172033]">{step.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-[#6f7b92]">{step.text}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="bg-[#111827] text-white">
-          <div className="mx-auto max-w-5xl px-4 py-14 text-center sm:px-6 lg:py-16">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10"><Sparkles size={21} className="text-indigo-300" /></div>
-            <h2 className="mt-5 text-3xl font-bold sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Ready to build a better application?</h2>
-            <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-slate-300">Start with Germany + Software / IT in V1, then use the same product structure as more country and role modules are added.</p>
-            <div className="mx-auto mt-7 flex max-w-md flex-col items-center justify-center gap-3 sm:flex-row">
-              <div className="text-3xl font-bold">₹699</div>
-              <button type="button" disabled className="inline-flex items-center gap-2 rounded-2xl bg-white px-6 py-3.5 text-sm font-bold text-[#111827] opacity-60 cursor-not-allowed">
-                Get the kit <ArrowRight size={16} />
-              </button>
-            </div>
-            <div className="mt-4 text-xs text-slate-400">Secure checkout will be connected in the commerce phase.</div>
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-5xl px-4 py-14 sm:px-6 lg:py-16">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-xs font-mono uppercase tracking-[0.18em] text-[#06b6d4]">Questions</div>
-              <h2 className="mt-2 text-3xl font-bold text-[#111827]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Before you buy</h2>
-            </div>
-            <ChevronDown size={20} className="text-[#9aa3b4]" />
-          </div>
-          <div className="mt-8 divide-y divide-[#e4e8f0] rounded-3xl border border-[#e4e8f0] bg-white">
-            {[
-              ["What country is available first?", "Germany is the first V1 country. Other countries are shown as planned expansion and are not presented as available yet."],
-              ["What job types are included?", "The first V1 focuses on Software / IT. The product structure is designed to expand to Business, Design and Marketing later."],
-              ["Is this a subscription?", "No. The planned price is ₹699 as a one-time digital product purchase."],
-              ["Do I need special software?", "The kit is designed around editable digital resources and practical application guidance. Specific file formats will be finalized with the commerce delivery package."],
-            ].map(([question, answer]) => (
-              <div key={question} className="p-5 sm:p-6">
-                <div className="text-sm font-bold text-[#172033]">{question}</div>
-                <div className="mt-2 text-sm leading-6 text-[#6f7b92]">{answer}</div>
-              </div>
-            ))}
-          </div>
+        <section className="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 lg:py-20">
+          <div className="text-xs font-mono uppercase tracking-[0.16em] text-[#4f46e5]">Start with V1</div>
+          <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Germany · Software / IT</h2>
+          <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-[#707b91]">Templates, guidance and workflow together — so you can spend more time applying and less time rebuilding.</p>
+          <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row"><div className="text-3xl font-bold">₹699</div><button type="button" disabled className="inline-flex items-center gap-2 rounded-2xl bg-[#4f46e5] px-7 py-3.5 text-sm font-bold text-white opacity-60 cursor-not-allowed">Get the kit <ArrowRight size={16} /></button></div>
+          <div className="mt-4 flex items-center justify-center gap-2 text-xs text-[#929bad]"><LockKeyhole size={13} /> Secure checkout will be connected next</div>
         </section>
       </main>
     </div>
