@@ -27,6 +27,9 @@ const parkingDetails = {
   ],
 };
 
+const careerCountries = ["Germany", "Netherlands", "UK", "Canada", "Sweden", "Australia", "USA", "Ireland"] as const;
+const careerJobTypes = ["Software Engineer", "Tech Lead", "Solution Architect", "Engineering Manager"] as const;
+
 const productDetails: Record<string, {
   headline: string;
   description: string;
@@ -52,14 +55,14 @@ const productDetails: Record<string, {
     description: "A collection of practical prompts you can copy, adapt and use for work, research, planning, writing and everyday problem solving.",
     highlights: ["Copy-and-use prompt library", "Work and productivity prompts", "Research and learning prompts", "Everyday life problem-solving prompts"],
   },
-  "germany-tech-job-application-kit": {
-    headline: "Build a professional Germany-focused job application without starting from scratch.",
-    description: "A practical country-specific application kit for software and IT professionals applying to jobs in Germany, with editable CV and cover-letter templates, application guidance, examples and a job-search workflow.",
+  "tech-job-application-kit": {
+    headline: "Build a stronger job application for the country and tech role you are targeting.",
+    description: "A practical country-aware application kit for software and IT professionals, designed to adapt CVs, cover letters and application strategy to the market you are targeting.",
     highlights: [
-      "3 editable CV templates: ATS-conscious, professional and executive",
-      "3 editable cover-letter templates for different seniority levels",
-      "Germany-focused CV and cover-letter guidance",
-      "Tech examples for Software Engineer, Solution Architect and Engineering Manager",
+      "Country-specific CV and cover-letter guidance",
+      "Editable CV templates for software and IT professionals",
+      "Cover-letter templates for different seniority levels",
+      "Examples for Software Engineer, Tech Lead, Solution Architect and Engineering Manager",
       "Job-description customization worksheet and application checklist",
       "Application tracker plus ready-to-use AI prompts for optional self-service refinement",
     ],
@@ -332,6 +335,46 @@ export function ProductDetailPage({
             <h1 className="text-4xl font-bold leading-tight tracking-tight text-[#0f1523] sm:text-5xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{product.name}</h1>
             <p className="mt-5 text-xl leading-relaxed text-[#4f46e5]">{detail.headline}</p>
             <p className="mt-5 text-base leading-7 text-[#6b7a99]">{detail.description}</p>
+            {product.slug === "tech-job-application-kit" && (
+              <div className="mt-8 rounded-3xl border border-[#e4e8f0] bg-white p-6 shadow-sm sm:p-7">
+                <div className="text-xs font-mono uppercase tracking-widest text-[#4f46e5]">Build your application kit</div>
+                <h2 className="mt-2 text-2xl font-bold text-[#0f1523]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Choose your country and job type</h2>
+                <p className="mt-2 text-sm leading-6 text-[#6b7a99]">The product is designed as a country-specific, role-specific kit. The first launch focuses on Germany and Software / IT roles; more combinations can be added without changing the product structure.</p>
+                <div className="mt-6">
+                  <div className="text-sm font-semibold text-[#33405a]">Country</div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {careerCountries.map((country) => (
+                      <button
+                        key={country}
+                        type="button"
+                        className={"rounded-xl border px-3.5 py-2 text-sm font-medium transition " + (country === "Germany" ? "border-[#4f46e5] bg-[#eef0fd] text-[#4f46e5]" : "border-[#e4e8f0] bg-white text-[#6b7a99]")}
+                      >
+                        {country}
+                        {country !== "Germany" && <span className="ml-1.5 text-[10px] uppercase tracking-wide text-[#a0a8b8]">Soon</span>}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="mt-6">
+                  <div className="text-sm font-semibold text-[#33405a]">Job type</div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {careerJobTypes.map((jobType, index) => (
+                      <button
+                        key={jobType}
+                        type="button"
+                        className={"rounded-xl border px-3.5 py-2 text-sm font-medium transition " + (index === 0 ? "border-[#4f46e5] bg-[#eef0fd] text-[#4f46e5]" : "border-[#e4e8f0] bg-white text-[#6b7a99]")}
+                      >
+                        {jobType}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="mt-6 flex items-start gap-3 rounded-2xl bg-[#f8f9fb] p-4">
+                  <Sparkles size={17} className="mt-0.5 flex-shrink-0 text-[#4f46e5]" />
+                  <p className="text-sm leading-6 text-[#6b7a99]"><span className="font-semibold text-[#33405a]">Current launch:</span> Germany + Software / IT. The same selection flow will support additional countries and job types as new kits are added.</p>
+                </div>
+              </div>
+            )}
             <div className="mt-8 rounded-3xl border border-[#e4e8f0] bg-white p-6 shadow-sm">
               <div className="flex flex-wrap items-end justify-between gap-5">
                 <div><div className="text-xs font-mono uppercase tracking-widest text-[#6b7a99]">Digital product</div><div className="mt-1 text-3xl font-bold text-[#0f1523]">{product.isFree ? "FREE" : `₹${product.price.toLocaleString("en-IN")}`}</div></div>
