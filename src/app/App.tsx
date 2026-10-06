@@ -21,12 +21,13 @@ import { ParkingOrderSuccessPage } from "./features/parking/ParkingOrderSuccessP
 import { ParkingScanPage } from "./features/parking/ParkingScanPage";
 import { getProductBySlug, products } from "./data/products/products";
 import { ProductCard } from "./features/products/components/ProductCard";
+import { ContactUsPage } from "./features/contact/ContactUsPage";
 
 // ─── Data ───────────────────────────────────────────────────────
 import { articles } from "./data/articles";
 
 // ─── Types ──────────────────────────────────────────────────────
-type Page = "home" | "tools" | "blog" | "article" | "products" | "product" | "parking" | "parking-activation" | "parking-success";
+type Page = "home" | "tools" | "blog" | "article" | "products" | "product" | "parking" | "parking-activation" | "parking-success" | "contact";
 
 // ─── Tool Definitions ───────────────────────────────────────────
 const tools = [
@@ -39,6 +40,7 @@ const tools = [
 const pageFromPath = (path: string): Page => {
   if (path === "/") return "home";
   if (path === "/blog") return "blog";
+  if (path === "/contact") return "contact";
   if (path.startsWith("/blog/")) return "article";
   if (path === "/parking") return "parking";
   if (path === PARKING_ACTIVATION_ROUTE) return "parking-activation";
@@ -421,7 +423,7 @@ export default function App() {
         )}
 
         {/* BLOG PAGE */}
-        {page === "blog" && <Blog onSelectArticle={openArticle} />}
+        {page === "blog" && <Blog onSelectArticle={openArticle} />}\n\n        {/* CONTACT PAGE */}\n        {page === "contact" && <ContactUsPage />}
 
         {/* ARTICLE PAGE */}
         {page === "article" && activeArticleId && (
