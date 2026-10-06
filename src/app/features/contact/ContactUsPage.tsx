@@ -1,5 +1,5 @@
-import { FormEvent, useState } from "react";
-import { Mail, Send, MessageSquare, CheckCircle2 } from "lucide-react";
+
+import { Mail, Send, MessageSquare } from "lucide-react";
 
 const CATEGORIES = [
   "General enquiry",
@@ -16,13 +16,6 @@ const subjectFor = (category: string) =>
   `RichLifeTools Contact — ${category}`;
 
 export function ContactUsPage() {
-  const [category, setCategory] = useState(CATEGORIES[0]);
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    setSubmitted(true);
-  };
-
   return (
     <div className="pt-16 min-h-screen bg-[#f8f9fb]">
       <section className="relative overflow-hidden bg-[#0f1523] text-white">
@@ -58,23 +51,10 @@ export function ContactUsPage() {
           </div>
 
           <div className="bg-white border border-[#e4e8f0] rounded-3xl p-6 sm:p-8 shadow-sm">
-            {submitted ? (
-              <div className="py-10 text-center">
-                <div className="mx-auto w-14 h-14 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mb-5">
-                  <CheckCircle2 size={28} />
-                </div>
-                <h2 className="text-2xl font-bold text-[#0f1523] mb-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                  Message sent
-                </h2>
-                <p className="text-[#6b7a99] text-sm leading-relaxed">
-                  Thanks for reaching out. Your message has been submitted successfully.
-                </p>
-              </div>
-            ) : (
+
               <form
                 action="https://formsubmit.co/richlifetools.support@gmail.com"
                 method="POST"
-                onSubmit={handleSubmit}
                 className="space-y-5"
               >
                 <input type="hidden" name="_subject" value={subjectFor(category)} />
@@ -114,7 +94,6 @@ export function ContactUsPage() {
                     id="contact-category"
                     name="category"
                     value={category}
-                    onChange={(event) => setCategory(event.target.value)}
                     className="w-full rounded-2xl border border-[#e4e8f0] bg-[#f8f9fb] px-4 py-3 text-sm text-[#0f1523] outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50"
                   >
                     {CATEGORIES.map((item) => <option key={item} value={item}>{item}</option>)}
@@ -140,7 +119,6 @@ export function ContactUsPage() {
                   Send Message <Send size={15} />
                 </button>
               </form>
-            )}
           </div>
         </div>
       </section>
