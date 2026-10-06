@@ -151,6 +151,7 @@ export default function App() {
     ["tools", "Tools"],
     ["products", "Products"],
     ["blog", "Blog"],
+    ["contact", "Contact"],
   ];
 
   return (
