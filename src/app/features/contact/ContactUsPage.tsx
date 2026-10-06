@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mail, Send, MessageSquare } from "lucide-react";
+import { Mail, Send, MessageSquare, CheckCircle2 } from "lucide-react";
 
 const CATEGORIES = [
   "General enquiry",
@@ -17,6 +17,7 @@ const subjectFor = (category: string) =>
 
 export function ContactUsPage() {
   const [category, setCategory] = useState(CATEGORIES[0]);
+  const [submitted, setSubmitted] = useState(() => new URLSearchParams(window.location.search).get("sent") === "1");
 
   return (
     <div className="pt-16 min-h-screen bg-[#f8f9fb]">
@@ -53,6 +54,26 @@ export function ContactUsPage() {
           </div>
 
           <div className="bg-white border border-[#e4e8f0] rounded-3xl p-6 sm:p-8 shadow-sm">
+            {submitted ? (
+              <div className="py-8 text-center">
+                <div className="mx-auto w-14 h-14 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mb-5">
+                  <CheckCircle2 size={30} />
+                </div>
+                <h2 className="text-2xl font-bold text-[#0f1523] mb-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                  Message sent successfully!
+                </h2>
+                <p className="text-[#6b7a99] text-sm sm:text-base leading-relaxed max-w-md mx-auto">
+                  Thank you for reaching out to RichLifeTools. We’ve received your message and will get back to you within <strong className="text-[#0f1523]">24–48 hours</strong>.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setSubmitted(false)}
+                  className="mt-7 rounded-2xl bg-[#4f46e5] px-5 py-3 text-sm font-semibold text-white hover:bg-[#4338ca] transition-colors"
+                >
+                  Send another message
+                </button>
+              </div>
+            ) : (
             <form
                 action="https://formsubmit.co/richlifetools.support@gmail.com"
                 method="POST"
@@ -61,7 +82,7 @@ export function ContactUsPage() {
                 <input type="hidden" name="_subject" value={subjectFor(category)} />
                 <input type="hidden" name="_captcha" value="false" />
                 <input type="hidden" name="_template" value="table" />
-                <input type="hidden" name="_next" value="https://richlifetools.com/contact" />
+                <input type="hidden" name="_next" value="https://www.richlifetools.com/contact?sent=1" />
 
                 <div>
                   <label htmlFor="contact-name" className="block text-sm font-semibold text-[#0f1523] mb-2">Name</label>
@@ -121,6 +142,7 @@ export function ContactUsPage() {
                   Send Message <Send size={15} />
                 </button>
             </form>
+            )}
           </div>
         </div>
       </section>
