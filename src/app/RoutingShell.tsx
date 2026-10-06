@@ -18,6 +18,9 @@ export default function RoutingShell() {
         <Route path={PARKING_ORDER_SUCCESS_ROUTE} element={<App />} />
         <Route path="/blog" element={<App />} />
         <Route path="/contact" element={<App />} />
+        <Route path="/privacy" element={<App />} />
+        <Route path="/terms" element={<App />} />
+        <Route path="/refund-policy" element={<App />} />
         {ARTICLE_ROUTES.map((article) => (
           <Route key={article.id} path={article.path} element={<App />} />
         ))}

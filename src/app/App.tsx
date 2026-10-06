@@ -22,12 +22,15 @@ import { ParkingScanPage } from "./features/parking/ParkingScanPage";
 import { getProductBySlug, products } from "./data/products/products";
 import { ProductCard } from "./features/products/components/ProductCard";
 import { ContactUsPage } from "./features/contact/ContactUsPage";
+import { PrivacyPolicyPage } from "./features/legal/PrivacyPolicyPage";
+import { TermsOfServicePage } from "./features/legal/TermsOfServicePage";
+import { RefundPolicyPage } from "./features/legal/RefundPolicyPage";
 
 // ─── Data ───────────────────────────────────────────────────────
 import { articles } from "./data/articles";
 
 // ─── Types ──────────────────────────────────────────────────────
-type Page = "home" | "tools" | "blog" | "article" | "products" | "product" | "parking" | "parking-activation" | "parking-success" | "contact";
+type Page = "home" | "tools" | "blog" | "article" | "products" | "product" | "parking" | "parking-activation" | "parking-success" | "contact" | "privacy" | "terms" | "refund";
 
 // ─── Tool Definitions ───────────────────────────────────────────
 const tools = [
@@ -41,6 +44,9 @@ const pageFromPath = (path: string): Page => {
   if (path === "/") return "home";
   if (path === "/blog") return "blog";
   if (path === "/contact") return "contact";
+  if (path === "/privacy") return "privacy";
+  if (path === "/terms") return "terms";
+  if (path === "/refund-policy") return "refund";
   if (path.startsWith("/blog/")) return "article";
   if (path === "/parking") return "parking";
   if (path === PARKING_ACTIVATION_ROUTE) return "parking-activation";
@@ -71,7 +77,7 @@ export default function App() {
   const [selectedTool, setSelectedTool] = useState<string>(() => toolIdByPath.get(path) || "fire");
 
   const navigate = (newPage: Page, tool?: ToolId) => {
-    const route = newPage === "home" ? "/" : newPage === "tools" ? (tool ? pathForTool(tool) : "/tools") : newPage === "products" ? PRODUCTS_ROUTE : newPage === "contact" ? "/contact" : "/blog";
+    const route = newPage === "home" ? "/" : newPage === "tools" ? (tool ? pathForTool(tool) : "/tools") : newPage === "products" ? PRODUCTS_ROUTE : newPage === "contact" ? "/contact" : newPage === "privacy" ? "/privacy" : newPage === "terms" ? "/terms" : newPage === "refund" ? "/refund-policy" : "/blog";
     routerNavigate(route);
     setSelectedTool(tool || (newPage === "tools" ? selectedTool : "fire"));
     setMobileMenuOpen(false);
@@ -121,6 +127,21 @@ export default function App() {
       title: "Thank You for Your Smart Parking Sticker Order",
       description: "Your Smart Parking Sticker order is confirmed and ready to download.",
       url: PARKING_ORDER_SUCCESS_ROUTE,
+    },
+    privacy: {
+      title: "Privacy Policy",
+      description: "Privacy Policy for RichLifeTools, including how we handle contact, order, payment, and Smart Parking Sticker information.",
+      url: "/privacy",
+    },
+    terms: {
+      title: "Terms of Service",
+      description: "Terms of Service governing use of RichLifeTools, its calculators, articles, digital products, and Smart Parking Sticker services.",
+      url: "/terms",
+    },
+    refund: {
+      title: "Refund & Cancellation Policy",
+      description: "Refund and cancellation policy for RichLifeTools products and services, including Smart Parking Stickers and digital products.",
+      url: "/refund-policy",
     },
     product: routeProduct
       ? {
@@ -429,6 +450,11 @@ export default function App() {
         {/* CONTACT PAGE */}
         {page === "contact" && <ContactUsPage />}
 
+        {/* LEGAL PAGES */}
+        {page === "privacy" && <PrivacyPolicyPage />}
+        {page === "terms" && <TermsOfServicePage />}
+        {page === "refund" && <RefundPolicyPage />}
+
         {/* ARTICLE PAGE */}
         {page === "article" && activeArticleId && (
           <ArticleView
@@ -457,7 +483,12 @@ export default function App() {
               </button>
             ))}
           </div>
-          <p className="text-[#6b7a99] text-xs">© 2024 {SITE_NAME}. No ads. No sign-up. No tracking.</p>
+          <div className="flex justify-center gap-6 flex-wrap mb-8 text-sm">
+            <button onClick={() => navigate("privacy")} className="text-[#c4cad9] hover:text-white transition-colors cursor-pointer">Privacy Policy</button>
+            <button onClick={() => navigate("terms")} className="text-[#c4cad9] hover:text-white transition-colors cursor-pointer">Terms of Service</button>
+            <button onClick={() => navigate("refund")} className="text-[#c4cad9] hover:text-white transition-colors cursor-pointer">Refund Policy</button>
+          </div>
+          <p className="text-[#6b7a99] text-xs">© 2024 {SITE_NAME}. No ads. No sign-up.</p>
         </div>
       </footer>
     </div>
