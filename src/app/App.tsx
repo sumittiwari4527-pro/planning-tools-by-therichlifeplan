@@ -126,6 +126,16 @@ export default function App() {
       description: "Your Smart Parking Sticker order is confirmed and ready to download.",
       url: PARKING_ORDER_SUCCESS_ROUTE,
     },
+    privacy: {
+      title: "Privacy Policy",
+      description: "Privacy Policy for RichLifeTools, including how we handle contact, order, payment, and Smart Parking Sticker information.",
+      url: "/privacy",
+    },
+    terms: {
+      title: "Terms of Service",
+      description: "Terms of Service governing use of RichLifeTools, its calculators, articles, digital products, and Smart Parking Sticker services.",
+      url: "/terms",
+    },
     product: routeProduct
       ? {
           title: routeProduct.name,
