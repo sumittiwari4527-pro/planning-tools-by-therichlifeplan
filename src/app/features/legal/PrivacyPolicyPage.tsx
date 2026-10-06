@@ -63,6 +63,11 @@ export function PrivacyPolicyPage() {
           </section>
 
           <section>
+            <h2>6. Sensitive information</h2>
+            <p>Please do not submit sensitive personal information through ordinary website forms or Smart Parking Sticker fields unless specifically requested and necessary. We do not intentionally request health, biometric, precise geolocation, financial-account credentials, government identification, or similar sensitive information through ordinary website forms.</p>
+          </section>
+
+          <section>
             <h2>7. Smart Parking Sticker and QR data</h2>
             <p>The Smart Parking Sticker can encode information such as your name, phone number, email address (if supplied), vehicle identifier, and sticker/order information. The QR payload is encrypted before the QR code is generated. However, you should treat the information encoded in a sticker as information that may be viewed by anyone who obtains or scans the sticker.</p>
             <p>We recommend including only information you are comfortable making available to a person who scans the sticker. We do not guarantee that encryption or any internet-connected service can never be compromised.</p>
@@ -98,6 +103,11 @@ export function PrivacyPolicyPage() {
           <section>
             <h2>12. Security and breach response</h2>
             <p>We use reasonable technical and organizational measures appropriate to the nature of the information we process. No method of transmission or storage over the internet is completely secure. If a data incident occurs, we will assess it and make notifications to affected individuals, regulators, or authorities where required by applicable law.</p>
+          </section>
+
+          <section>
+            <h2>13. Lawful bases and regional privacy laws</h2>
+            <p>For people in the European Economic Area, the United Kingdom, and other jurisdictions that require a defined legal basis, we process personal information on an appropriate legal basis such as contract, legal obligation, legitimate interests, consent where required, or another permitted basis. For India, we intend to comply with the Digital Personal Data Protection framework to the extent applicable. For California and other U.S. states with comprehensive privacy laws, we provide applicable rights and disclosures and do not knowingly sell personal information for money.</p>
           </section>
 
           <section>
