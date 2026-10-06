@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Mail, Send, MessageSquare } from "lucide-react";
 
@@ -54,8 +53,7 @@ export function ContactUsPage() {
           </div>
 
           <div className="bg-white border border-[#e4e8f0] rounded-3xl p-6 sm:p-8 shadow-sm">
-
-              <form
+            <form
                 action="https://formsubmit.co/richlifetools.support@gmail.com"
                 method="POST"
                 className="space-y-5"
@@ -122,7 +120,7 @@ export function ContactUsPage() {
                 >
                   Send Message <Send size={15} />
                 </button>
-              </form>
+            </form>
           </div>
         </div>
       </section>
