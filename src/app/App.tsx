@@ -22,12 +22,14 @@ import { ParkingScanPage } from "./features/parking/ParkingScanPage";
 import { getProductBySlug, products } from "./data/products/products";
 import { ProductCard } from "./features/products/components/ProductCard";
 import { ContactUsPage } from "./features/contact/ContactUsPage";
+import { PrivacyPolicyPage } from "./features/legal/PrivacyPolicyPage";
+import { TermsOfServicePage } from "./features/legal/TermsOfServicePage";
 
 // ─── Data ───────────────────────────────────────────────────────
 import { articles } from "./data/articles";
 
 // ─── Types ──────────────────────────────────────────────────────
-type Page = "home" | "tools" | "blog" | "article" | "products" | "product" | "parking" | "parking-activation" | "parking-success" | "contact";
+type Page = "home" | "tools" | "blog" | "article" | "products" | "product" | "parking" | "parking-activation" | "parking-success" | "contact" | "privacy" | "terms";
 
 // ─── Tool Definitions ───────────────────────────────────────────
 const tools = [
@@ -41,6 +43,8 @@ const pageFromPath = (path: string): Page => {
   if (path === "/") return "home";
   if (path === "/blog") return "blog";
   if (path === "/contact") return "contact";
+  if (path === "/privacy") return "privacy";
+  if (path === "/terms") return "terms";
   if (path.startsWith("/blog/")) return "article";
   if (path === "/parking") return "parking";
   if (path === PARKING_ACTIVATION_ROUTE) return "parking-activation";
@@ -71,7 +75,7 @@ export default function App() {
   const [selectedTool, setSelectedTool] = useState<string>(() => toolIdByPath.get(path) || "fire");
 
   const navigate = (newPage: Page, tool?: ToolId) => {
-    const route = newPage === "home" ? "/" : newPage === "tools" ? (tool ? pathForTool(tool) : "/tools") : newPage === "products" ? PRODUCTS_ROUTE : newPage === "contact" ? "/contact" : "/blog";
+    const route = newPage === "home" ? "/" : newPage === "tools" ? (tool ? pathForTool(tool) : "/tools") : newPage === "products" ? PRODUCTS_ROUTE : newPage === "contact" ? "/contact" : newPage === "privacy" ? "/privacy" : newPage === "terms" ? "/terms" : "/blog";
     routerNavigate(route);
     setSelectedTool(tool || (newPage === "tools" ? selectedTool : "fire"));
     setMobileMenuOpen(false);
@@ -429,6 +433,10 @@ export default function App() {
         {/* CONTACT PAGE */}
         {page === "contact" && <ContactUsPage />}
 
+        {/* LEGAL PAGES */}
+        {page === "privacy" && <PrivacyPolicyPage />}
+        {page === "terms" && <TermsOfServicePage />}
+
         {/* ARTICLE PAGE */}
         {page === "article" && activeArticleId && (
           <ArticleView
@@ -457,7 +465,11 @@ export default function App() {
               </button>
             ))}
           </div>
-          <p className="text-[#6b7a99] text-xs">© 2024 {SITE_NAME}. No ads. No sign-up. No tracking.</p>
+          <div className="flex justify-center gap-6 flex-wrap mb-8 text-sm">
+            <button onClick={() => navigate("privacy")} className="text-[#c4cad9] hover:text-white transition-colors cursor-pointer">Privacy Policy</button>
+            <button onClick={() => navigate("terms")} className="text-[#c4cad9] hover:text-white transition-colors cursor-pointer">Terms of Service</button>
+          </div>
+          <p className="text-[#6b7a99] text-xs">© 2024 {SITE_NAME}. No ads. No sign-up.</p>
         </div>
       </footer>
     </div>
