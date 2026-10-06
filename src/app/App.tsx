@@ -423,7 +423,10 @@ export default function App() {
         )}
 
         {/* BLOG PAGE */}
-        {page === "blog" && <Blog onSelectArticle={openArticle} />}\n\n        {/* CONTACT PAGE */}\n        {page === "contact" && <ContactUsPage />}
+        {page === "blog" && <Blog onSelectArticle={openArticle} />}
+
+        {/* CONTACT PAGE */}
+        {page === "contact" && <ContactUsPage />}
 
         {/* ARTICLE PAGE */}
         {page === "article" && activeArticleId && (
