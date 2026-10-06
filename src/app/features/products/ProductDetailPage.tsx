@@ -29,7 +29,7 @@ const parkingDetails = {
 };
 
 const careerCountries = ["Germany", "Netherlands", "UK", "Canada", "Sweden", "Australia", "USA", "Ireland"] as const;
-const careerJobTypes = ["Software Engineer", "Tech Lead", "Solution Architect", "Engineering Manager"] as const;
+const careerJobTypes = ["Software / IT", "Business", "Design", "Marketing"] as const;
 
 const productDetails: Record<string, {
   headline: string;
