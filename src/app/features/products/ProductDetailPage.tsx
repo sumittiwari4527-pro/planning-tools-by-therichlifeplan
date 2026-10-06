@@ -52,6 +52,18 @@ const productDetails: Record<string, {
     description: "A collection of practical prompts you can copy, adapt and use for work, research, planning, writing and everyday problem solving.",
     highlights: ["Copy-and-use prompt library", "Work and productivity prompts", "Research and learning prompts", "Everyday life problem-solving prompts"],
   },
+  "germany-tech-job-application-kit": {
+    headline: "Build a professional Germany-focused job application without starting from scratch.",
+    description: "A practical country-specific application kit for software and IT professionals applying to jobs in Germany, with editable CV and cover-letter templates, application guidance, examples and a job-search workflow.",
+    highlights: [
+      "3 editable CV templates: ATS-conscious, professional and executive",
+      "3 editable cover-letter templates for different seniority levels",
+      "Germany-focused CV and cover-letter guidance",
+      "Tech examples for Software Engineer, Solution Architect and Engineering Manager",
+      "Job-description customization worksheet and application checklist",
+      "Application tracker plus ready-to-use AI prompts for optional self-service refinement",
+    ],
+  },
 };
 
 export function ProductDetailPage({
