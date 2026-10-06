@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ArrowLeft, Check, FileText, ShieldCheck, Sparkles, ArrowRight, Phone, QrCode, MessageCircle, CarFront, Clock3, Eye } from "lucide-react";
 import type { Product } from "./types";
 import lightTemplateUrl from "../parking/assets/parking-template-light.svg?url";
@@ -81,6 +82,8 @@ export function ProductDetailPage({
   onAlreadyPurchased?: () => void;
 }) {
   const isParking = product.slug === "smart-parking-sticker";
+  const [selectedCountry, setSelectedCountry] = useState<(typeof careerCountries)[number]>("Germany");
+  const [selectedJobType, setSelectedJobType] = useState<(typeof careerJobTypes)[number]>("Software Engineer");
   const detail = isParking ? parkingDetails : productDetails[product.slug] ?? {
     headline: product.shortDescription,
     description: product.shortDescription,
@@ -347,7 +350,8 @@ export function ProductDetailPage({
                       <button
                         key={country}
                         type="button"
-                        className={"rounded-xl border px-3.5 py-2 text-sm font-medium transition " + (country === "Germany" ? "border-[#4f46e5] bg-[#eef0fd] text-[#4f46e5]" : "border-[#e4e8f0] bg-white text-[#6b7a99]")}
+                        onClick={() => setSelectedCountry(country)}
+                        className={"rounded-xl border px-3.5 py-2 text-sm font-medium transition " + (selectedCountry === country ? "border-[#4f46e5] bg-[#eef0fd] text-[#4f46e5]" : "border-[#e4e8f0] bg-white text-[#6b7a99]")}
                       >
                         {country}
                         {country !== "Germany" && <span className="ml-1.5 text-[10px] uppercase tracking-wide text-[#a0a8b8]">Soon</span>}
@@ -358,11 +362,12 @@ export function ProductDetailPage({
                 <div className="mt-6">
                   <div className="text-sm font-semibold text-[#33405a]">Job type</div>
                   <div className="mt-3 flex flex-wrap gap-2">
-                    {careerJobTypes.map((jobType, index) => (
+                    {careerJobTypes.map((jobType) => (
                       <button
                         key={jobType}
                         type="button"
-                        className={"rounded-xl border px-3.5 py-2 text-sm font-medium transition " + (index === 0 ? "border-[#4f46e5] bg-[#eef0fd] text-[#4f46e5]" : "border-[#e4e8f0] bg-white text-[#6b7a99]")}
+                        onClick={() => setSelectedJobType(jobType)}
+                        className={"rounded-xl border px-3.5 py-2 text-sm font-medium transition " + (selectedJobType === jobType ? "border-[#4f46e5] bg-[#eef0fd] text-[#4f46e5]" : "border-[#e4e8f0] bg-white text-[#6b7a99]")}
                       >
                         {jobType}
                       </button>
@@ -371,7 +376,7 @@ export function ProductDetailPage({
                 </div>
                 <div className="mt-6 flex items-start gap-3 rounded-2xl bg-[#f8f9fb] p-4">
                   <Sparkles size={17} className="mt-0.5 flex-shrink-0 text-[#4f46e5]" />
-                  <p className="text-sm leading-6 text-[#6b7a99]"><span className="font-semibold text-[#33405a]">Current launch:</span> Germany + Software / IT. The same selection flow will support additional countries and job types as new kits are added.</p>
+                  <p className="text-sm leading-6 text-[#6b7a99]"><span className="font-semibold text-[#33405a]">Selected:</span> {selectedCountry} · {selectedJobType}. Germany is the first available country; other countries are shown as the planned expansion.</p>
                 </div>
               </div>
             )}
