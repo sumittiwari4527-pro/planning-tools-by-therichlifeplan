@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import { Mail, Send, MessageSquare } from "lucide-react";
 
 const CATEGORIES = [
@@ -16,6 +17,8 @@ const subjectFor = (category: string) =>
   `RichLifeTools Contact — ${category}`;
 
 export function ContactUsPage() {
+  const [category, setCategory] = useState(CATEGORIES[0]);
+
   return (
     <div className="pt-16 min-h-screen bg-[#f8f9fb]">
       <section className="relative overflow-hidden bg-[#0f1523] text-white">
@@ -94,6 +97,7 @@ export function ContactUsPage() {
                     id="contact-category"
                     name="category"
                     value={category}
+                    onChange={(event) => setCategory(event.target.value)}
                     className="w-full rounded-2xl border border-[#e4e8f0] bg-[#f8f9fb] px-4 py-3 text-sm text-[#0f1523] outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50"
                   >
                     {CATEGORIES.map((item) => <option key={item} value={item}>{item}</option>)}
