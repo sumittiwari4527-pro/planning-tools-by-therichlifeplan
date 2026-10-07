@@ -159,10 +159,10 @@ function CareerProductPage({ product, onBack }: { product: Product; onBack: () =
                     </div>
                   </div>
                 </div>
-                <div className="absolute right-0 top-5 w-[220px] rounded-2xl bg-[#111827] px-4 py-3 shadow-2xl ring-1 ring-white/15 sm:right-[-8px] sm:top-8 sm:w-[245px]">
-                  <div className="text-[9px] font-mono uppercase tracking-[0.18em] text-indigo-300">Application kit</div>
-                  <div className="mt-1 text-lg font-bold tracking-tight text-white">Target country · IT</div>
-                  <div className="mt-1 text-[11px] text-slate-400">CV + cover letter + workflow</div>
+                <div className="absolute right-0 top-2 w-[190px] rounded-2xl bg-[#111827] px-3.5 py-3 shadow-2xl ring-1 ring-white/15 sm:right-[-14px] sm:top-5 sm:w-[215px]">
+                  <div className="text-[8px] font-mono uppercase tracking-[0.18em] text-indigo-300">Application kit</div>
+                  <div className="mt-1 text-base font-bold tracking-tight text-white">Target country · IT</div>
+                  <div className="mt-1 text-[10px] text-slate-400">CV + cover letter + workflow</div>
                 </div>
               </div>
             </div>
