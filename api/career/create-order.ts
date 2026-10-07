@@ -1,4 +1,4 @@
-import { createHmac, randomUUID } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import { careerPackageStore } from "./package-store";
 
 const json = (res: any, status: number, body: unknown) => {
