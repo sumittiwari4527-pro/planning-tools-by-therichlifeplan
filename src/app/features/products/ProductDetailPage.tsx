@@ -72,10 +72,45 @@ const productDetails: Record<string, {
 function CareerProductPage({ product, onBack }: { product: Product; onBack: () => void }) {
   const [selectedCountry, setSelectedCountry] = useState<(typeof careerCountries)[number]>("Germany");
   const [selectedJobType, setSelectedJobType] = useState<(typeof careerJobTypes)[number]>("Software / IT");
+  const [checkoutState, setCheckoutState] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [checkoutError, setCheckoutError] = useState("");
+  const [downloadUrl, setDownloadUrl] = useState("");
+  const [orderId, setOrderId] = useState("");
   const selectedPackage = getCareerPackage(selectedCountry, selectedJobType);
   const available = selectedPackage?.status === "ready";
   const careerPackagesForCountry = (country: (typeof careerCountries)[number]) =>
     careerJobTypes.some((jobType) => getCareerPackage(country, jobType)?.status === "ready");
+
+  const startCheckout = async () => {
+    if (!selectedPackage || !available || checkoutState === "loading") return;
+    setCheckoutState("loading");
+    setCheckoutError("");
+    try {
+      const response = await fetch("/api/career/create-order", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ packageId: selectedPackage.id }) });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data?.error || "Unable to start checkout.");
+      await new Promise<void>((resolve, reject) => {
+        if ((window as any).Razorpay) return resolve();
+        const script = document.createElement("script");
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
+        script.async = true;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error("Unable to load secure checkout."));
+        document.body.appendChild(script);
+      });
+      const Razorpay = (window as any).Razorpay;
+      const checkout = new Razorpay({ key: data.keyId, amount: data.amount, currency: data.currency, name: "RichLifeTools", description: selectedPackage.country + " — " + selectedPackage.jobType + " Application Kit", order_id: data.orderId, handler: async (payment: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => {
+        try {
+          const verifyResponse = await fetch("/api/career/verify-payment", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payment) });
+          const verified = await verifyResponse.json();
+          if (!verifyResponse.ok || !verified.paid) throw new Error(verified?.error || "Payment verification failed.");
+          setOrderId(verified.orderId); setDownloadUrl(verified.downloadUrl); setCheckoutState("success");
+        } catch (error) { setCheckoutError(error instanceof Error ? error.message : "Payment verification failed."); setCheckoutState("error"); }
+      }, modal: { ondismiss: () => setCheckoutState("idle") }, theme: { color: "#4f46e5" } });
+      checkout.on("payment.failed", () => { setCheckoutError("Payment was not completed. You can try again."); setCheckoutState("error"); });
+      checkout.open();
+    } catch (error) { setCheckoutError(error instanceof Error ? error.message : "Unable to start checkout."); setCheckoutState("error"); }
+  };
 
   return (
     <div className="min-h-screen bg-[#f8f9fc] pt-16 text-[#111827]">
@@ -185,9 +220,22 @@ function CareerProductPage({ product, onBack }: { product: Product; onBack: () =
               <div><div className="mb-3 flex items-center gap-2 text-sm font-bold"><BriefcaseBusiness size={17} className="text-[#4f46e5]" /> Job type</div><div className="flex flex-wrap gap-2">{careerJobTypes.map(jobType => { const enabled = getCareerPackage(selectedCountry, jobType)?.status === "ready"; return <button key={jobType} type="button" disabled={!enabled} onClick={() => enabled && setSelectedJobType(jobType)} className={"rounded-xl border px-3 py-2 text-xs font-semibold " + (selectedJobType === jobType ? "border-[#4f46e5] bg-[#eef0fd] text-[#4f46e5]" : enabled ? "border-[#e1e5ee] text-[#526078] hover:border-indigo-200" : "border-[#eef0f4] bg-[#fafbfc] text-[#a2aaba] cursor-not-allowed")}>{jobType}{!enabled && <span className="ml-1 text-[9px] font-normal">Soon</span>}</button>; })}</div></div>
             </div>
             <div className="mt-7 rounded-2xl border border-[#e8ebf2] bg-[#fafbfe] p-4"><div className="text-xs font-semibold uppercase tracking-[0.14em] text-[#8993a8]">Package contents</div><div className="mt-3 flex flex-wrap gap-2">{(selectedPackage?.contents ?? []).map((item) => <span key={item} className="rounded-lg bg-white px-2.5 py-1.5 text-xs font-medium text-[#526078] ring-1 ring-[#e5e8ef]">{item}</span>)}</div></div>
-            <div className="mt-7 flex flex-col gap-4 rounded-2xl bg-[#f6f7fb] p-4 sm:flex-row sm:items-center sm:justify-between"><div className="flex items-center gap-3"><div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white shadow-sm"><BadgeCheck size={17} className="text-emerald-600" /></div><div><div className="text-xs text-[#8993a8]">Selected version</div><div className="text-sm font-bold">{getCareerPackageLabel(selectedCountry, selectedJobType)}</div></div></div><button type="button" disabled={!available} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#111827] px-5 py-3 text-sm font-bold text-white opacity-50 cursor-not-allowed">Get this version · ₹699 <ArrowRight size={15} /></button></div>
+            <div className="mt-7 flex flex-col gap-4 rounded-2xl bg-[#f6f7fb] p-4 sm:flex-row sm:items-center sm:justify-between"><div className="flex items-center gap-3"><div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white shadow-sm"><BadgeCheck size={17} className="text-emerald-600" /></div><div><div className="text-xs text-[#8993a8]">Selected version</div><div className="text-sm font-bold">{getCareerPackageLabel(selectedCountry, selectedJobType)}</div></div></div><button type="button" disabled={!available || checkoutState === "loading"} onClick={startCheckout} className={"inline-flex items-center justify-center gap-2 rounded-xl bg-[#111827] px-5 py-3 text-sm font-bold text-white " + (!available || checkoutState === "loading" ? "opacity-50 cursor-not-allowed" : "hover:bg-[#1f2937] cursor-pointer")}>{checkoutState === "loading" ? "Opening checkout…" : "Get this version · ₹699"} {checkoutState !== "loading" && <ArrowRight size={15} />}</button></div>
           </div>
         </section>
+
+        {checkoutState === "success" && (
+          <section className="border-y border-emerald-100 bg-emerald-50/60">
+            <div className="mx-auto max-w-3xl px-4 py-10 text-center sm:px-6">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-700"><Check size={24} /></div>
+              <h2 className="mt-4 text-2xl font-bold tracking-tight">Payment successful</h2>
+              <p className="mt-2 text-sm leading-6 text-[#667189]">Your {selectedPackage?.country} — {selectedPackage?.jobType} application kit is ready.</p>
+              <p className="mt-2 text-xs text-[#8993a8]">Order ID: {orderId}</p>
+              <a href={downloadUrl} className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-[#4f46e5] px-6 py-3.5 text-sm font-bold text-white hover:bg-[#4338ca]"><Download size={16} /> Download your kit</a>
+              <p className="mt-3 text-[11px] text-[#929bad]">The secure download link expires after 15 minutes.</p>
+            </div>
+          </section>
+        )}
 
         <section className="border-y border-[#e4e8f0] bg-white">
           <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
@@ -207,8 +255,8 @@ function CareerProductPage({ product, onBack }: { product: Product; onBack: () =
           <div className="text-xs font-mono uppercase tracking-[0.16em] text-[#4f46e5]">Build your application</div>
           <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Choose the country and role you're targeting.</h2>
           <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-[#707b91]">Get the relevant CV guidance, cover-letter templates and application workflow for your target market.</p>
-          <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row"><div><div className="text-xs text-[#929bad]">{selectedCountry} · {selectedJobType}</div><div className="mt-1 text-3xl font-bold">₹699</div></div><button type="button" disabled={!available} className="inline-flex items-center gap-2 rounded-2xl bg-[#4f46e5] px-7 py-3.5 text-sm font-bold text-white opacity-60 cursor-not-allowed">Get the kit <ArrowRight size={16} /></button></div>
-          <div className="mt-4 flex items-center justify-center gap-2 text-xs text-[#929bad]"><LockKeyhole size={13} /> Secure checkout will be connected next</div>
+          <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row"><div><div className="text-xs text-[#929bad]">{selectedCountry} · {selectedJobType}</div><div className="mt-1 text-3xl font-bold">₹699</div></div><button type="button" disabled={!available || checkoutState === "loading"} onClick={startCheckout} className={"inline-flex items-center gap-2 rounded-2xl bg-[#4f46e5] px-7 py-3.5 text-sm font-bold text-white " + (!available || checkoutState === "loading" ? "opacity-60 cursor-not-allowed" : "hover:bg-[#4338ca] cursor-pointer")}>{checkoutState === "loading" ? "Opening checkout…" : "Get the kit"} {checkoutState !== "loading" && <ArrowRight size={16} />}</button></div>
+          <div className="mt-4 flex flex-col items-center gap-2 text-xs text-[#929bad]"><div className="flex items-center justify-center gap-2"><LockKeyhole size={13} /> Secure payment via Razorpay</div>{checkoutState === "error" && <div className="text-red-600">{checkoutError}</div>}</div>
         </section>
       </main>
     </div>
