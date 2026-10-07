@@ -80,45 +80,88 @@ function CareerProductPage({ product, onBack }: { product: Product; onBack: () =
     <div className="min-h-screen bg-[#f8f9fc] pt-16 text-[#111827]">
       <main>
         <section className="overflow-hidden bg-white">
-          <div className="mx-auto max-w-7xl px-4 pb-14 pt-8 sm:px-6 lg:px-8 lg:pb-20 lg:pt-10">
+          <div className="mx-auto max-w-7xl px-4 pb-14 pt-8 sm:px-6 lg:px-8 lg:pb-18 lg:pt-10">
             <button onClick={onBack} className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-[#7a8499] hover:text-[#111827] cursor-pointer">
               <ArrowLeft size={15} /> Back to products
             </button>
-            <div className="grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr]">
-              <div>
-                <div className="mb-5 flex items-center gap-2 text-xs font-mono uppercase tracking-[0.16em] text-[#4f46e5]">
-                  <span>Career toolkit</span><span className="text-[#c8cedb]">·</span><span className="rounded-full bg-emerald-50 px-2.5 py-1 text-emerald-700">NEW</span>
+
+            <div className="grid items-center gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
+              <div className="max-w-xl">
+                <div className="mb-4 flex items-center gap-2 text-xs font-mono uppercase tracking-[0.16em] text-[#4f46e5]">
+                  <span>Career toolkit</span>
+                  <span className="text-[#c8cedb]">·</span>
+                  <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-emerald-700">NEW</span>
                 </div>
-                <h1 className="max-w-xl text-4xl font-bold leading-[1.04] tracking-tight sm:text-5xl lg:text-6xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                  A better job application, without starting from zero.
+                <h1 className="max-w-lg text-4xl font-bold leading-[1.04] tracking-tight sm:text-5xl lg:text-[3.65rem]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                  Your job application, professionally prepared.
                 </h1>
-                <p className="mt-6 max-w-xl text-base leading-7 text-[#667189] sm:text-lg">
-                  Templates, country guidance and a simple application workflow — built for people applying for tech jobs abroad.
+                <p className="mt-5 max-w-lg text-base leading-7 text-[#667189] sm:text-lg">
+                  A practical toolkit for building, tailoring and managing stronger job applications.
                 </p>
-                <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3 text-sm text-[#536078]">
-                  <span className="flex items-center gap-2"><Check size={16} className="text-emerald-600" /> Editable templates</span>
+                <div className="mt-6 flex flex-wrap gap-x-5 gap-y-3 text-sm text-[#536078]">
+                  <span className="flex items-center gap-2"><Check size={16} className="text-emerald-600" /> Editable resources</span>
                   <span className="flex items-center gap-2"><Check size={16} className="text-emerald-600" /> One-time purchase</span>
-                  <span className="flex items-center gap-2"><Check size={16} className="text-emerald-600" /> Start with Germany</span>
+                  <span className="flex items-center gap-2"><ShieldCheck size={16} className="text-emerald-600" /> Clear, transparent pricing</span>
                 </div>
               </div>
 
               <div className="relative mx-auto h-[390px] w-full max-w-xl">
-                <div className="absolute right-2 top-7 h-[310px] w-[78%] rotate-[5deg] rounded-2xl border border-[#dfe4ee] bg-white p-5 shadow-xl">
-                  <div className="flex items-center gap-3 border-b border-[#edf0f5] pb-4"><div className="h-10 w-10 rounded-xl bg-indigo-100" /><div><div className="h-2.5 w-28 rounded bg-[#172033]" /><div className="mt-2 h-2 w-20 rounded bg-[#dce1ea]" /></div></div>
-                  <div className="mt-5 h-3 w-32 rounded bg-indigo-100" />
-                  <div className="mt-3 space-y-2">{["w-11/12","w-10/12","w-8/12","w-9/12"].map((w,i) => <div key={i} className={"h-2 rounded bg-[#edf0f5] " + w} />)}</div>
-                  <div className="mt-7 grid grid-cols-2 gap-3"><div className="h-20 rounded-xl bg-[#f5f6fa]" /><div className="h-20 rounded-xl bg-[#eef0fd]" /></div>
+                <div className="absolute inset-x-5 top-2 rounded-[2rem] bg-[#111827] p-3 shadow-2xl sm:inset-x-8">
+                  <div className="rounded-[1.5rem] bg-[#f7f8fc] p-5 sm:p-6">
+                    <div className="flex items-center justify-between border-b border-[#e3e7ef] pb-4">
+                      <div>
+                        <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-[#68748c]">RichLifeTools</div>
+                        <div className="mt-1 text-lg font-bold tracking-tight">Job Application Kit</div>
+                      </div>
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-[#4f46e5]"><BriefcaseBusiness size={19} /></div>
+                    </div>
+
+                    <div className="mt-5 grid grid-cols-[1.15fr_0.85fr] gap-3">
+                      <div className="rounded-2xl border border-[#dfe4ee] bg-white p-4 shadow-sm">
+                        <div className="flex items-center justify-between">
+                          <span className="rounded-md bg-indigo-50 px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-[#4f46e5]">CV</span>
+                          <FileText size={14} className="text-[#8c96aa]" />
+                        </div>
+                        <div className="mt-4 h-2 w-24 rounded bg-[#172033]" />
+                        <div className="mt-2 h-1.5 w-16 rounded bg-[#d9dee8]" />
+                        <div className="mt-5 space-y-2">
+                          <div className="h-1.5 rounded bg-[#edf0f5]" />
+                          <div className="h-1.5 w-11/12 rounded bg-[#edf0f5]" />
+                          <div className="h-1.5 w-9/12 rounded bg-[#edf0f5]" />
+                        </div>
+                        <div className="mt-5 h-10 rounded-lg bg-[#f4f5f8]" />
+                      </div>
+
+                      <div className="mt-7 rounded-2xl border border-[#dfe4ee] bg-white p-4 shadow-sm">
+                        <div className="flex items-center justify-between">
+                          <span className="rounded-md bg-emerald-50 px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-emerald-700">Cover letter</span>
+                          <FileText size={14} className="text-[#8c96aa]" />
+                        </div>
+                        <div className="mt-4 h-2 w-20 rounded bg-[#172033]" />
+                        <div className="mt-2 h-1.5 w-14 rounded bg-[#d9dee8]" />
+                        <div className="mt-5 space-y-2">
+                          <div className="h-1.5 rounded bg-[#edf0f5]" />
+                          <div className="h-1.5 w-10/12 rounded bg-[#edf0f5]" />
+                          <div className="h-1.5 w-8/12 rounded bg-[#edf0f5]" />
+                          <div className="h-1.5 w-9/12 rounded bg-[#edf0f5]" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-3 rounded-2xl bg-[#111827] p-4 text-white">
+                      <div className="flex items-center gap-3">
+                        <ListChecks size={18} className="text-indigo-300" />
+                        <div>
+                          <div className="text-xs font-bold">Application tracker</div>
+                          <div className="mt-1 text-[10px] text-slate-400">Applications · status · next action</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="absolute bottom-3 left-3 h-[285px] w-[78%] -rotate-[7deg] rounded-2xl border border-[#dfe4ee] bg-white p-5 shadow-2xl">
-                  <div className="flex justify-between"><div><div className="h-3 w-32 rounded bg-[#172033]" /><div className="mt-2 h-2 w-24 rounded bg-[#dce1ea]" /></div><div className="h-9 w-9 rounded-lg bg-emerald-100" /></div>
-                  <div className="mt-7 h-2.5 w-24 rounded bg-emerald-100" />
-                  <div className="mt-3 space-y-2">{["w-full","w-10/12","w-9/12","w-11/12","w-8/12"].map((w,i) => <div key={i} className={"h-2 rounded bg-[#edf0f5] " + w} />)}</div>
-                  <div className="mt-7 h-16 rounded-xl bg-[#f5f6fa]" />
-                </div>
-                <div className="absolute bottom-1 right-2 rounded-2xl border border-[#dfe4ee] bg-[#111827] p-4 text-white shadow-2xl">
-                  <div className="text-[10px] font-mono uppercase tracking-widest text-indigo-300">Application kit</div>
-                  <div className="mt-1 text-xl font-bold">Germany · IT</div>
-                  <div className="mt-2 text-xs text-slate-400">CV + cover letter + workflow</div>
+                <div className="absolute -bottom-1 right-0 rounded-2xl border border-[#dfe4ee] bg-white px-4 py-3 shadow-xl">
+                  <div className="flex items-center gap-2 text-xs font-bold text-[#273149]"><BadgeCheck size={15} className="text-emerald-600" /> Complete toolkit</div>
+                  <div className="mt-1 text-[10px] text-[#8a94a8]">CV · cover letter · workflow</div>
                 </div>
               </div>
             </div>
