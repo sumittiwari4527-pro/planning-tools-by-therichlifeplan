@@ -177,7 +177,7 @@ function CareerProductPage({ product, onBack }: { product: Product; onBack: () =
         </section>
 
         <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
-          <div className="mx-auto max-w-3xl text-center"><div className="text-xs font-mono uppercase tracking-[0.16em] text-[#4f46e5]">Choose your version</div><h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Make it relevant to your target.</h2><p className="mt-3 text-sm leading-6 text-[#737e94]">Germany + Software / IT is the first available version. More country and job-type modules can be added later.</p></div>
+          <div className="mx-auto max-w-3xl text-center"><div className="text-xs font-mono uppercase tracking-[0.16em] text-[#4f46e5]">Choose your version</div><h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Make it relevant to your target.</h2><p className="mt-3 text-sm leading-6 text-[#737e94]">Choose the country and job type you are targeting. Country and role-specific modules can be added as the kit expands.</p></div>
           <div className="mx-auto mt-9 max-w-4xl rounded-[1.75rem] border border-[#dfe4ee] bg-white p-5 shadow-sm sm:p-7">
             <div className="grid gap-8 md:grid-cols-2">
               <div><div className="mb-3 flex items-center gap-2 text-sm font-bold"><Globe2 size={17} className="text-[#4f46e5]" /> Country</div><div className="flex flex-wrap gap-2">{careerCountries.map(country => { const enabled = country === "Germany"; return <button key={country} type="button" disabled={!enabled} onClick={() => enabled && setSelectedCountry(country)} className={"rounded-xl border px-3 py-2 text-xs font-semibold " + (selectedCountry === country ? "border-[#4f46e5] bg-[#eef0fd] text-[#4f46e5]" : enabled ? "border-[#e1e5ee] text-[#526078] hover:border-indigo-200" : "border-[#eef0f4] bg-[#fafbfc] text-[#a2aaba] cursor-not-allowed")}>{country}{!enabled && <span className="ml-1 text-[9px] font-normal">Soon</span>}</button>; })}</div></div>
@@ -202,10 +202,10 @@ function CareerProductPage({ product, onBack }: { product: Product; onBack: () =
         </section>
 
         <section className="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 lg:py-20">
-          <div className="text-xs font-mono uppercase tracking-[0.16em] text-[#4f46e5]">Start with V1</div>
-          <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Germany · Software / IT</h2>
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-[#707b91]">Templates, guidance and workflow together — so you can spend more time applying and less time rebuilding.</p>
-          <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row"><div className="text-3xl font-bold">₹699</div><button type="button" disabled className="inline-flex items-center gap-2 rounded-2xl bg-[#4f46e5] px-7 py-3.5 text-sm font-bold text-white opacity-60 cursor-not-allowed">Get the kit <ArrowRight size={16} /></button></div>
+          <div className="text-xs font-mono uppercase tracking-[0.16em] text-[#4f46e5]">Build your application</div>
+          <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Choose the country and role you're targeting.</h2>
+          <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-[#707b91]">Get the relevant CV guidance, cover-letter templates and application workflow for your target market.</p>
+          <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row"><div><div className="text-xs text-[#929bad]">{selectedCountry} · {selectedJobType}</div><div className="mt-1 text-3xl font-bold">₹699</div></div><button type="button" disabled={!available} className="inline-flex items-center gap-2 rounded-2xl bg-[#4f46e5] px-7 py-3.5 text-sm font-bold text-white opacity-60 cursor-not-allowed">Get the kit <ArrowRight size={16} /></button></div>
           <div className="mt-4 flex items-center justify-center gap-2 text-xs text-[#929bad]"><LockKeyhole size={13} /> Secure checkout will be connected next</div>
         </section>
       </main>
