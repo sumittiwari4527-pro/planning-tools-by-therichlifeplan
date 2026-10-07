@@ -159,9 +159,10 @@ function CareerProductPage({ product, onBack }: { product: Product; onBack: () =
                     </div>
                   </div>
                 </div>
-                <div className="absolute -bottom-1 right-0 rounded-2xl border border-[#dfe4ee] bg-white px-4 py-3 shadow-xl">
-                  <div className="flex items-center gap-2 text-xs font-bold text-[#273149]"><BadgeCheck size={15} className="text-emerald-600" /> Complete toolkit</div>
-                  <div className="mt-1 text-[10px] text-[#8a94a8]">CV · cover letter · workflow</div>
+                <div className="absolute -bottom-1 right-0 rounded-2xl bg-[#111827] px-5 py-4 shadow-2xl ring-1 ring-white/20">
+                  <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-indigo-300">Application kit</div>
+                  <div className="mt-1 text-2xl font-bold tracking-tight text-white">Your target country · IT</div>
+                  <div className="mt-2 text-sm text-slate-400">CV + cover letter + workflow</div>
                 </div>
               </div>
             </div>
