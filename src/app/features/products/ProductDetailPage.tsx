@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ArrowLeft, Check, FileText, ShieldCheck, Sparkles, ArrowRight, Phone, QrCode, MessageCircle, CarFront, Clock3, Eye, Globe2, BriefcaseBusiness, Download, ListChecks, LockKeyhole, BadgeCheck, ChevronDown } from "lucide-react";
 import type { Product } from "./types";
+import { careerCountries, careerJobTypes, getCareerPackage, getCareerPackageLabel } from "./careerPackages";
 import lightTemplateUrl from "../parking/assets/parking-template-light.svg?url";
 import darkTemplateUrl from "../parking/assets/parking-template-dark.svg?url";
 import physicalTemplateUrl from "../parking/assets/parking-template-physical.svg?url";
@@ -27,9 +28,6 @@ const parkingDetails = {
     "No app required for the person scanning",
   ],
 };
-
-const careerCountries = ["Germany", "Netherlands", "UK", "Canada", "Sweden", "Australia", "USA", "Ireland"] as const;
-const careerJobTypes = ["Software / IT", "Business", "Design", "Marketing"] as const;
 
 const productDetails: Record<string, {
   headline: string;
@@ -74,7 +72,8 @@ const productDetails: Record<string, {
 function CareerProductPage({ product, onBack }: { product: Product; onBack: () => void }) {
   const [selectedCountry, setSelectedCountry] = useState<(typeof careerCountries)[number]>("Germany");
   const [selectedJobType, setSelectedJobType] = useState<(typeof careerJobTypes)[number]>("Software / IT");
-  const available = selectedCountry === "Germany" && selectedJobType === "Software / IT";
+  const selectedPackage = getCareerPackage(selectedCountry, selectedJobType);
+  const available = selectedPackage?.status === "ready";
 
   return (
     <div className="min-h-screen bg-[#f8f9fc] pt-16 text-[#111827]">
@@ -177,13 +176,13 @@ function CareerProductPage({ product, onBack }: { product: Product; onBack: () =
         </section>
 
         <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
-          <div className="mx-auto max-w-3xl text-center"><div className="text-xs font-mono uppercase tracking-[0.16em] text-[#4f46e5]">Choose your version</div><h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Make it relevant to your target.</h2><p className="mt-3 text-sm leading-6 text-[#737e94]">Choose the country and job type you are targeting. Country and role-specific modules can be added as the kit expands.</p></div>
+          <div className="mx-auto max-w-3xl text-center"><div className="text-xs font-mono uppercase tracking-[0.16em] text-[#4f46e5]">Choose your version</div><h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Make it relevant to your target.</h2><p className="mt-3 text-sm leading-6 text-[#737e94]">Choose the country and job type you are targeting. Your selection determines the country-and-role-specific package you receive after payment.</p></div>
           <div className="mx-auto mt-9 max-w-4xl rounded-[1.75rem] border border-[#dfe4ee] bg-white p-5 shadow-sm sm:p-7">
             <div className="grid gap-8 md:grid-cols-2">
-              <div><div className="mb-3 flex items-center gap-2 text-sm font-bold"><Globe2 size={17} className="text-[#4f46e5]" /> Country</div><div className="flex flex-wrap gap-2">{careerCountries.map(country => { const enabled = country === "Germany"; return <button key={country} type="button" disabled={!enabled} onClick={() => enabled && setSelectedCountry(country)} className={"rounded-xl border px-3 py-2 text-xs font-semibold " + (selectedCountry === country ? "border-[#4f46e5] bg-[#eef0fd] text-[#4f46e5]" : enabled ? "border-[#e1e5ee] text-[#526078] hover:border-indigo-200" : "border-[#eef0f4] bg-[#fafbfc] text-[#a2aaba] cursor-not-allowed")}>{country}{!enabled && <span className="ml-1 text-[9px] font-normal">Soon</span>}</button>; })}</div></div>
-              <div><div className="mb-3 flex items-center gap-2 text-sm font-bold"><BriefcaseBusiness size={17} className="text-[#4f46e5]" /> Job type</div><div className="flex flex-wrap gap-2">{careerJobTypes.map(jobType => { const enabled = jobType === "Software / IT"; return <button key={jobType} type="button" disabled={!enabled} onClick={() => enabled && setSelectedJobType(jobType)} className={"rounded-xl border px-3 py-2 text-xs font-semibold " + (selectedJobType === jobType ? "border-[#4f46e5] bg-[#eef0fd] text-[#4f46e5]" : enabled ? "border-[#e1e5ee] text-[#526078] hover:border-indigo-200" : "border-[#eef0f4] bg-[#fafbfc] text-[#a2aaba] cursor-not-allowed")}>{jobType}{!enabled && <span className="ml-1 text-[9px] font-normal">Soon</span>}</button>; })}</div></div>
+              <div><div className="mb-3 flex items-center gap-2 text-sm font-bold"><Globe2 size={17} className="text-[#4f46e5]" /> Country</div><div className="flex flex-wrap gap-2">{careerCountries.map(country => { const enabled = Boolean(careerPackagesForCountry(country)); return <button key={country} type="button" disabled={!enabled} onClick={() => enabled && setSelectedCountry(country)} className={"rounded-xl border px-3 py-2 text-xs font-semibold " + (selectedCountry === country ? "border-[#4f46e5] bg-[#eef0fd] text-[#4f46e5]" : enabled ? "border-[#e1e5ee] text-[#526078] hover:border-indigo-200" : "border-[#eef0f4] bg-[#fafbfc] text-[#a2aaba] cursor-not-allowed")}>{country}{!enabled && <span className="ml-1 text-[9px] font-normal">Soon</span>}</button>; })}</div></div>
+              <div><div className="mb-3 flex items-center gap-2 text-sm font-bold"><BriefcaseBusiness size={17} className="text-[#4f46e5]" /> Job type</div><div className="flex flex-wrap gap-2">{careerJobTypes.map(jobType => { const enabled = getCareerPackage(selectedCountry, jobType)?.status === "ready"; return <button key={jobType} type="button" disabled={!enabled} onClick={() => enabled && setSelectedJobType(jobType)} className={"rounded-xl border px-3 py-2 text-xs font-semibold " + (selectedJobType === jobType ? "border-[#4f46e5] bg-[#eef0fd] text-[#4f46e5]" : enabled ? "border-[#e1e5ee] text-[#526078] hover:border-indigo-200" : "border-[#eef0f4] bg-[#fafbfc] text-[#a2aaba] cursor-not-allowed")}>{jobType}{!enabled && <span className="ml-1 text-[9px] font-normal">Soon</span>}</button>; })}</div></div>
             </div>
-            <div className="mt-7 flex flex-col gap-4 rounded-2xl bg-[#f6f7fb] p-4 sm:flex-row sm:items-center sm:justify-between"><div className="flex items-center gap-3"><div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white shadow-sm"><BadgeCheck size={17} className="text-emerald-600" /></div><div><div className="text-xs text-[#8993a8]">Selected version</div><div className="text-sm font-bold">{selectedCountry} · {selectedJobType}</div></div></div><button type="button" disabled={!available} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#111827] px-5 py-3 text-sm font-bold text-white opacity-50 cursor-not-allowed">Get this version · ₹699 <ArrowRight size={15} /></button></div>
+            <div className="mt-7 flex flex-col gap-4 rounded-2xl bg-[#f6f7fb] p-4 sm:flex-row sm:items-center sm:justify-between"><div className="flex items-center gap-3"><div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white shadow-sm"><BadgeCheck size={17} className="text-emerald-600" /></div><div><div className="text-xs text-[#8993a8]">Selected version</div><div className="text-sm font-bold">{getCareerPackageLabel(selectedCountry, selectedJobType)}</div></div></div><button type="button" disabled={!available} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#111827] px-5 py-3 text-sm font-bold text-white opacity-50 cursor-not-allowed">Get this version · ₹699 <ArrowRight size={15} /></button></div>
           </div>
         </section>
 
