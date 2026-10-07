@@ -93,7 +93,7 @@ function CareerProductPage({ product, onBack }: { product: Product; onBack: () =
                   <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-emerald-700">NEW</span>
                 </div>
                 <h1 className="max-w-lg text-4xl font-bold leading-[1.04] tracking-tight sm:text-5xl lg:text-[3.65rem]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                  Build a job application that feels ready to send.
+                  Applying for tech jobs abroad? Make every application count.
                 </h1>
                 <p className="mt-5 max-w-lg text-base leading-7 text-[#667189] sm:text-lg">
                   Templates, country guidance and a simple application workflow — built for people applying for tech jobs abroad.
