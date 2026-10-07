@@ -96,12 +96,12 @@ function CareerProductPage({ product, onBack }: { product: Product; onBack: () =
                   Your job application, professionally prepared.
                 </h1>
                 <p className="mt-5 max-w-lg text-base leading-7 text-[#667189] sm:text-lg">
-                  A practical toolkit for building, tailoring and managing stronger job applications.
+                  Templates, country guidance and a simple application workflow — built for people applying for tech jobs abroad.
                 </p>
                 <div className="mt-6 flex flex-wrap gap-x-5 gap-y-3 text-sm text-[#536078]">
-                  <span className="flex items-center gap-2"><Check size={16} className="text-emerald-600" /> Editable resources</span>
+                  <span className="flex items-center gap-2"><Check size={16} className="text-emerald-600" /> Suitable templates</span>
                   <span className="flex items-center gap-2"><Check size={16} className="text-emerald-600" /> One-time purchase</span>
-                  <span className="flex items-center gap-2"><ShieldCheck size={16} className="text-emerald-600" /> Clear, transparent pricing</span>
+                  <span className="flex items-center gap-2"><ShieldCheck size={16} className="text-emerald-600" /> Complete application toolkit</span>
                 </div>
               </div>
 
