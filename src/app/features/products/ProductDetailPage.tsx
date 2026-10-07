@@ -93,7 +93,7 @@ function CareerProductPage({ product, onBack }: { product: Product; onBack: () =
                   <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-emerald-700">NEW</span>
                 </div>
                 <h1 className="max-w-lg text-4xl font-bold leading-[1.04] tracking-tight sm:text-5xl lg:text-[3.65rem]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                  Your job application, professionally prepared.
+                  Build a job application that feels ready to send.
                 </h1>
                 <p className="mt-5 max-w-lg text-base leading-7 text-[#667189] sm:text-lg">
                   Templates, country guidance and a simple application workflow — built for people applying for tech jobs abroad.
@@ -101,7 +101,7 @@ function CareerProductPage({ product, onBack }: { product: Product; onBack: () =
                 <div className="mt-6 flex flex-wrap gap-x-5 gap-y-3 text-sm text-[#536078]">
                   <span className="flex items-center gap-2"><Check size={16} className="text-emerald-600" /> Suitable templates</span>
                   <span className="flex items-center gap-2"><Check size={16} className="text-emerald-600" /> One-time purchase</span>
-                  <span className="flex items-center gap-2"><ShieldCheck size={16} className="text-emerald-600" /> Complete application toolkit</span>
+                  <span className="flex items-center gap-2"><ListChecks size={16} className="text-emerald-600" /> Complete application toolkit</span>
                 </div>
               </div>
 
