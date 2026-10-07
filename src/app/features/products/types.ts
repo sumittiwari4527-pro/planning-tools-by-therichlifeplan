@@ -1,4 +1,5 @@
-export type ProductCategory = "AI" | "Money" | "Productivity" | "Health" | "Family & Kids";
+export type ProductCategory = "AI" | "Money" | "Productivity" | "Health" | "Family & Kids" | "Career";
+
 export type ProductType = "ebook" | "template" | "printable" | "tool";
 
 export interface Product {

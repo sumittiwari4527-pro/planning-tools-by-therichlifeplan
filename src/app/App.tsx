@@ -307,7 +307,7 @@ export default function App() {
               </div>
 
               {(() => {
-                const readySlugs = new Set(["smart-parking-sticker"]);
+                const readySlugs = new Set(["smart-parking-sticker", "tech-job-application-kit"]);
                 const readyProducts = products.filter((product) => readySlugs.has(product.slug));
 
                 return (

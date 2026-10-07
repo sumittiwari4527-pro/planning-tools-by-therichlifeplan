@@ -1,5 +1,7 @@
-import { ArrowLeft, Check, FileText, ShieldCheck, Sparkles, ArrowRight, Phone, QrCode, MessageCircle, CarFront, Clock3, Eye } from "lucide-react";
+import { useState } from "react";
+import { ArrowLeft, Check, FileText, ShieldCheck, Sparkles, ArrowRight, Phone, QrCode, MessageCircle, CarFront, Clock3, Eye, Globe2, BriefcaseBusiness, Download, ListChecks, LockKeyhole, BadgeCheck, ChevronDown } from "lucide-react";
 import type { Product } from "./types";
+import { careerCountries, careerJobTypes, getCareerPackage, getCareerPackageLabel } from "./careerPackages";
 import lightTemplateUrl from "../parking/assets/parking-template-light.svg?url";
 import darkTemplateUrl from "../parking/assets/parking-template-dark.svg?url";
 import physicalTemplateUrl from "../parking/assets/parking-template-physical.svg?url";
@@ -52,7 +54,214 @@ const productDetails: Record<string, {
     description: "A collection of practical prompts you can copy, adapt and use for work, research, planning, writing and everyday problem solving.",
     highlights: ["Copy-and-use prompt library", "Work and productivity prompts", "Research and learning prompts", "Everyday life problem-solving prompts"],
   },
+  "tech-job-application-kit": {
+    headline: "Build a stronger job application for the country and tech role you are targeting.",
+    description: "A practical country-aware application kit for software and IT professionals, designed to adapt CVs, cover letters and application strategy to the market you are targeting.",
+    highlights: [
+      "Country-specific CV and cover-letter guidance",
+      "Editable CV templates for software and IT professionals",
+      "Cover-letter templates for different seniority levels",
+      "Examples for Software Engineer, Tech Lead, Solution Architect and Engineering Manager",
+      "Job-description customization worksheet and application checklist",
+      "Application tracker plus ready-to-use AI prompts for optional self-service refinement",
+    ],
+  },
 };
+
+
+function CareerProductPage({ product, onBack }: { product: Product; onBack: () => void }) {
+  const [selectedCountry, setSelectedCountry] = useState<(typeof careerCountries)[number]>("Germany");
+  const [selectedJobType, setSelectedJobType] = useState<(typeof careerJobTypes)[number]>("Software / IT");
+  const [checkoutState, setCheckoutState] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [checkoutError, setCheckoutError] = useState("");
+  const [downloadUrl, setDownloadUrl] = useState("");
+  const [orderId, setOrderId] = useState("");
+  const selectedPackage = getCareerPackage(selectedCountry, selectedJobType);
+  const available = selectedPackage?.status === "ready";
+  const careerPackagesForCountry = (country: (typeof careerCountries)[number]) =>
+    careerJobTypes.some((jobType) => getCareerPackage(country, jobType)?.status === "ready");
+
+  const startCheckout = async () => {
+    if (!selectedPackage || !available || checkoutState === "loading") return;
+    setCheckoutState("loading");
+    setCheckoutError("");
+    try {
+      const response = await fetch("/api/career/create-order", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ packageId: selectedPackage.id }) });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data?.error || "Unable to start checkout.");
+      await new Promise<void>((resolve, reject) => {
+        if ((window as any).Razorpay) return resolve();
+        const script = document.createElement("script");
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
+        script.async = true;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error("Unable to load secure checkout."));
+        document.body.appendChild(script);
+      });
+      const Razorpay = (window as any).Razorpay;
+      const checkout = new Razorpay({ key: data.keyId, amount: data.amount, currency: data.currency, name: "RichLifeTools", description: selectedPackage.country + " — " + selectedPackage.jobType + " Application Kit", order_id: data.orderId, handler: async (payment: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => {
+        try {
+          const verifyResponse = await fetch("/api/career/verify-payment", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payment) });
+          const verified = await verifyResponse.json();
+          if (!verifyResponse.ok || !verified.paid) throw new Error(verified?.error || "Payment verification failed.");
+          setOrderId(verified.orderId); setDownloadUrl(verified.downloadUrl); setCheckoutState("success");
+        } catch (error) { setCheckoutError(error instanceof Error ? error.message : "Payment verification failed."); setCheckoutState("error"); }
+      }, modal: { ondismiss: () => setCheckoutState("idle") }, theme: { color: "#4f46e5" } });
+      checkout.on("payment.failed", () => { setCheckoutError("Payment was not completed. You can try again."); setCheckoutState("error"); });
+      checkout.open();
+    } catch (error) { setCheckoutError(error instanceof Error ? error.message : "Unable to start checkout."); setCheckoutState("error"); }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#f8f9fc] pt-16 text-[#111827]">
+      <main>
+        <section className="overflow-hidden bg-white">
+          <div className="mx-auto max-w-7xl px-4 pb-14 pt-8 sm:px-6 lg:px-8 lg:pb-18 lg:pt-10">
+            <button onClick={onBack} className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-[#7a8499] hover:text-[#111827] cursor-pointer">
+              <ArrowLeft size={15} /> Back to products
+            </button>
+
+            <div className="grid items-center gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
+              <div className="max-w-xl">
+                <div className="mb-4 flex items-center gap-2 text-xs font-mono uppercase tracking-[0.16em] text-[#4f46e5]">
+                  <span>Career toolkit</span>
+                  <span className="text-[#c8cedb]">·</span>
+                  <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-emerald-700">NEW</span>
+                </div>
+                <h1 className="max-w-lg text-4xl font-bold leading-[1.04] tracking-tight sm:text-5xl lg:text-[3.65rem]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                  Applying for tech jobs abroad? Make every application count.
+                </h1>
+                <p className="mt-5 max-w-lg text-base leading-7 text-[#667189] sm:text-lg">
+                  Templates, country guidance and a simple application workflow — built for people applying for tech jobs abroad.
+                </p>
+                <div className="mt-6 flex flex-wrap gap-x-5 gap-y-3 text-sm text-[#536078]">
+                  <span className="flex items-center gap-2"><Check size={16} className="text-emerald-600" /> Suitable templates</span>
+                  <span className="flex items-center gap-2"><Check size={16} className="text-emerald-600" /> One-time purchase</span>
+                  <span className="flex items-center gap-2"><ListChecks size={16} className="text-emerald-600" /> Complete application toolkit</span>
+                </div>
+              </div>
+
+              <div className="relative mx-auto h-[390px] w-full max-w-xl">
+                <div className="absolute inset-x-5 top-2 rounded-[2rem] bg-[#111827] p-3 shadow-2xl sm:inset-x-8">
+                  <div className="rounded-[1.5rem] bg-[#f7f8fc] p-5 sm:p-6">
+                    <div className="flex items-center justify-between border-b border-[#e3e7ef] pb-4">
+                      <div>
+                        <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-[#68748c]">RichLifeTools</div>
+                        <div className="mt-1 text-lg font-bold tracking-tight">Job Application Kit</div>
+                      </div>
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-[#4f46e5]"><BriefcaseBusiness size={19} /></div>
+                    </div>
+
+                    <div className="mt-5 grid grid-cols-[1.15fr_0.85fr] gap-3">
+                      <div className="rounded-2xl border border-[#dfe4ee] bg-white p-4 shadow-sm">
+                        <div className="flex items-center justify-between">
+                          <span className="rounded-md bg-indigo-50 px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-[#4f46e5]">CV</span>
+                          <FileText size={14} className="text-[#8c96aa]" />
+                        </div>
+                        <div className="mt-4 h-2 w-24 rounded bg-[#172033]" />
+                        <div className="mt-2 h-1.5 w-16 rounded bg-[#d9dee8]" />
+                        <div className="mt-5 space-y-2">
+                          <div className="h-1.5 rounded bg-[#edf0f5]" />
+                          <div className="h-1.5 w-11/12 rounded bg-[#edf0f5]" />
+                          <div className="h-1.5 w-9/12 rounded bg-[#edf0f5]" />
+                        </div>
+                        <div className="mt-5 h-10 rounded-lg bg-[#f4f5f8]" />
+                      </div>
+
+                      <div className="mt-7 rounded-2xl border border-[#dfe4ee] bg-white p-4 shadow-sm">
+                        <div className="flex items-center justify-between">
+                          <span className="rounded-md bg-emerald-50 px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-emerald-700">Cover letter</span>
+                          <FileText size={14} className="text-[#8c96aa]" />
+                        </div>
+                        <div className="mt-4 h-2 w-20 rounded bg-[#172033]" />
+                        <div className="mt-2 h-1.5 w-14 rounded bg-[#d9dee8]" />
+                        <div className="mt-5 space-y-2">
+                          <div className="h-1.5 rounded bg-[#edf0f5]" />
+                          <div className="h-1.5 w-10/12 rounded bg-[#edf0f5]" />
+                          <div className="h-1.5 w-8/12 rounded bg-[#edf0f5]" />
+                          <div className="h-1.5 w-9/12 rounded bg-[#edf0f5]" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-3 rounded-2xl bg-[#111827] p-4 text-white">
+                      <div className="flex items-center gap-3">
+                        <ListChecks size={18} className="text-indigo-300" />
+                        <div>
+                          <div className="text-xs font-bold">Application tracker</div>
+                          <div className="mt-1 text-[10px] text-slate-400">Applications · status · next action</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="absolute right-0 top-5 w-[200px] rounded-2xl bg-[#111827] px-3.5 py-3.5 shadow-2xl ring-1 ring-white/15 sm:right-[-8px] sm:top-8 sm:w-[220px]">
+                  <div className="text-[8px] font-mono uppercase tracking-[0.18em] text-indigo-300">Application kit</div>
+                  <div className="mt-1 text-lg font-bold tracking-tight text-white">Target country · IT</div>
+                  <div className="mt-1 text-[10px] text-slate-400">CV + cover letter + workflow</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="border-y border-[#e4e8f0] bg-[#fbfcff]">
+          <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
+            <div className="flex items-center gap-4"><div><div className="text-xs text-[#8993a8]">One-time price</div><div className="text-2xl font-bold">₹699</div></div><div className="h-9 w-px bg-[#dfe4ec]" /><div className="text-sm text-[#667189]">Digital product · no subscription</div></div>
+            <div className="flex flex-wrap gap-4 text-xs text-[#667189]"><span className="flex items-center gap-1.5"><ShieldCheck size={15} className="text-emerald-600" /> Transparent pricing</span><span className="flex items-center gap-1.5"><Download size={15} className="text-indigo-500" /> Editable resources</span></div>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
+          <div className="mx-auto max-w-3xl text-center"><div className="text-xs font-mono uppercase tracking-[0.16em] text-[#4f46e5]">Choose your version</div><h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Make it relevant to your target.</h2><p className="mt-3 text-sm leading-6 text-[#737e94]">Choose the country and job type you are targeting. Your selection determines the country-and-role-specific package you receive after payment.</p></div>
+          <div className="mx-auto mt-9 max-w-4xl rounded-[1.75rem] border border-[#dfe4ee] bg-white p-5 shadow-sm sm:p-7">
+            <div className="grid gap-8 md:grid-cols-2">
+              <div><div className="mb-3 flex items-center gap-2 text-sm font-bold"><Globe2 size={17} className="text-[#4f46e5]" /> Country</div><div className="flex flex-wrap gap-2">{careerCountries.map(country => { const enabled = Boolean(careerPackagesForCountry(country)); return <button key={country} type="button" disabled={!enabled} onClick={() => enabled && setSelectedCountry(country)} className={"rounded-xl border px-3 py-2 text-xs font-semibold " + (selectedCountry === country ? "border-[#4f46e5] bg-[#eef0fd] text-[#4f46e5]" : enabled ? "border-[#e1e5ee] text-[#526078] hover:border-indigo-200" : "border-[#eef0f4] bg-[#fafbfc] text-[#a2aaba] cursor-not-allowed")}>{country}{!enabled && <span className="ml-1 text-[9px] font-normal">Soon</span>}</button>; })}</div></div>
+              <div><div className="mb-3 flex items-center gap-2 text-sm font-bold"><BriefcaseBusiness size={17} className="text-[#4f46e5]" /> Job type</div><div className="flex flex-wrap gap-2">{careerJobTypes.map(jobType => { const enabled = getCareerPackage(selectedCountry, jobType)?.status === "ready"; return <button key={jobType} type="button" disabled={!enabled} onClick={() => enabled && setSelectedJobType(jobType)} className={"rounded-xl border px-3 py-2 text-xs font-semibold " + (selectedJobType === jobType ? "border-[#4f46e5] bg-[#eef0fd] text-[#4f46e5]" : enabled ? "border-[#e1e5ee] text-[#526078] hover:border-indigo-200" : "border-[#eef0f4] bg-[#fafbfc] text-[#a2aaba] cursor-not-allowed")}>{jobType}{!enabled && <span className="ml-1 text-[9px] font-normal">Soon</span>}</button>; })}</div></div>
+            </div>
+            <div className="mt-7 rounded-2xl border border-[#e8ebf2] bg-[#fafbfe] p-4"><div className="text-xs font-semibold uppercase tracking-[0.14em] text-[#8993a8]">Package contents</div><div className="mt-3 flex flex-wrap gap-2">{(selectedPackage?.contents ?? []).map((item) => <span key={item} className="rounded-lg bg-white px-2.5 py-1.5 text-xs font-medium text-[#526078] ring-1 ring-[#e5e8ef]">{item}</span>)}</div></div>
+            <div className="mt-7 flex flex-col gap-4 rounded-2xl bg-[#f6f7fb] p-4 sm:flex-row sm:items-center sm:justify-between"><div className="flex items-center gap-3"><div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white shadow-sm"><BadgeCheck size={17} className="text-emerald-600" /></div><div><div className="text-xs text-[#8993a8]">Selected version</div><div className="text-sm font-bold">{getCareerPackageLabel(selectedCountry, selectedJobType)}</div></div></div><button type="button" disabled={!available || checkoutState === "loading"} onClick={startCheckout} className={"inline-flex items-center justify-center gap-2 rounded-xl bg-[#111827] px-5 py-3 text-sm font-bold text-white " + (!available || checkoutState === "loading" ? "opacity-50 cursor-not-allowed" : "hover:bg-[#1f2937] cursor-pointer")}>{checkoutState === "loading" ? "Opening checkout…" : "Get this version · ₹699"} {checkoutState !== "loading" && <ArrowRight size={15} />}</button></div>
+          </div>
+        </section>
+
+        {checkoutState === "success" && (
+          <section className="border-y border-emerald-100 bg-emerald-50/60">
+            <div className="mx-auto max-w-3xl px-4 py-10 text-center sm:px-6">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-700"><Check size={24} /></div>
+              <h2 className="mt-4 text-2xl font-bold tracking-tight">Payment successful</h2>
+              <p className="mt-2 text-sm leading-6 text-[#667189]">Your {selectedPackage?.country} — {selectedPackage?.jobType} application kit is ready.</p>
+              <p className="mt-2 text-xs text-[#8993a8]">Order ID: {orderId}</p>
+              <a href={downloadUrl} className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-[#4f46e5] px-6 py-3.5 text-sm font-bold text-white hover:bg-[#4338ca]"><Download size={16} /> Download your kit</a>
+              <p className="mt-3 text-[11px] text-[#929bad]">The secure download link expires after 15 minutes.</p>
+            </div>
+          </section>
+        )}
+
+        <section className="border-y border-[#e4e8f0] bg-white">
+          <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
+            <div className="grid items-center gap-12 lg:grid-cols-2">
+              <div><div className="text-xs font-mono uppercase tracking-[0.16em] text-[#4f46e5]">Inside the kit</div><h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Everything you need, in one place.</h2><p className="mt-4 max-w-lg text-sm leading-7 text-[#707b91]">A compact system for turning a job description into a tailored application and keeping track of what you sent.</p><div className="mt-7 space-y-3">{[["CV templates","Editable starting points"],["Cover letters","Structured and ready to customize"],["Country guidance","Practical market-specific guidance"],["Application workflow","Checklist, tracker and AI prompts"]].map(([title,text]) => <div key={title} className="flex gap-3"><Check size={17} className="mt-1 shrink-0 text-emerald-600" /><div><div className="text-sm font-bold">{title}</div><div className="mt-0.5 text-xs leading-5 text-[#7b869b]">{text}</div></div></div>)}</div></div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="rounded-3xl border border-[#dfe4ee] bg-[#f8f9fc] p-4 shadow-sm"><div className="rounded-2xl bg-white p-4 shadow-sm"><div className="h-2 w-20 rounded bg-[#172033]" /><div className="mt-3 h-1.5 w-28 rounded bg-[#dfe4ee]" /><div className="mt-5 h-2 w-14 rounded bg-indigo-100" /><div className="mt-3 space-y-2"><div className="h-1.5 rounded bg-[#edf0f5]" /><div className="h-1.5 w-10/12 rounded bg-[#edf0f5]" /><div className="h-1.5 w-8/12 rounded bg-[#edf0f5]" /></div><div className="mt-5 h-12 rounded-xl bg-[#f1f3f7]" /></div><div className="mt-3 text-xs font-bold">CV template</div></div>
+                <div className="mt-8 rounded-3xl border border-[#dfe4ee] bg-[#f8f9fc] p-4 shadow-sm"><div className="rounded-2xl bg-white p-4 shadow-sm"><div className="h-2 w-24 rounded bg-[#172033]" /><div className="mt-3 h-1.5 w-20 rounded bg-[#dfe4ee]" /><div className="mt-5 space-y-2"><div className="h-1.5 rounded bg-[#edf0f5]" /><div className="h-1.5 w-11/12 rounded bg-[#edf0f5]" /><div className="h-1.5 w-9/12 rounded bg-[#edf0f5]" /><div className="h-1.5 w-10/12 rounded bg-[#edf0f5]" /></div><div className="mt-4 h-8 rounded-xl bg-emerald-50" /></div><div className="mt-3 text-xs font-bold">Cover letter</div></div>
+                <div className="col-span-2 rounded-3xl bg-[#111827] p-5 text-white shadow-lg"><div className="flex items-center gap-3"><ListChecks size={19} className="text-indigo-300" /><div><div className="text-sm font-bold">Application tracker</div><div className="text-xs text-slate-400">Applications · status · next action</div></div></div><div className="mt-4 grid grid-cols-3 gap-2"><div className="rounded-xl bg-white/5 p-2.5 text-[10px] text-slate-300">Applied<div className="mt-2 h-1.5 rounded bg-white/10" /></div><div className="rounded-xl bg-white/5 p-2.5 text-[10px] text-slate-300">Interview<div className="mt-2 h-1.5 rounded bg-white/10" /></div><div className="rounded-xl bg-white/5 p-2.5 text-[10px] text-slate-300">Follow-up<div className="mt-2 h-1.5 rounded bg-white/10" /></div></div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 lg:py-20">
+          <div className="text-xs font-mono uppercase tracking-[0.16em] text-[#4f46e5]">Build your application</div>
+          <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Choose the country and role you're targeting.</h2>
+          <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-[#707b91]">Get the relevant CV guidance, cover-letter templates and application workflow for your target market.</p>
+          <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row"><div><div className="text-xs text-[#929bad]">{selectedCountry} · {selectedJobType}</div><div className="mt-1 text-3xl font-bold">₹699</div></div><button type="button" disabled={!available || checkoutState === "loading"} onClick={startCheckout} className={"inline-flex items-center gap-2 rounded-2xl bg-[#4f46e5] px-7 py-3.5 text-sm font-bold text-white " + (!available || checkoutState === "loading" ? "opacity-60 cursor-not-allowed" : "hover:bg-[#4338ca] cursor-pointer")}>{checkoutState === "loading" ? "Opening checkout…" : "Get the kit"} {checkoutState !== "loading" && <ArrowRight size={16} />}</button></div>
+          <div className="mt-4 flex flex-col items-center gap-2 text-xs text-[#929bad]"><div className="flex items-center justify-center gap-2"><LockKeyhole size={13} /> Secure payment via Razorpay</div>{checkoutState === "error" && <div className="text-red-600">{checkoutError}</div>}</div>
+        </section>
+      </main>
+    </div>
+  );
+}
 
 export function ProductDetailPage({
   product,
@@ -66,6 +275,10 @@ export function ProductDetailPage({
   onAlreadyPurchased?: () => void;
 }) {
   const isParking = product.slug === "smart-parking-sticker";
+  if (product.slug === "tech-job-application-kit") {
+    return <CareerProductPage product={product} onBack={onBack} />;
+  }
+
   const detail = isParking ? parkingDetails : productDetails[product.slug] ?? {
     headline: product.shortDescription,
     description: product.shortDescription,
@@ -320,6 +533,7 @@ export function ProductDetailPage({
             <h1 className="text-4xl font-bold leading-tight tracking-tight text-[#0f1523] sm:text-5xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{product.name}</h1>
             <p className="mt-5 text-xl leading-relaxed text-[#4f46e5]">{detail.headline}</p>
             <p className="mt-5 text-base leading-7 text-[#6b7a99]">{detail.description}</p>
+
             <div className="mt-8 rounded-3xl border border-[#e4e8f0] bg-white p-6 shadow-sm">
               <div className="flex flex-wrap items-end justify-between gap-5">
                 <div><div className="text-xs font-mono uppercase tracking-widest text-[#6b7a99]">Digital product</div><div className="mt-1 text-3xl font-bold text-[#0f1523]">{product.isFree ? "FREE" : `₹${product.price.toLocaleString("en-IN")}`}</div></div>
