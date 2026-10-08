@@ -12,6 +12,7 @@ import { buildParkingTemplateSvg } from "./parkingTemplates";
 import physicalTemplateUrl from "./assets/parking-template-physical.svg?url";
 import { PARKING_ORDER_SUCCESS_ROUTE } from "../../utils/routes";
 import { PARKING_ORDER_SUCCESS_STORAGE_KEY } from "./ParkingOrderSuccessPage";
+import { trackMetaEvent, trackMetaPurchase } from "../../utils/metaPixel";
 
 const PHONE_COUNTRIES = [
   ["IN", "India", "+91"], ["US", "United States", "+1"], ["CA", "Canada", "+1"], ["GB", "United Kingdom", "+44"],
@@ -416,6 +417,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
           });
 
           setError("");
+          trackMetaPurchase(String(orderId));
           setFinalOrderId(String(orderId));
           setPaymentComplete(true);
           window.setTimeout(() => window.LemonSqueezy?.Url.Close(), 150);
@@ -474,6 +476,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
     }
   };
   const startCheckout = async (method: "razorpay" | "lemonsqueezy") => {
+    trackMetaEvent("InitiateCheckout", { value: 199, currency: "INR", content_name: "Smart Car Parking Sticker", content_type: "product" });
     if (form.delivery === "physical" || !previewPayload) return;
 
     if (method === "lemonsqueezy") {
@@ -561,6 +564,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
               throw new Error(verifyResult?.error || "We couldn't verify the Razorpay payment.");
             }
 
+            trackMetaPurchase(String(verifyResult.paymentId || verifyResult.orderId));
             await sendRazorpayPaymentNotification(verifyResult);
 
             routerNavigate(
