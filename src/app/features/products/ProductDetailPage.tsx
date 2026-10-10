@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { ArrowLeft, Check, FileText, ShieldCheck, Sparkles, ArrowRight, Phone, QrCode, MessageCircle, CarFront, Clock3, Eye } from "lucide-react";
 import type { Product } from "./types";
 import lightTemplateUrl from "../parking/assets/parking-template-light.svg?url";
@@ -5,6 +6,7 @@ import darkTemplateUrl from "../parking/assets/parking-template-dark.svg?url";
 import physicalTemplateUrl from "../parking/assets/parking-template-physical.svg?url";
 
 import option2CarUrl from "./assets/option2-car-hero.webp?url";
+import { trackMetaEvent } from "../../utils/metaPixel";
 
 const typeLabels: Record<Product["type"], string> = {
   ebook: "Ebook",
@@ -66,6 +68,16 @@ export function ProductDetailPage({
   onAlreadyPurchased?: () => void;
 }) {
   const isParking = product.slug === "smart-parking-sticker";
+
+  useEffect(() => {
+    if (!isParking) return;
+    trackMetaEvent("ViewContent", {
+      value: 199,
+      currency: "INR",
+      content_name: "Smart Car Parking Sticker",
+      content_type: "product",
+    });
+  }, [isParking, product.slug]);
   const detail = isParking ? parkingDetails : productDetails[product.slug] ?? {
     headline: product.shortDescription,
     description: product.shortDescription,
