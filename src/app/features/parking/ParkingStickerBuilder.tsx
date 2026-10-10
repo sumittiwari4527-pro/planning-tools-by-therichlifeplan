@@ -93,6 +93,10 @@ type FormState = {
   vehicle: string;
   theme: ParkingTheme;
   delivery: ParkingDelivery;
+  addressLine: string;
+  city: string;
+  state: string;
+  pincode: string;
 };
 
 const initialForm: FormState = {
@@ -103,6 +107,10 @@ const initialForm: FormState = {
   vehicle: "",
   theme: "dark",
   delivery: "digital",
+  addressLine: "",
+  city: "",
+  state: "",
+  pincode: "",
 };
 
 declare global {
@@ -137,13 +145,14 @@ const sendRazorpayPaymentNotification = async (result: Record<string, unknown>) 
     customerName: String(result.name || ""),
     customerEmail: String(result.email || ""),
     currency: "INR",
-    total: "₹199",
+    total: String(result.deliveryType || "digital") === "physical" ? "₹399" : "₹199",
     formName: String(result.name || ""),
     formPhone: String(result.phone || ""),
     formEmail: String(result.email || ""),
     vehicle: String(result.vehicle || "").toUpperCase(),
     stickerStyle,
-    deliveryType: "digital",
+    deliveryType: String(result.deliveryType || "digital"),
+    shippingAddress: String(result.deliveryType || "digital") === "physical" ? [result.addressLine, result.city, result.state, result.pincode, "India"].map((part) => String(part || "").trim()).filter(Boolean).join(", ") : "Digital download",
     submittedAt: new Date().toISOString(),
   };
 
@@ -222,11 +231,13 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
     formRef.current = form;
   }, [form]);
 
+  const validPhysicalAddress = form.delivery !== "physical" || (form.addressLine.trim().length >= 5 && form.city.trim().length >= 2 && form.state.trim().length >= 2 && /^[1-9][0-9]{5}$/.test(form.pincode.trim()));
   const canPreview =
     form.name.trim().length >= 2 &&
     isValidPhone(form.phone) &&
     form.vehicle.trim().length >= 2 &&
     (!form.email.trim() || isValidEmail(form.email)) &&
+    validPhysicalAddress &&
     (!activationMode || (orderId.trim().length >= 2 && Boolean(deliveryEmail.trim()) && isValidEmail(deliveryEmail)));
 
   const canSubmitRequest = Boolean(previewPayload) && !submitting && Boolean(orderId.trim()) && Boolean(deliveryEmail.trim()) && isValidEmail(deliveryEmail);
@@ -476,10 +487,12 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
     }
   };
   const startCheckout = async (method: "razorpay" | "lemonsqueezy") => {
-    trackMetaEvent("InitiateCheckout", { value: 199, currency: "INR", content_name: "Smart Car Parking Sticker", content_type: "product" });
-    if (form.delivery === "physical" || !previewPayload) return;
-
+    const physicalOrder = form.delivery === "physical";
+    const price = physicalOrder ? 399 : 199;
+    trackMetaEvent("InitiateCheckout", { value: price, currency: "INR", content_name: "Smart Car Parking Sticker", content_type: "product" });
+    if (!previewPayload) return;
     if (method === "lemonsqueezy") {
+      if (physicalOrder) { setError("Physical sticker delivery is available only through Razorpay."); return; }
       if (!checkoutUrl) {
         setError("Lemon Squeezy checkout is not configured yet. Add the Lemon Squeezy parking checkout URL to the site environment.");
         return;
@@ -513,6 +526,11 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
           email: form.email.trim(),
           vehicle: form.vehicle.trim().toUpperCase(),
           theme: form.theme,
+          deliveryType: form.delivery,
+          addressLine: form.delivery === "physical" ? form.addressLine.trim() : "",
+          city: form.delivery === "physical" ? form.city.trim() : "",
+          state: form.delivery === "physical" ? form.state.trim() : "",
+          pincode: form.delivery === "physical" ? form.pincode.trim() : "",
         }),
       });
 
@@ -532,7 +550,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
         amount: result.amount,
         currency: result.currency,
         name: "TheRichLifePlan",
-        description: "Smart Car Parking Sticker",
+        description: physicalOrder ? "Smart Car Parking Sticker — physical delivery" : "Smart Car Parking Sticker",
         order_id: result.orderId,
         prefill: {
           name: form.name.trim(),
@@ -541,6 +559,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
         },
         notes: {
           product: "smart-parking-sticker",
+          deliveryType: form.delivery,
           vehicle: form.vehicle.trim().toUpperCase(),
         },
         theme: {
@@ -773,6 +792,18 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                 />
               </label>
 
+              {form.delivery === "physical" && !activationMode && (
+                <div className="space-y-4 rounded-2xl border border-emerald-100 bg-[#f5fffa] p-4">
+                  <div><div className="text-sm font-bold text-[#0f1523]">Delivery address</div><p className="mt-1 text-xs leading-5 text-[#6b7a99]">India only · ₹399 total, including standard delivery.</p></div>
+                  <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">House / street / locality *</span><input value={form.addressLine} onChange={(event) => update("addressLine", event.target.value)} autoComplete="street-address" placeholder="Flat, building, street, locality" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50" /></label>
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">City *</span><input value={form.city} onChange={(event) => update("city", event.target.value)} autoComplete="address-level2" placeholder="City" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50" /></label>
+                    <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">State *</span><input value={form.state} onChange={(event) => update("state", event.target.value)} autoComplete="address-level1" placeholder="State" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50" /></label>
+                  </div>
+                  <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">PIN code *</span><input value={form.pincode} onChange={(event) => update("pincode", event.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" autoComplete="postal-code" placeholder="6-digit PIN code" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50" />{form.pincode && !/^[1-9][0-9]{5}$/.test(form.pincode) && <p className="mt-2 text-xs text-red-600">Enter a valid 6-digit Indian PIN code.</p>}</label>
+                </div>
+              )}
+
               <div>
                 <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Palette size={15} /> Sticker style</div>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -824,7 +855,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                       className={"rounded-2xl border p-4 text-left transition " + (form.delivery === delivery ? "border-[#00b968] bg-[#eefaf3] ring-4 ring-emerald-50" : "border-[#dbe2ec] bg-white")}
                     >
                       <div className="text-sm font-bold text-[#0f1523]">{delivery === "digital" ? "Downloadable" : "Physical sticker"}</div>
-                      <div className="mt-1 text-xs text-[#6b7a99]">{delivery === "digital" ? "₹199 · SVG download" : "Coming soon"}</div>
+                      <div className="mt-1 text-xs text-[#6b7a99]">{delivery === "digital" ? "₹199 · SVG download" : "₹399 · Printed and delivered in India"}</div>
                     </button>
                   ))}
                 </div>
@@ -906,12 +937,8 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                     </p>
                   </div>
                   {form.delivery === "physical" ? (
-                    <button
-                      type="button"
-                      disabled
-                      className="inline-flex shrink-0 cursor-not-allowed items-center justify-center gap-2 rounded-2xl bg-[#d9dfea] px-5 py-3 text-sm font-bold text-[#7a8498]"
-                    >
-                      Coming soon
+                    <button type="button" onClick={() => { setError(""); setPaymentMethodOpen(true); }} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#00b968] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-100">
+                      <ShoppingCart size={16} /> Order for ₹399
                     </button>
                   ) : (
                     <button
@@ -938,7 +965,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                       <div className="flex items-start justify-between gap-4">
                         <div>
                           <div className="text-lg font-bold text-[#0f1523]">Choose your payment method</div>
-                          <p className="mt-1 text-xs leading-5 text-[#6b7a99]">Pay securely for your Smart Car Parking Sticker.</p>
+                          <p className="mt-1 text-xs leading-5 text-[#6b7a99]">{form.delivery === "physical" ? "Pay ₹399 for a printed sticker delivered to your Indian address." : "Pay securely for your digital Smart Car Parking Sticker for ₹199."}</p>
                         </div>
                         <button
                           type="button"
@@ -972,7 +999,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
 
                         <button
                           type="button"
-                          disabled={!checkoutUrl}
+                          disabled={!checkoutUrl || form.delivery === "physical"}
                           onClick={() => startCheckout("lemonsqueezy")}
                           className="group flex w-full items-center gap-4 rounded-2xl border border-[#dfe7e3] bg-white p-4 text-left transition hover:border-[#4f46e5] hover:bg-[#f8f7ff] disabled:cursor-not-allowed disabled:opacity-50"
                         >
@@ -991,7 +1018,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                       </div>
 
                       <p className="mt-4 text-center text-[11px] leading-5 text-[#8b95aa]">
-                        Both options use the same ₹199 sticker and existing personalization flow.
+                        {form.delivery === "physical" ? "Physical orders are available in India only. Printing and courier dispatch are handled manually." : "Digital sticker orders remain ₹199 and can be paid using either available checkout."}
                       </p>
                     </div>
                   </div>

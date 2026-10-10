@@ -47,23 +47,11 @@ export default async function handler(req: any, res: any) {
     const payments = await paymentsResponse.json();
     if (!paymentsResponse.ok) return json(res, 502, { error: "Unable to fetch Razorpay payment details." });
 
-    const capturedPayment = Array.isArray(payments?.items)
-      ? payments.items.find((payment: any) =>
-          payment.order_id === orderId &&
-          payment.amount === 19900 &&
-          payment.currency === "INR" &&
-          payment.status === "captured"
-        )
-      : null;
-
     const notes = order.notes || {};
-    if (
-      order.id !== orderId ||
-      order.amount !== 19900 ||
-      order.currency !== "INR" ||
-      notes.product !== "smart-parking-sticker" ||
-      !capturedPayment
-    ) {
+    const physicalOrder = notes.deliveryType === "physical";
+    const expectedAmount = physicalOrder ? 39900 : 19900;
+    const capturedPayment = Array.isArray(payments?.items) ? payments.items.find((payment: any) => payment.order_id === orderId && payment.amount === expectedAmount && payment.currency === "INR" && payment.status === "captured") : null;
+    if (order.id !== orderId || order.amount !== expectedAmount || order.currency !== "INR" || notes.product !== "smart-parking-sticker" || (physicalOrder && (String(notes.addressLine || "").length < 5 || !/^[1-9][0-9]{5}$/.test(String(notes.pincode || "")))) || !capturedPayment) {
       return json(res, 402, { error: "Razorpay payment has not been captured for this order." });
     }
 
@@ -76,6 +64,9 @@ export default async function handler(req: any, res: any) {
       email: String(notes.email || ""),
       vehicle: String(notes.vehicle || ""),
       theme: notes.theme === "light" || notes.theme === "dark" || notes.theme === "physical" ? notes.theme : "dark",
+      deliveryType: physicalOrder ? "physical" : "digital",
+      addressLine: String(notes.addressLine || ""), city: String(notes.city || ""), state: String(notes.state || ""),
+      pincode: String(notes.pincode || ""), country: String(notes.country || ""),
     });
   } catch (error) {
     return json(res, 500, {

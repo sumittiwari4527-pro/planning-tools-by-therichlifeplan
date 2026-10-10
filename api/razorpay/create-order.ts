@@ -17,7 +17,12 @@ export default async function handler(req: any, res: any) {
 
   try {
     const { keyId, keySecret } = getCredentials();
-    const { name, phone, email, vehicle, theme } = req.body || {};
+    const { name, phone, email, vehicle, theme, deliveryType, addressLine, city, state, pincode } = req.body || {};
+    const cleanDeliveryType = deliveryType === "physical" ? "physical" : "digital";
+    const cleanAddressLine = String(addressLine || "").trim();
+    const cleanCity = String(city || "").trim();
+    const cleanState = String(state || "").trim();
+    const cleanPincode = String(pincode || "").trim();
     const cleanName = String(name || "").trim();
     const cleanPhone = String(phone || "").trim();
     const cleanEmail = String(email || "").trim();
@@ -28,6 +33,12 @@ export default async function handler(req: any, res: any) {
     if (!/^\+?[0-9]{7,15}$/.test(cleanPhone.replace(/[\s()-]/g, ""))) return json(res, 400, { error: "Invalid phone number." });
     if (cleanEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) return json(res, 400, { error: "Invalid email address." });
     if (cleanVehicle.length < 2 || cleanVehicle.length > 40) return json(res, 400, { error: "Invalid vehicle number." });
+    if (cleanDeliveryType === "physical") {
+      if (cleanAddressLine.length < 5 || cleanAddressLine.length > 200) return json(res, 400, { error: "Enter a valid delivery address." });
+      if (cleanCity.length < 2 || cleanCity.length > 80) return json(res, 400, { error: "Enter a valid delivery city." });
+      if (cleanState.length < 2 || cleanState.length > 80) return json(res, 400, { error: "Enter a valid delivery state." });
+      if (!/^[1-9][0-9]{5}$/.test(cleanPincode)) return json(res, 400, { error: "Enter a valid 6-digit Indian PIN code." });
+    }
 
     const receipt = `RL-${crypto.randomUUID().replace(/-/g, "").slice(0, 32)}`;
     const auth = Buffer.from(`${keyId}:${keySecret}`).toString("base64");
@@ -39,12 +50,18 @@ export default async function handler(req: any, res: any) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        amount: 19900,
+        amount: cleanDeliveryType === "physical" ? 39900 : 19900,
         currency: "INR",
         receipt,
         partial_payment: false,
         notes: {
           product: "smart-parking-sticker",
+          deliveryType: cleanDeliveryType,
+          addressLine: cleanDeliveryType === "physical" ? cleanAddressLine : "",
+          city: cleanDeliveryType === "physical" ? cleanCity : "",
+          state: cleanDeliveryType === "physical" ? cleanState : "",
+          pincode: cleanDeliveryType === "physical" ? cleanPincode : "",
+          country: cleanDeliveryType === "physical" ? "India" : "",
           name: cleanName,
           phone: cleanPhone,
           email: cleanEmail,
