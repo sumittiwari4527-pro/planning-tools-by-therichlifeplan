@@ -67,22 +67,22 @@ export function ParkingOrderSuccessPage() {
     const verifyRazorpayOrder = async () => {
       const params = new URLSearchParams(window.location.search);
       const razorpayOrderId = params.get("razorpay_order_id");
-      const razorpayPaymentId = params.get("razorpay_payment_id");
-      const razorpaySignature = params.get("razorpay_signature");
       if (razorpayOrderId) {
         setLoading(true);
         setError("");
 
         try {
-          const verificationParams = new URLSearchParams({
-            razorpay_order_id: razorpayOrderId,
-            razorpay_payment_id: razorpayPaymentId || "",
-            razorpay_signature: razorpaySignature || "",
+          const verificationRaw = sessionStorage.getItem("richlifetools_parking_razorpay_verification");
+          if (!verificationRaw) throw new Error("Payment proof is missing from this browser session. If you were charged, please contact support with your Razorpay order details.");
+          const verification = JSON.parse(verificationRaw) as { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string };
+          if (verification.razorpay_order_id !== razorpayOrderId || !verification.razorpay_payment_id || !verification.razorpay_signature) {
+            throw new Error("Payment verification details are incomplete. If you were charged, please contact support with your Razorpay order details.");
+          }
+          const response = await fetch("/api/razorpay/verify-order", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify(verification),
           });
-          const response = await fetch(
-            `/api/razorpay/verify-order?${verificationParams.toString()}`,
-            { headers: { Accept: "application/json" } }
-          );
           const result = await response.json();
 
           if (!response.ok || !result?.paid) {
@@ -100,6 +100,7 @@ export function ParkingOrderSuccessPage() {
           };
 
           sessionStorage.setItem(PARKING_ORDER_SUCCESS_STORAGE_KEY, JSON.stringify(successData));
+          sessionStorage.removeItem("richlifetools_parking_razorpay_verification");
           setData(successData);
           window.history.replaceState({}, "", window.location.pathname);
         } catch (verificationError) {
