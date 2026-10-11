@@ -738,7 +738,17 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
         },
         handler: async (paymentResponse: any) => {
           setRazorpayProcessing(true);
+          const paymentProof = {
+            razorpay_order_id: String(paymentResponse?.razorpay_order_id || result.orderId),
+            razorpay_payment_id: String(paymentResponse?.razorpay_payment_id || ""),
+            razorpay_signature: String(paymentResponse?.razorpay_signature || ""),
+          };
+
           try {
+            if (paymentProof.razorpay_order_id && paymentProof.razorpay_payment_id && paymentProof.razorpay_signature) {
+              sessionStorage.setItem("richlifetools_parking_razorpay_verification", JSON.stringify(paymentProof));
+            }
+
             const verifyResponse = await fetch("/api/razorpay/verify-payment", {
               method: "POST",
               headers: { "Content-Type": "application/json", Accept: "application/json" },
@@ -757,23 +767,28 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
             trackMetaPurchase(String(verifyResult.paymentId || verifyResult.orderId));
             await sendRazorpayPaymentNotification(verifyResult);
 
-            sessionStorage.setItem("richlifetools_parking_razorpay_verification", JSON.stringify({
-              razorpay_order_id: String(paymentResponse?.razorpay_order_id || result.orderId),
-              razorpay_payment_id: String(paymentResponse?.razorpay_payment_id || ""),
-              razorpay_signature: String(paymentResponse?.razorpay_signature || ""),
-            }));
             routerNavigate(
               `${PARKING_ORDER_SUCCESS_ROUTE}?razorpay_order_id=${encodeURIComponent(result.orderId)}`,
               { replace: true }
             );
           } catch (verificationError) {
+            // Keep Razorpay's proof and retry confirmation through the dedicated
+            // server-side order verifier. Never reopen checkout after a payment
+            // response, as that could invite a duplicate payment.
+            if (paymentProof.razorpay_order_id && paymentProof.razorpay_payment_id && paymentProof.razorpay_signature) {
+              routerNavigate(
+                `${PARKING_ORDER_SUCCESS_ROUTE}?razorpay_order_id=${encodeURIComponent(paymentProof.razorpay_order_id)}`,
+                { replace: true }
+              );
+              return;
+            }
+
             setRazorpayProcessing(false);
             setError(
               verificationError instanceof Error
                 ? verificationError.message
-                : "Payment completed, but verification failed. Please contact support."
+                : "We couldn't verify the payment response. Please contact support before trying to pay again."
             );
-            setPaymentMethodOpen(true);
           }
         },
       });
