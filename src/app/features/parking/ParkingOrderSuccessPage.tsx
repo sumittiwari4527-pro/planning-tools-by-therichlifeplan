@@ -67,13 +67,20 @@ export function ParkingOrderSuccessPage() {
     const verifyRazorpayOrder = async () => {
       const params = new URLSearchParams(window.location.search);
       const razorpayOrderId = params.get("razorpay_order_id");
+      const razorpayPaymentId = params.get("razorpay_payment_id");
+      const razorpaySignature = params.get("razorpay_signature");
       if (razorpayOrderId) {
         setLoading(true);
         setError("");
 
         try {
+          const verificationParams = new URLSearchParams({
+            razorpay_order_id: razorpayOrderId,
+            razorpay_payment_id: razorpayPaymentId || "",
+            razorpay_signature: razorpaySignature || "",
+          });
           const response = await fetch(
-            `/api/razorpay/verify-order?razorpay_order_id=${encodeURIComponent(razorpayOrderId)}`,
+            `/api/razorpay/verify-order?${verificationParams.toString()}`,
             { headers: { Accept: "application/json" } }
           );
           const result = await response.json();
