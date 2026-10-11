@@ -1,3 +1,5 @@
+import { createHmac, timingSafeEqual } from "node:crypto";
+
 const json = (res: any, status: number, body: unknown) => {
   res.status(status).setHeader("Content-Type", "application/json").json(body);
 };
@@ -7,6 +9,11 @@ const getCredentials = () => {
   const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim();
   if (!keyId || !keySecret) throw new Error("Razorpay server credentials are not configured.");
   return { keyId, keySecret };
+};
+
+const safeEqualHex = (a: string, b: string) => {
+  if (!/^[a-f0-9]{64}$/i.test(a) || !/^[a-f0-9]{64}$/i.test(b)) return false;
+  return timingSafeEqual(Buffer.from(a, "hex"), Buffer.from(b, "hex"));
 };
 
 const fetchRazorpay = async (url: string, keyId: string, keySecret: string) => {
@@ -26,10 +33,18 @@ export default async function handler(req: any, res: any) {
   }
 
   const orderId = String(req.query?.razorpay_order_id || "");
-  if (!orderId) return json(res, 400, { error: "Missing Razorpay order id." });
+  const paymentId = String(req.query?.razorpay_payment_id || "");
+  const signature = String(req.query?.razorpay_signature || "");
+  if (!orderId || !paymentId || !signature) {
+    return json(res, 400, { error: "Missing Razorpay payment verification parameters." });
+  }
 
   try {
     const { keyId, keySecret } = getCredentials();
+    const expectedSignature = createHmac("sha256", keySecret).update(`${orderId}|${paymentId}`).digest("hex");
+    if (!safeEqualHex(expectedSignature, signature)) {
+      return json(res, 401, { error: "Invalid Razorpay payment signature." });
+    }
 
     const orderResponse = await fetchRazorpay(
       `https://api.razorpay.com/v1/orders/${encodeURIComponent(orderId)}`,
@@ -50,7 +65,7 @@ export default async function handler(req: any, res: any) {
     const notes = order.notes || {};
     const physicalOrder = notes.deliveryType === "physical";
     const expectedAmount = physicalOrder ? 39900 : 19900;
-    const capturedPayment = Array.isArray(payments?.items) ? payments.items.find((payment: any) => payment.order_id === orderId && payment.amount === expectedAmount && payment.currency === "INR" && payment.status === "captured") : null;
+    const capturedPayment = Array.isArray(payments?.items) ? payments.items.find((payment: any) => payment.order_id === orderId && payment.id === paymentId && payment.amount === expectedAmount && payment.currency === "INR" && payment.status === "captured") : null;
     if (order.id !== orderId || order.amount !== expectedAmount || order.currency !== "INR" || notes.product !== "smart-parking-sticker" || (physicalOrder && (notes.country !== "India" || String(notes.addressLine || "").length < 5 || !/^[1-9][0-9]{5}$/.test(String(notes.pincode || "")) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(notes.shippingEmail || "")) || !/^\+?[0-9]{7,15}$/.test(String(notes.shippingPhone || "")))) || !capturedPayment) {
       return json(res, 402, { error: "Razorpay payment has not been captured for this order." });
     }
