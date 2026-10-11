@@ -21,7 +21,7 @@ export default async function handler(req: any, res: any) {
     const cleanDeliveryType = deliveryType === "physical" ? "physical" : "digital";
     const cleanAddressLine = String(addressLine || "").trim();
     const cleanShippingEmail = String(shippingEmail || "").trim();
-    const cleanShippingPhone = String(shippingPhone || "").trim().replace(/[\\s()-]/g, "");
+    const cleanShippingPhone = String(shippingPhone || "").trim().replace(/[\s()-]/g, "");
     const cleanCity = String(city || "").trim();
     const cleanState = String(state || "").trim();
     const cleanPincode = String(pincode || "").trim();
@@ -39,8 +39,8 @@ export default async function handler(req: any, res: any) {
     if (cleanDeliveryType === "physical") {
       if (cleanCountry !== "India") return json(res, 400, { error: "Physical delivery is currently available in India only." });
       if (cleanAddressLine.length < 5 || cleanAddressLine.length > 200) return json(res, 400, { error: "Enter a valid delivery address." });
-      if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(cleanShippingEmail)) return json(res, 400, { error: "Enter a valid shipping email." });
-      if (!/^\\+?[0-9]{7,15}$/.test(cleanShippingPhone)) return json(res, 400, { error: "Enter a valid delivery contact number." });
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanShippingEmail)) return json(res, 400, { error: "Enter a valid shipping email." });
+      if (!/^\+?[0-9]{7,15}$/.test(cleanShippingPhone)) return json(res, 400, { error: "Enter a valid delivery contact number." });
       if (cleanCity.length < 2 || cleanCity.length > 80) return json(res, 400, { error: "Enter a valid delivery city." });
       if (cleanState.length < 2 || cleanState.length > 80) return json(res, 400, { error: "Enter a valid delivery state." });
       if (!/^[1-9][0-9]{5}$/.test(cleanPincode)) return json(res, 400, { error: "Enter a valid 6-digit Indian PIN code." });
