@@ -370,7 +370,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
   const orderIdError = touched.orderId && activationMode && !orderId.trim() ? "Enter your Lemon Squeezy order number." : "";
 
   const fullPhone = (countryCode: PhoneCountryCode, phone: string) =>
-    `${PHONE_COUNTRIES.find(([code]) => code === countryCode)?.[2] ?? "+91"}${phone.replace(/\\D/g, "")}`;
+    `${PHONE_COUNTRIES.find(([code]) => code === countryCode)?.[2] ?? "+91"}${phone.replace(/\D/g, "")}`;
 
   const update = (field: keyof FormState, value: string) => {
     setForm((current) => {
