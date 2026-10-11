@@ -97,6 +97,7 @@ type FormState = {
   city: string;
   state: string;
   pincode: string;
+  country: string;
 };
 
 const initialForm: FormState = {
@@ -111,6 +112,7 @@ const initialForm: FormState = {
   city: "",
   state: "",
   pincode: "",
+  country: "India",
 };
 
 declare global {
@@ -225,13 +227,57 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
   const [deliveryEmail, setDeliveryEmail] = useState("");
   const [requestSubmitted, setRequestSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [pincodeLookupStatus, setPincodeLookupStatus] = useState<"idle" | "loading" | "found" | "not-found" | "error">("idle");
   const formRef = useRef(form);
 
   useEffect(() => {
     formRef.current = form;
   }, [form]);
 
-  const validPhysicalAddress = form.addressLine.trim().length >= 5 && form.city.trim().length >= 2 && form.state.trim().length >= 2 && /^[1-9][0-9]{5}$/.test(form.pincode.trim());
+  useEffect(() => {
+    const pincode = form.pincode.trim();
+    if (form.delivery !== "physical" || !/^[1-9][0-9]{5}$/.test(pincode)) {
+      setPincodeLookupStatus("idle");
+      return;
+    }
+
+    const controller = new AbortController();
+    setPincodeLookupStatus("loading");
+    const timeout = window.setTimeout(async () => {
+      try {
+        const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`, { signal: controller.signal });
+        if (!response.ok) throw new Error("PIN lookup unavailable");
+        const result = await response.json();
+        const postOffices = Array.isArray(result) && result[0]?.Status === "Success" && Array.isArray(result[0]?.PostOffice)
+          ? result[0].PostOffice
+          : [];
+        if (!postOffices.length) {
+          setPincodeLookupStatus("not-found");
+          return;
+        }
+
+        const match = postOffices[0];
+        setForm((current) => {
+          if (current.pincode !== pincode) return current;
+          return {
+            ...current,
+            city: String(match.District || match.Block || current.city || ""),
+            state: String(match.State || current.state || ""),
+          };
+        });
+        setPincodeLookupStatus("found");
+      } catch (error) {
+        if (!controller.signal.aborted) setPincodeLookupStatus("error");
+      }
+    }, 300);
+
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [form.pincode, form.delivery]);
+
+  const validPhysicalAddress = form.country === "India" && form.addressLine.trim().length >= 5 && form.city.trim().length >= 2 && form.state.trim().length >= 2 && /^[1-9][0-9]{5}$/.test(form.pincode.trim());
   const canPreview =
     form.name.trim().length >= 2 &&
     isValidPhone(form.phone) &&
@@ -531,6 +577,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
           city: form.delivery === "physical" ? form.city.trim() : "",
           state: form.delivery === "physical" ? form.state.trim() : "",
           pincode: form.delivery === "physical" ? form.pincode.trim() : "",
+          country: form.delivery === "physical" ? form.country : "",
         }),
       });
 
@@ -795,12 +842,13 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
               {form.delivery === "physical" && !activationMode && (
                 <div className="space-y-4 rounded-2xl border border-emerald-100 bg-[#f5fffa] p-4">
                   <div><div className="text-sm font-bold text-[#0f1523]">Delivery address</div><p className="mt-1 text-xs leading-5 text-[#6b7a99]">India only · ₹399 total, including standard delivery.</p></div>
-                  <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">House / street / locality *</span><input value={form.addressLine} onChange={(event) => update("addressLine", event.target.value)} autoComplete="street-address" placeholder="Flat, building, street, locality" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50" /></label>
+                  <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">Country *</span><select value={form.country} onChange={(event) => update("country", event.target.value)} autoComplete="country-name" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50"><option value="India">India</option></select><span className="mt-1 block text-xs text-[#8b95aa]">More countries can be enabled here later.</span></label>
+                  <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">Flat / building / locality / street *</span><input value={form.addressLine} onChange={(event) => update("addressLine", event.target.value)} autoComplete="street-address" placeholder="Flat number, building, street, locality" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50" /></label>
+                  <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">PIN code *</span><input value={form.pincode} onChange={(event) => update("pincode", event.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" autoComplete="postal-code" placeholder="6-digit PIN code" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50" />{form.pincode && !/^[1-9][0-9]{5}$/.test(form.pincode) && <p className="mt-2 text-xs text-red-600">Enter a valid 6-digit Indian PIN code.</p>}{pincodeLookupStatus === "loading" && <p className="mt-2 text-xs text-[#6b7a99]">Looking up city and state…</p>}{pincodeLookupStatus === "found" && <p className="mt-2 text-xs text-emerald-700">City/district and state filled from PIN-code records. Please confirm the details.</p>}{pincodeLookupStatus === "not-found" && <p className="mt-2 text-xs text-red-600">PIN code not found in postal records. Check it and try again.</p>}{pincodeLookupStatus === "error" && <p className="mt-2 text-xs text-[#8b95aa]">PIN lookup is temporarily unavailable. You can enter city and state manually.</p>}</label>
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">City *</span><input value={form.city} onChange={(event) => update("city", event.target.value)} autoComplete="address-level2" placeholder="City" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50" /></label>
-                    <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">State *</span><input value={form.state} onChange={(event) => update("state", event.target.value)} autoComplete="address-level1" placeholder="State" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50" /></label>
+                    <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">City / district *</span><input value={form.city} onChange={(event) => update("city", event.target.value)} autoComplete="address-level2" placeholder="Filled from PIN code; editable" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50" /></label>
+                    <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">State *</span><input value={form.state} onChange={(event) => update("state", event.target.value)} autoComplete="address-level1" placeholder="Filled from PIN code; editable" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50" /></label>
                   </div>
-                  <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">PIN code *</span><input value={form.pincode} onChange={(event) => update("pincode", event.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" autoComplete="postal-code" placeholder="6-digit PIN code" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50" />{form.pincode && !/^[1-9][0-9]{5}$/.test(form.pincode) && <p className="mt-2 text-xs text-red-600">Enter a valid 6-digit Indian PIN code.</p>}</label>
                 </div>
               )}
 
