@@ -7,11 +7,7 @@ import { buildParkingTemplateSvg } from "./parkingTemplates";
 
 export const PARKING_ORDER_SUCCESS_STORAGE_KEY = "richlifetools_parking_order_success";
 
-type SuccessData = {
-  orderId: string;
-  stickerDataUrl: string;
-  vehicle?: string;
-};
+type SuccessData = { orderId: string; stickerDataUrl?: string; vehicle?: string; deliveryType?: "digital" | "physical"; addressLine?: string; shippingEmail?: string; shippingPhone?: string; city?: string; state?: string; pincode?: string; country?: string; };
 
 const buildFinalSticker = async ({
   name,
@@ -76,32 +72,35 @@ export function ParkingOrderSuccessPage() {
         setError("");
 
         try {
-          const response = await fetch(
-            `/api/razorpay/verify-order?razorpay_order_id=${encodeURIComponent(razorpayOrderId)}`,
-            { headers: { Accept: "application/json" } }
-          );
+          const verificationRaw = sessionStorage.getItem("richlifetools_parking_razorpay_verification");
+          if (!verificationRaw) throw new Error("Payment proof is missing from this browser session. If you were charged, please contact support with your Razorpay order details.");
+          const verification = JSON.parse(verificationRaw) as { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string };
+          if (verification.razorpay_order_id !== razorpayOrderId || !verification.razorpay_payment_id || !verification.razorpay_signature) {
+            throw new Error("Payment verification details are incomplete. If you were charged, please contact support with your Razorpay order details.");
+          }
+          const response = await fetch("/api/razorpay/verify-order", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify(verification),
+          });
           const result = await response.json();
 
           if (!response.ok || !result?.paid) {
             throw new Error(result?.error || "We couldn't verify the Razorpay payment.");
           }
 
-          const stickerDataUrl = await buildFinalSticker({
-            name: String(result.name || ""),
-            phone: String(result.phone || ""),
-            email: String(result.email || ""),
-            vehicle: String(result.vehicle || ""),
-            theme: result.theme === "light" ? "light" : result.theme === "physical" ? "physical" : "dark",
-            orderId: String(result.orderId),
+          const deliveryType = result.deliveryType === "physical" ? "physical" : "digital";
+          const stickerDataUrl = deliveryType === "physical" ? undefined : await buildFinalSticker({
+            name: String(result.name || ""), phone: String(result.phone || ""), email: String(result.email || ""),
+            vehicle: String(result.vehicle || ""), theme: result.theme === "light" ? "light" : result.theme === "physical" ? "physical" : "dark", orderId: String(result.orderId),
           });
-
-          const successData = {
-            orderId: String(result.orderId),
-            stickerDataUrl,
-            vehicle: String(result.vehicle || ""),
+          const successData: SuccessData = {
+            orderId: String(result.orderId), ...(stickerDataUrl ? { stickerDataUrl } : {}), vehicle: String(result.vehicle || ""), deliveryType,
+            addressLine: String(result.addressLine || ""), shippingEmail: String(result.shippingEmail || ""), shippingPhone: String(result.shippingPhone || ""), city: String(result.city || ""), state: String(result.state || ""), pincode: String(result.pincode || ""), country: String(result.country || ""),
           };
 
           sessionStorage.setItem(PARKING_ORDER_SUCCESS_STORAGE_KEY, JSON.stringify(successData));
+          sessionStorage.removeItem("richlifetools_parking_razorpay_verification");
           setData(successData);
           window.history.replaceState({}, "", window.location.pathname);
         } catch (verificationError) {
@@ -120,7 +119,7 @@ export function ParkingOrderSuccessPage() {
         const stored = sessionStorage.getItem(PARKING_ORDER_SUCCESS_STORAGE_KEY);
         if (stored) {
           const parsed = JSON.parse(stored) as SuccessData;
-          if (parsed.orderId && parsed.stickerDataUrl) setData(parsed);
+          if (parsed.orderId && (parsed.stickerDataUrl || parsed.deliveryType === "physical")) setData(parsed);
         }
       } catch {
         // Ignore invalid or unavailable session storage.
@@ -222,8 +221,7 @@ export function ParkingOrderSuccessPage() {
                 Thank you for your order! 🎉
               </h1>
               <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-[#6b7a99]">
-                Your Smart Parking Sticker payment was successful and your permanent QR sticker is ready.
-                Please save your order number below for future reference.
+                {data?.deliveryType === "physical" ? "Your ₹399 payment was successful. We’ll print your personalized Smart Parking Sticker and dispatch it to the address below. Please save your order number for reference." : "Your Smart Parking Sticker payment was successful and your permanent QR sticker is ready. Please save your order number below for future reference."}
               </p>
 
               {data ? (
@@ -250,13 +248,20 @@ export function ParkingOrderSuccessPage() {
                     </div>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={downloadSticker}
-                    className="mt-6 inline-flex items-center justify-center gap-2 rounded-2xl bg-[#071421] px-6 py-3.5 text-sm font-bold text-white transition hover:bg-[#102331]"
-                  >
-                    <Download size={17} /> Download your sticker
-                  </button>
+                  {data.deliveryType === "physical" ? (
+                    <div className="mx-auto mt-6 max-w-md rounded-2xl border border-emerald-100 bg-[#f5fffa] p-5 text-left">
+                      <div className="text-sm font-bold text-[#0f1523]">Shipping address</div>
+                      <p className="mt-2 text-sm leading-6 text-[#45516a]">{[data.addressLine, data.city, data.state, data.pincode, data.country || "India"].filter(Boolean).join(", ")}</p>
+                      <div className="mt-4 border-t border-emerald-100 pt-4">
+                        <div className="text-xs font-semibold uppercase tracking-wider text-[#8b95aa]">Delivery contact</div>
+                        {data.shippingEmail && <p className="mt-2 break-words text-sm text-[#45516a]">Email: {data.shippingEmail}</p>}
+                        {data.shippingPhone && <p className="mt-1 text-sm text-[#45516a]">Phone: {data.shippingPhone}</p>}
+                      </div>
+                      <p className="mt-3 text-xs leading-5 text-[#6b7a99]">Your order will be printed and shipped manually. Dispatch and tracking details will be shared using your delivery contact details when available.</p>
+                    </div>
+                  ) : (
+                    <button type="button" onClick={downloadSticker} className="mt-6 inline-flex items-center justify-center gap-2 rounded-2xl bg-[#071421] px-6 py-3.5 text-sm font-bold text-white transition hover:bg-[#102331]"><Download size={17} /> Download your sticker</button>
+                  )}
                 </>
               ) : (
                 <div className="mx-auto mt-8 max-w-md rounded-2xl bg-[#fff8ed] p-4 text-left text-sm leading-6 text-[#7a6651]">

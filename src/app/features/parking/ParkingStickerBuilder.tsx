@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { ArrowLeft, ArrowRight, Download, Mail, Palette, Phone, QrCode, ShoppingCart, Sparkles, CheckCircle2, Loader2, CreditCard, Globe2, X } from "lucide-react";
 import QRCode from "qrcode";
+import { getIndiaPincode } from "india-pincode/browser";
 import {
   encryptParkingPayload,
   svgToDataUrl,
@@ -93,6 +94,13 @@ type FormState = {
   vehicle: string;
   theme: ParkingTheme;
   delivery: ParkingDelivery;
+  addressLine: string;
+  shippingEmail: string;
+  shippingPhone: string;
+  city: string;
+  state: string;
+  pincode: string;
+  country: string;
 };
 
 const initialForm: FormState = {
@@ -103,6 +111,13 @@ const initialForm: FormState = {
   vehicle: "",
   theme: "dark",
   delivery: "digital",
+  addressLine: "",
+  shippingEmail: "",
+  shippingPhone: "",
+  city: "",
+  state: "",
+  pincode: "",
+  country: "India",
 };
 
 declare global {
@@ -137,13 +152,16 @@ const sendRazorpayPaymentNotification = async (result: Record<string, unknown>) 
     customerName: String(result.name || ""),
     customerEmail: String(result.email || ""),
     currency: "INR",
-    total: "₹199",
+    total: String(result.deliveryType || "digital") === "physical" ? "₹399" : "₹199",
     formName: String(result.name || ""),
     formPhone: String(result.phone || ""),
     formEmail: String(result.email || ""),
     vehicle: String(result.vehicle || "").toUpperCase(),
     stickerStyle,
-    deliveryType: "digital",
+    deliveryType: String(result.deliveryType || "digital"),
+    shippingAddress: String(result.deliveryType || "digital") === "physical" ? [result.addressLine, result.city, result.state, result.pincode, "India"].map((part) => String(part || "").trim()).filter(Boolean).join(", ") : "Digital download",
+    shippingEmail: String(result.shippingEmail || ""),
+    shippingPhone: String(result.shippingPhone || ""),
     submittedAt: new Date().toISOString(),
   };
 
@@ -216,18 +234,134 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
   const [deliveryEmail, setDeliveryEmail] = useState("");
   const [requestSubmitted, setRequestSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [pincodeLookupStatus, setPincodeLookupStatus] = useState<"idle" | "loading" | "found" | "not-found" | "error">("idle");
   const formRef = useRef(form);
 
   useEffect(() => {
     formRef.current = form;
   }, [form]);
 
+  useEffect(() => {
+    const pincode = form.pincode.trim();
+    if (form.delivery !== "physical" || !/^[1-9][0-9]{5}$/.test(pincode)) {
+      setPincodeLookupStatus("idle");
+      return;
+    }
+
+    const controller = new AbortController();
+    let timedOut = false;
+    let disposed = false;
+    setPincodeLookupStatus("loading");
+
+    const applyLocalLookup = async () => {
+      try {
+        // Browser-compatible dataset fallback. The library loads its data from a
+        // free CDN on first use, then caches it in memory for later lookups.
+        const pinLookup = await getIndiaPincode();
+        const lookupResult = pinLookup.getByPincode(pincode);
+        if (!lookupResult?.success) return false;
+
+        const resultData = lookupResult.data as unknown as {
+          data?: Array<Record<string, unknown>>;
+          district?: string;
+          state?: string;
+          city?: string;
+        } | Array<Record<string, unknown>>;
+        const records = Array.isArray(resultData)
+          ? resultData
+          : Array.isArray(resultData.data)
+            ? resultData.data
+            : [];
+        const record = records[0];
+        const district = String(
+          (!Array.isArray(resultData) && resultData.district) || record?.district || record?.District || ""
+        ).trim();
+        const state = String(
+          (!Array.isArray(resultData) && resultData.state) || record?.state || record?.State || ""
+        ).trim();
+        const city = String(
+          (!Array.isArray(resultData) && resultData.city) || record?.city || record?.area || record?.District || district
+        ).trim();
+
+        if (!district && !state && !city) return false;
+        setForm((current) => {
+          if (current.pincode !== pincode) return current;
+          return {
+            ...current,
+            city: district || city || current.city || "",
+            state: state || current.state || "",
+          };
+        });
+        setPincodeLookupStatus("found");
+        return true;
+      } catch {
+        // A fallback lookup failure must never block manual address entry.
+        return false;
+      }
+    };
+
+    const debounce = window.setTimeout(async () => {
+      const requestTimeout = window.setTimeout(() => {
+        timedOut = true;
+        controller.abort();
+      }, 5000);
+
+      try {
+        const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`, { signal: controller.signal });
+        if (!response.ok) throw new Error("PIN lookup unavailable");
+        const result = await response.json();
+        const postOffices = Array.isArray(result) && result[0]?.Status === "Success" && Array.isArray(result[0]?.PostOffice)
+          ? result[0].PostOffice
+          : [];
+
+        if (!postOffices.length) {
+          if (!(await applyLocalLookup()) && !disposed) setPincodeLookupStatus("not-found");
+          return;
+        }
+
+        const match = postOffices.find((office: { DeliveryStatus?: string }) => office.DeliveryStatus === "Delivery") ?? postOffices[0];
+        const apiCity = String(match.District || match.Block || "").trim();
+        const apiState = String(match.State || "").trim();
+        if (!apiCity || !apiState) {
+          if (!(await applyLocalLookup()) && !disposed) setPincodeLookupStatus("not-found");
+          return;
+        }
+        setForm((current) => {
+          if (current.pincode !== pincode) return current;
+          return {
+            ...current,
+            city: apiCity,
+            state: apiState,
+          };
+        });
+        setPincodeLookupStatus("found");
+      } catch {
+        // Try the browser-compatible PIN dataset on network errors, non-2xx responses,
+        // malformed responses, and timeouts. Ignore requests cancelled because
+        // the customer changed the PIN or switched away from physical delivery.
+        if (!disposed && (timedOut || !controller.signal.aborted)) {
+          if (!(await applyLocalLookup())) setPincodeLookupStatus("error");
+        }
+      } finally {
+        window.clearTimeout(requestTimeout);
+      }
+    }, 300);
+
+    return () => {
+      disposed = true;
+      window.clearTimeout(debounce);
+      controller.abort();
+    };
+  }, [form.pincode, form.delivery]);
+
+  const validPhysicalAddress = form.country === "India" && form.addressLine.trim().length >= 5 && isValidEmail(form.shippingEmail) && isValidPhone(form.shippingPhone) && form.city.trim().length >= 2 && form.state.trim().length >= 2 && /^[1-9][0-9]{5}$/.test(form.pincode.trim());
   const canPreview =
     form.name.trim().length >= 2 &&
     isValidPhone(form.phone) &&
     form.vehicle.trim().length >= 2 &&
     (!form.email.trim() || isValidEmail(form.email)) &&
     (!activationMode || (orderId.trim().length >= 2 && Boolean(deliveryEmail.trim()) && isValidEmail(deliveryEmail)));
+  const canBuy = Boolean(previewPayload) && (form.delivery !== "physical" || (validPhysicalAddress && pincodeLookupStatus !== "loading"));
 
   const canSubmitRequest = Boolean(previewPayload) && !submitting && Boolean(orderId.trim()) && Boolean(deliveryEmail.trim()) && isValidEmail(deliveryEmail);
 
@@ -235,8 +369,53 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
   const emailError = touched.stickerEmail && Boolean(form.email.trim()) && !isValidEmail(form.email) ? "Enter a valid email address." : "";
   const orderIdError = touched.orderId && activationMode && !orderId.trim() ? "Enter your Lemon Squeezy order number." : "";
 
+  const fullPhone = (countryCode: PhoneCountryCode, phone: string) =>
+    `${PHONE_COUNTRIES.find(([code]) => code === countryCode)?.[2] ?? "+91"}${phone.replace(/\D/g, "")}`;
+
   const update = (field: keyof FormState, value: string) => {
-    setForm((current) => ({ ...current, [field]: value }));
+    setForm((current) => {
+      if (field === "delivery" && value === "physical") {
+        return {
+          ...current,
+          delivery: "physical",
+          shippingEmail: current.shippingEmail || current.email,
+          shippingPhone: current.shippingPhone || fullPhone(current.phoneCountry, current.phone),
+        };
+      }
+
+      if (field === "email") {
+        return {
+          ...current,
+          email: value,
+          shippingEmail: !current.shippingEmail || current.shippingEmail === current.email ? value : current.shippingEmail,
+        };
+      }
+
+      if (field === "phone") {
+        const previousSourcePhone = fullPhone(current.phoneCountry, current.phone);
+        return {
+          ...current,
+          phone: value,
+          shippingPhone: !current.shippingPhone || current.shippingPhone === previousSourcePhone
+            ? fullPhone(current.phoneCountry, value)
+            : current.shippingPhone,
+        };
+      }
+
+      if (field === "phoneCountry") {
+        const previousSourcePhone = fullPhone(current.phoneCountry, current.phone);
+        const nextCountry = value as PhoneCountryCode;
+        return {
+          ...current,
+          phoneCountry: nextCountry,
+          shippingPhone: !current.shippingPhone || current.shippingPhone === previousSourcePhone
+            ? fullPhone(nextCountry, current.phone)
+            : current.shippingPhone,
+        };
+      }
+
+      return { ...current, [field]: value };
+    });
     setPaymentComplete(false);
     setFinalOrderId("");
     setRequestSubmitted(false);
@@ -476,10 +655,12 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
     }
   };
   const startCheckout = async (method: "razorpay" | "lemonsqueezy") => {
-    trackMetaEvent("InitiateCheckout", { value: 199, currency: "INR", content_name: "Smart Car Parking Sticker", content_type: "product" });
-    if (form.delivery === "physical" || !previewPayload) return;
-
+    const physicalOrder = form.delivery === "physical";
+    const price = physicalOrder ? 399 : 199;
+    trackMetaEvent("InitiateCheckout", { value: price, currency: "INR", content_name: "Smart Car Parking Sticker", content_type: "product" });
+    if (!previewPayload) return;
     if (method === "lemonsqueezy") {
+      if (physicalOrder) { setError("Physical sticker delivery is available only through Razorpay."); return; }
       if (!checkoutUrl) {
         setError("Lemon Squeezy checkout is not configured yet. Add the Lemon Squeezy parking checkout URL to the site environment.");
         return;
@@ -513,6 +694,14 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
           email: form.email.trim(),
           vehicle: form.vehicle.trim().toUpperCase(),
           theme: form.theme,
+          deliveryType: form.delivery,
+          addressLine: form.delivery === "physical" ? form.addressLine.trim() : "",
+          shippingEmail: form.delivery === "physical" ? form.shippingEmail.trim() : "",
+          shippingPhone: form.delivery === "physical" ? form.shippingPhone.trim() : "",
+          city: form.delivery === "physical" ? form.city.trim() : "",
+          state: form.delivery === "physical" ? form.state.trim() : "",
+          pincode: form.delivery === "physical" ? form.pincode.trim() : "",
+          country: form.delivery === "physical" ? form.country : "",
         }),
       });
 
@@ -532,7 +721,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
         amount: result.amount,
         currency: result.currency,
         name: "TheRichLifePlan",
-        description: "Smart Car Parking Sticker",
+        description: physicalOrder ? "Smart Car Parking Sticker — physical delivery" : "Smart Car Parking Sticker",
         order_id: result.orderId,
         prefill: {
           name: form.name.trim(),
@@ -541,6 +730,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
         },
         notes: {
           product: "smart-parking-sticker",
+          deliveryType: form.delivery,
           vehicle: form.vehicle.trim().toUpperCase(),
         },
         theme: {
@@ -548,7 +738,17 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
         },
         handler: async (paymentResponse: any) => {
           setRazorpayProcessing(true);
+          const paymentProof = {
+            razorpay_order_id: String(paymentResponse?.razorpay_order_id || result.orderId),
+            razorpay_payment_id: String(paymentResponse?.razorpay_payment_id || ""),
+            razorpay_signature: String(paymentResponse?.razorpay_signature || ""),
+          };
+
           try {
+            if (paymentProof.razorpay_order_id && paymentProof.razorpay_payment_id && paymentProof.razorpay_signature) {
+              sessionStorage.setItem("richlifetools_parking_razorpay_verification", JSON.stringify(paymentProof));
+            }
+
             const verifyResponse = await fetch("/api/razorpay/verify-payment", {
               method: "POST",
               headers: { "Content-Type": "application/json", Accept: "application/json" },
@@ -572,13 +772,23 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
               { replace: true }
             );
           } catch (verificationError) {
+            // Keep Razorpay's proof and retry confirmation through the dedicated
+            // server-side order verifier. Never reopen checkout after a payment
+            // response, as that could invite a duplicate payment.
+            if (paymentProof.razorpay_order_id && paymentProof.razorpay_payment_id && paymentProof.razorpay_signature) {
+              routerNavigate(
+                `${PARKING_ORDER_SUCCESS_ROUTE}?razorpay_order_id=${encodeURIComponent(paymentProof.razorpay_order_id)}`,
+                { replace: true }
+              );
+              return;
+            }
+
             setRazorpayProcessing(false);
             setError(
               verificationError instanceof Error
                 ? verificationError.message
-                : "Payment completed, but verification failed. Please contact support."
+                : "We couldn't verify the payment response. Please contact support before trying to pay again."
             );
-            setPaymentMethodOpen(true);
           }
         },
       });
@@ -773,6 +983,24 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                 />
               </label>
 
+              {form.delivery === "physical" && !activationMode && (
+                <div className="space-y-4 rounded-2xl border border-emerald-100 bg-[#f5fffa] p-4">
+                  <div><div className="text-sm font-bold text-[#0f1523]">Delivery address</div><p className="mt-1 text-xs leading-5 text-[#6b7a99]">India only · ₹399 total, including standard delivery.</p></div>
+                  <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">Country *</span><select value={form.country} onChange={(event) => update("country", event.target.value)} autoComplete="country-name" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50"><option value="India">India</option></select><span className="mt-1 block text-xs text-[#8b95aa]">More countries can be enabled here later.</span></label>
+                  <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">Flat / building / locality / street *</span><input value={form.addressLine} onChange={(event) => update("addressLine", event.target.value)} autoComplete="street-address" placeholder="Flat number, building, street, locality" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50" /></label>
+
+                  <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">PIN code *</span><input value={form.pincode} onChange={(event) => update("pincode", event.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" autoComplete="postal-code" placeholder="6-digit PIN code" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50" />{form.pincode && !/^[1-9][0-9]{5}$/.test(form.pincode) && <p className="mt-2 text-xs text-red-600">Enter a valid 6-digit Indian PIN code.</p>}{pincodeLookupStatus === "loading" && <p className="mt-2 text-xs text-[#6b7a99]">Looking up city and state…</p>}{pincodeLookupStatus === "found" && <p className="mt-2 text-xs text-emerald-700">City/district and state filled from PIN-code records. Please confirm the details.</p>}{pincodeLookupStatus === "not-found" && <p className="mt-2 text-xs text-amber-700">We couldn’t find this PIN in either lookup source. It may still be valid. Enter the correct city/district and state manually; checkout remains available once all address fields are complete.</p>}{pincodeLookupStatus === "error" && <p className="mt-2 text-xs text-[#8b95aa]">The backup PIN dataset could not find this PIN or failed to load. You can enter city and state manually.</p>}</label>
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">City / district *</span><input value={form.city} onChange={(event) => update("city", event.target.value)} autoComplete="address-level2" placeholder="Filled from PIN code; editable" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50" /></label>
+                    <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">State *</span><input value={form.state} onChange={(event) => update("state", event.target.value)} autoComplete="address-level1" placeholder="Filled from PIN code; editable" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50" /></label>
+                  </div>
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">Shipping email *</span><input value={form.shippingEmail} onChange={(event) => update("shippingEmail", event.target.value)} type="email" autoComplete="email" placeholder="Email for delivery updates" className={`w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none focus:ring-4 ${form.shippingEmail && !isValidEmail(form.shippingEmail) ? "border-red-300 focus:border-red-500 focus:ring-red-50" : "border-[#dbe2ec] focus:border-[#00b968] focus:ring-emerald-50"}`} />{form.shippingEmail && !isValidEmail(form.shippingEmail) && <p className="mt-1 text-xs text-red-600">Enter a valid shipping email.</p>}</label>
+                    <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">Delivery contact number *</span><input value={form.shippingPhone} onChange={(event) => update("shippingPhone", event.target.value)} type="tel" inputMode="tel" autoComplete="tel" placeholder="+91 98765 43210" className={`w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none focus:ring-4 ${form.shippingPhone && !isValidPhone(form.shippingPhone) ? "border-red-300 focus:border-red-500 focus:ring-red-50" : "border-[#dbe2ec] focus:border-[#00b968] focus:ring-emerald-50"}`} />{form.shippingPhone && !isValidPhone(form.shippingPhone) && <p className="mt-1 text-xs text-red-600">Enter a valid delivery contact number.</p>}</label>
+                  </div>
+                </div>
+              )}
+
               <div>
                 <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#33405a]"><Palette size={15} /> Sticker style</div>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -824,7 +1052,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                       className={"rounded-2xl border p-4 text-left transition " + (form.delivery === delivery ? "border-[#00b968] bg-[#eefaf3] ring-4 ring-emerald-50" : "border-[#dbe2ec] bg-white")}
                     >
                       <div className="text-sm font-bold text-[#0f1523]">{delivery === "digital" ? "Downloadable" : "Physical sticker"}</div>
-                      <div className="mt-1 text-xs text-[#6b7a99]">{delivery === "digital" ? "₹199 · SVG download" : "Coming soon"}</div>
+                      <div className="mt-1 text-xs text-[#6b7a99]">{delivery === "digital" ? "₹199 · SVG download" : "₹399 · Printed and delivered in India"}</div>
                     </button>
                   ))}
                 </div>
@@ -906,12 +1134,8 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                     </p>
                   </div>
                   {form.delivery === "physical" ? (
-                    <button
-                      type="button"
-                      disabled
-                      className="inline-flex shrink-0 cursor-not-allowed items-center justify-center gap-2 rounded-2xl bg-[#d9dfea] px-5 py-3 text-sm font-bold text-[#7a8498]"
-                    >
-                      Coming soon
+                    <button type="button" disabled={!canBuy} onClick={() => { if (!canBuy) { setError("Complete your Indian delivery address before checkout."); return; } setError(""); setPaymentMethodOpen(true); }} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#00b968] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-100 disabled:cursor-not-allowed disabled:opacity-50">
+                      <ShoppingCart size={16} /> Order for ₹399
                     </button>
                   ) : (
                     <button
@@ -938,7 +1162,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                       <div className="flex items-start justify-between gap-4">
                         <div>
                           <div className="text-lg font-bold text-[#0f1523]">Choose your payment method</div>
-                          <p className="mt-1 text-xs leading-5 text-[#6b7a99]">Pay securely for your Smart Car Parking Sticker.</p>
+                          <p className="mt-1 text-xs leading-5 text-[#6b7a99]">{form.delivery === "physical" ? "Pay ₹399 for a printed sticker delivered to your Indian address." : "Pay securely for your digital Smart Car Parking Sticker for ₹199."}</p>
                         </div>
                         <button
                           type="button"
@@ -972,7 +1196,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
 
                         <button
                           type="button"
-                          disabled={!checkoutUrl}
+                          disabled={!checkoutUrl || form.delivery === "physical"}
                           onClick={() => startCheckout("lemonsqueezy")}
                           className="group flex w-full items-center gap-4 rounded-2xl border border-[#dfe7e3] bg-white p-4 text-left transition hover:border-[#4f46e5] hover:bg-[#f8f7ff] disabled:cursor-not-allowed disabled:opacity-50"
                         >
@@ -991,7 +1215,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                       </div>
 
                       <p className="mt-4 text-center text-[11px] leading-5 text-[#8b95aa]">
-                        Both options use the same ₹199 sticker and existing personalization flow.
+                        {form.delivery === "physical" ? "Physical orders are available in India only. Printing and courier dispatch are handled manually." : "Digital sticker orders remain ₹199 and can be paid using either available checkout."}
                       </p>
                     </div>
                   </div>
