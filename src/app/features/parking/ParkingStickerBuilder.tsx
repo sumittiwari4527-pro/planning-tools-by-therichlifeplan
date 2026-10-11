@@ -249,8 +249,8 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
 
     const applyLocalLookup = async () => {
       try {
-        // Browser-compatible dataset fallback. The library loads its dataset
-        // from its free CDN on first use and caches it for subsequent lookups.
+        // Browser-compatible dataset fallback. The library loads its data from a
+        // free CDN on first use, then caches it in memory for later lookups.
         const pinLookup = await getIndiaPincode();
         const lookupResult = pinLookup.getByPincode(pincode);
         if (!lookupResult?.success) return false;
@@ -330,7 +330,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
         });
         setPincodeLookupStatus("found");
       } catch {
-        // Try the bundled offline dataset on network errors, non-2xx responses,
+        // Try the browser-compatible PIN dataset on network errors, non-2xx responses,
         // malformed responses, and timeouts. Ignore requests cancelled because
         // the customer changed the PIN or switched away from physical delivery.
         if (!disposed && (timedOut || !controller.signal.aborted)) {
