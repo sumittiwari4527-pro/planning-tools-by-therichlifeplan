@@ -291,12 +291,18 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
         }
 
         const match = postOffices.find((office: { DeliveryStatus?: string }) => office.DeliveryStatus === "Delivery") ?? postOffices[0];
+        const apiCity = String(match.District || match.Block || "").trim();
+        const apiState = String(match.State || "").trim();
+        if (!apiCity || !apiState) {
+          if (!applyLocalLookup() && !disposed) setPincodeLookupStatus("not-found");
+          return;
+        }
         setForm((current) => {
           if (current.pincode !== pincode) return current;
           return {
             ...current,
-            city: String(match.District || match.Block || current.city || ""),
-            state: String(match.State || current.state || ""),
+            city: apiCity,
+            state: apiState,
           };
         });
         setPincodeLookupStatus("found");
