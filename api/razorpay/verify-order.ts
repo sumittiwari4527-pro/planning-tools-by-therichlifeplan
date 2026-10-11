@@ -51,7 +51,7 @@ export default async function handler(req: any, res: any) {
     const physicalOrder = notes.deliveryType === "physical";
     const expectedAmount = physicalOrder ? 39900 : 19900;
     const capturedPayment = Array.isArray(payments?.items) ? payments.items.find((payment: any) => payment.order_id === orderId && payment.amount === expectedAmount && payment.currency === "INR" && payment.status === "captured") : null;
-    if (order.id !== orderId || order.amount !== expectedAmount || order.currency !== "INR" || notes.product !== "smart-parking-sticker" || (physicalOrder && (String(notes.addressLine || "").length < 5 || !/^[1-9][0-9]{5}$/.test(String(notes.pincode || "")))) || !capturedPayment) {
+    if (order.id !== orderId || order.amount !== expectedAmount || order.currency !== "INR" || notes.product !== "smart-parking-sticker" || (physicalOrder && (notes.country !== "India" || String(notes.addressLine || "").length < 5 || !/^[1-9][0-9]{5}$/.test(String(notes.pincode || "")))) || !capturedPayment) {
       return json(res, 402, { error: "Razorpay payment has not been captured for this order." });
     }
 
