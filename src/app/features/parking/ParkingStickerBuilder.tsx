@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { ArrowLeft, ArrowRight, Download, Mail, Palette, Phone, QrCode, ShoppingCart, Sparkles, CheckCircle2, Loader2, CreditCard, Globe2, X } from "lucide-react";
 import QRCode from "qrcode";
-import { lookup as lookupPincode } from "indiapins";
+import { getIndiaPincode } from "india-pincode/browser";
 import {
   encryptParkingPayload,
   svgToDataUrl,
@@ -247,26 +247,49 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
     let disposed = false;
     setPincodeLookupStatus("loading");
 
-    const applyLocalLookup = () => {
+    const applyLocalLookup = async () => {
       try {
-        const records = lookupPincode(pincode);
-        if (!Array.isArray(records) || records.length === 0) return false;
+        // Browser-compatible dataset fallback. The library loads its dataset
+        // from its free CDN on first use and caches it for subsequent lookups.
+        const pinLookup = await getIndiaPincode();
+        const lookupResult = pinLookup.getByPincode(pincode);
+        if (!lookupResult?.success) return false;
 
-        // A PIN may map to multiple post offices. Prefer a delivery office,
-        // but retain the complete address fields as customer-editable values.
-        const record = records.find((item) => item.delivery) ?? records[0];
+        const resultData = lookupResult.data as unknown as {
+          data?: Array<Record<string, unknown>>;
+          district?: string;
+          state?: string;
+          city?: string;
+        } | Array<Record<string, unknown>>;
+        const records = Array.isArray(resultData)
+          ? resultData
+          : Array.isArray(resultData.data)
+            ? resultData.data
+            : [];
+        const record = records[0];
+        const district = String(
+          (!Array.isArray(resultData) && resultData.district) || record?.district || record?.District || ""
+        ).trim();
+        const state = String(
+          (!Array.isArray(resultData) && resultData.state) || record?.state || record?.State || ""
+        ).trim();
+        const city = String(
+          (!Array.isArray(resultData) && resultData.city) || record?.city || record?.area || record?.District || district
+        ).trim();
+
+        if (!district && !state && !city) return false;
         setForm((current) => {
           if (current.pincode !== pincode) return current;
           return {
             ...current,
-            city: String(record.district || current.city || ""),
-            state: String(record.state || current.state || ""),
+            city: district || city || current.city || "",
+            state: state || current.state || "",
           };
         });
         setPincodeLookupStatus("found");
         return true;
       } catch {
-        // A local dataset failure must never block manual address entry.
+        // A fallback lookup failure must never block manual address entry.
         return false;
       }
     };
@@ -286,7 +309,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
           : [];
 
         if (!postOffices.length) {
-          if (!applyLocalLookup() && !disposed) setPincodeLookupStatus("not-found");
+          if (!(await applyLocalLookup()) && !disposed) setPincodeLookupStatus("not-found");
           return;
         }
 
@@ -294,7 +317,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
         const apiCity = String(match.District || match.Block || "").trim();
         const apiState = String(match.State || "").trim();
         if (!apiCity || !apiState) {
-          if (!applyLocalLookup() && !disposed) setPincodeLookupStatus("not-found");
+          if (!(await applyLocalLookup()) && !disposed) setPincodeLookupStatus("not-found");
           return;
         }
         setForm((current) => {
@@ -311,7 +334,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
         // malformed responses, and timeouts. Ignore requests cancelled because
         // the customer changed the PIN or switched away from physical delivery.
         if (!disposed && (timedOut || !controller.signal.aborted)) {
-          if (!applyLocalLookup()) setPincodeLookupStatus("error");
+          if (!(await applyLocalLookup())) setPincodeLookupStatus("error");
         }
       } finally {
         window.clearTimeout(requestTimeout);
