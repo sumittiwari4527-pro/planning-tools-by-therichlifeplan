@@ -7,7 +7,7 @@ import { buildParkingTemplateSvg } from "./parkingTemplates";
 
 export const PARKING_ORDER_SUCCESS_STORAGE_KEY = "richlifetools_parking_order_success";
 
-type SuccessData = { orderId: string; stickerDataUrl?: string; vehicle?: string; deliveryType?: "digital" | "physical"; addressLine?: string; city?: string; state?: string; pincode?: string; country?: string; };
+type SuccessData = { orderId: string; stickerDataUrl?: string; vehicle?: string; deliveryType?: "digital" | "physical"; addressLine?: string; shippingEmail?: string; shippingPhone?: string; city?: string; state?: string; pincode?: string; country?: string; };
 
 const buildFinalSticker = async ({
   name,
@@ -89,7 +89,7 @@ export function ParkingOrderSuccessPage() {
           });
           const successData: SuccessData = {
             orderId: String(result.orderId), ...(stickerDataUrl ? { stickerDataUrl } : {}), vehicle: String(result.vehicle || ""), deliveryType,
-            addressLine: String(result.addressLine || ""), city: String(result.city || ""), state: String(result.state || ""), pincode: String(result.pincode || ""), country: String(result.country || ""),
+            addressLine: String(result.addressLine || ""), shippingEmail: String(result.shippingEmail || ""), shippingPhone: String(result.shippingPhone || ""), city: String(result.city || ""), state: String(result.state || ""), pincode: String(result.pincode || ""), country: String(result.country || ""),
           };
 
           sessionStorage.setItem(PARKING_ORDER_SUCCESS_STORAGE_KEY, JSON.stringify(successData));
@@ -244,7 +244,12 @@ export function ParkingOrderSuccessPage() {
                     <div className="mx-auto mt-6 max-w-md rounded-2xl border border-emerald-100 bg-[#f5fffa] p-5 text-left">
                       <div className="text-sm font-bold text-[#0f1523]">Shipping address</div>
                       <p className="mt-2 text-sm leading-6 text-[#45516a]">{[data.addressLine, data.city, data.state, data.pincode, data.country || "India"].filter(Boolean).join(", ")}</p>
-                      <p className="mt-3 text-xs leading-5 text-[#6b7a99]">Your order will be printed and shipped manually. Dispatch and tracking details will be shared by email when available.</p>
+                      <div className="mt-4 border-t border-emerald-100 pt-4">
+                        <div className="text-xs font-semibold uppercase tracking-wider text-[#8b95aa]">Delivery contact</div>
+                        {data.shippingEmail && <p className="mt-2 break-words text-sm text-[#45516a]">Email: {data.shippingEmail}</p>}
+                        {data.shippingPhone && <p className="mt-1 text-sm text-[#45516a]">Phone: {data.shippingPhone}</p>}
+                      </div>
+                      <p className="mt-3 text-xs leading-5 text-[#6b7a99]">Your order will be printed and shipped manually. Dispatch and tracking details will be shared using your delivery contact details when available.</p>
                     </div>
                   ) : (
                     <button type="button" onClick={downloadSticker} className="mt-6 inline-flex items-center justify-center gap-2 rounded-2xl bg-[#071421] px-6 py-3.5 text-sm font-bold text-white transition hover:bg-[#102331]"><Download size={17} /> Download your sticker</button>
