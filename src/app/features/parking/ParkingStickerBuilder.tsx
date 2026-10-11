@@ -758,7 +758,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
             await sendRazorpayPaymentNotification(verifyResult);
 
             routerNavigate(
-              `${PARKING_ORDER_SUCCESS_ROUTE}?razorpay_order_id=${encodeURIComponent(result.orderId)}`,
+              `${PARKING_ORDER_SUCCESS_ROUTE}?razorpay_order_id=${encodeURIComponent(result.orderId)}&razorpay_payment_id=${encodeURIComponent(String(paymentResponse?.razorpay_payment_id || ""))}&razorpay_signature=${encodeURIComponent(String(paymentResponse?.razorpay_signature || ""))}`,
               { replace: true }
             );
           } catch (verificationError) {
