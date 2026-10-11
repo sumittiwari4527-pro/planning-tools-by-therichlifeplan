@@ -95,6 +95,8 @@ type FormState = {
   theme: ParkingTheme;
   delivery: ParkingDelivery;
   addressLine: string;
+  shippingEmail: string;
+  shippingPhone: string;
   city: string;
   state: string;
   pincode: string;
@@ -110,6 +112,8 @@ const initialForm: FormState = {
   theme: "dark",
   delivery: "digital",
   addressLine: "",
+  shippingEmail: "",
+  shippingPhone: "",
   city: "",
   state: "",
   pincode: "",
@@ -156,6 +160,8 @@ const sendRazorpayPaymentNotification = async (result: Record<string, unknown>) 
     stickerStyle,
     deliveryType: String(result.deliveryType || "digital"),
     shippingAddress: String(result.deliveryType || "digital") === "physical" ? [result.addressLine, result.city, result.state, result.pincode, "India"].map((part) => String(part || "").trim()).filter(Boolean).join(", ") : "Digital download",
+    shippingEmail: String(result.shippingEmail || ""),
+    shippingPhone: String(result.shippingPhone || ""),
     submittedAt: new Date().toISOString(),
   };
 
@@ -348,7 +354,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
     };
   }, [form.pincode, form.delivery]);
 
-  const validPhysicalAddress = form.country === "India" && form.addressLine.trim().length >= 5 && form.city.trim().length >= 2 && form.state.trim().length >= 2 && /^[1-9][0-9]{5}$/.test(form.pincode.trim());
+  const validPhysicalAddress = form.country === "India" && form.addressLine.trim().length >= 5 && isValidEmail(form.shippingEmail) && isValidPhone(form.shippingPhone) && form.city.trim().length >= 2 && form.state.trim().length >= 2 && /^[1-9][0-9]{5}$/.test(form.pincode.trim());
   const canPreview =
     form.name.trim().length >= 2 &&
     isValidPhone(form.phone) &&
@@ -363,8 +369,53 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
   const emailError = touched.stickerEmail && Boolean(form.email.trim()) && !isValidEmail(form.email) ? "Enter a valid email address." : "";
   const orderIdError = touched.orderId && activationMode && !orderId.trim() ? "Enter your Lemon Squeezy order number." : "";
 
+  const fullPhone = (countryCode: PhoneCountryCode, phone: string) =>
+    `${PHONE_COUNTRIES.find(([code]) => code === countryCode)?.[2] ?? "+91"}${phone.replace(/\\D/g, "")}`;
+
   const update = (field: keyof FormState, value: string) => {
-    setForm((current) => ({ ...current, [field]: value }));
+    setForm((current) => {
+      if (field === "delivery" && value === "physical") {
+        return {
+          ...current,
+          delivery: "physical",
+          shippingEmail: current.shippingEmail || current.email,
+          shippingPhone: current.shippingPhone || fullPhone(current.phoneCountry, current.phone),
+        };
+      }
+
+      if (field === "email") {
+        return {
+          ...current,
+          email: value,
+          shippingEmail: !current.shippingEmail || current.shippingEmail === current.email ? value : current.shippingEmail,
+        };
+      }
+
+      if (field === "phone") {
+        const previousSourcePhone = fullPhone(current.phoneCountry, current.phone);
+        return {
+          ...current,
+          phone: value,
+          shippingPhone: !current.shippingPhone || current.shippingPhone === previousSourcePhone
+            ? fullPhone(current.phoneCountry, value)
+            : current.shippingPhone,
+        };
+      }
+
+      if (field === "phoneCountry") {
+        const previousSourcePhone = fullPhone(current.phoneCountry, current.phone);
+        const nextCountry = value as PhoneCountryCode;
+        return {
+          ...current,
+          phoneCountry: nextCountry,
+          shippingPhone: !current.shippingPhone || current.shippingPhone === previousSourcePhone
+            ? fullPhone(nextCountry, current.phone)
+            : current.shippingPhone,
+        };
+      }
+
+      return { ...current, [field]: value };
+    });
     setPaymentComplete(false);
     setFinalOrderId("");
     setRequestSubmitted(false);
@@ -645,6 +696,8 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
           theme: form.theme,
           deliveryType: form.delivery,
           addressLine: form.delivery === "physical" ? form.addressLine.trim() : "",
+          shippingEmail: form.delivery === "physical" ? form.shippingEmail.trim() : "",
+          shippingPhone: form.delivery === "physical" ? form.shippingPhone.trim() : "",
           city: form.delivery === "physical" ? form.city.trim() : "",
           state: form.delivery === "physical" ? form.state.trim() : "",
           pincode: form.delivery === "physical" ? form.pincode.trim() : "",
@@ -915,6 +968,11 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                   <div><div className="text-sm font-bold text-[#0f1523]">Delivery address</div><p className="mt-1 text-xs leading-5 text-[#6b7a99]">India only · ₹399 total, including standard delivery.</p></div>
                   <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">Country *</span><select value={form.country} onChange={(event) => update("country", event.target.value)} autoComplete="country-name" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50"><option value="India">India</option></select><span className="mt-1 block text-xs text-[#8b95aa]">More countries can be enabled here later.</span></label>
                   <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">Flat / building / locality / street *</span><input value={form.addressLine} onChange={(event) => update("addressLine", event.target.value)} autoComplete="street-address" placeholder="Flat number, building, street, locality" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50" /></label>
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">Shipping email *</span><input value={form.shippingEmail} onChange={(event) => update("shippingEmail", event.target.value)} type="email" autoComplete="email" placeholder="Email for delivery updates" className={`w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none focus:ring-4 ${form.shippingEmail && !isValidEmail(form.shippingEmail) ? "border-red-300 focus:border-red-500 focus:ring-red-50" : "border-[#dbe2ec] focus:border-[#00b968] focus:ring-emerald-50"}`} />{form.shippingEmail && !isValidEmail(form.shippingEmail) && <p className="mt-1 text-xs text-red-600">Enter a valid shipping email.</p>}</label>
+                    <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">Delivery contact number *</span><input value={form.shippingPhone} onChange={(event) => update("shippingPhone", event.target.value)} type="tel" inputMode="tel" autoComplete="tel" placeholder="+91 98765 43210" className={`w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none focus:ring-4 ${form.shippingPhone && !isValidPhone(form.shippingPhone) ? "border-red-300 focus:border-red-500 focus:ring-red-50" : "border-[#dbe2ec] focus:border-[#00b968] focus:ring-emerald-50"}`} />{form.shippingPhone && !isValidPhone(form.shippingPhone) && <p className="mt-1 text-xs text-red-600">Enter a valid delivery contact number.</p>}</label>
+                  </div>
+                  <p className="text-xs leading-5 text-[#6b7a99]">Pre-filled from your sticker contact details. Change either field if delivery should use different contact information.</p>
                   <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">PIN code *</span><input value={form.pincode} onChange={(event) => update("pincode", event.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" autoComplete="postal-code" placeholder="6-digit PIN code" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50" />{form.pincode && !/^[1-9][0-9]{5}$/.test(form.pincode) && <p className="mt-2 text-xs text-red-600">Enter a valid 6-digit Indian PIN code.</p>}{pincodeLookupStatus === "loading" && <p className="mt-2 text-xs text-[#6b7a99]">Looking up city and state…</p>}{pincodeLookupStatus === "found" && <p className="mt-2 text-xs text-emerald-700">City/district and state filled from PIN-code records. Please confirm the details.</p>}{pincodeLookupStatus === "not-found" && <p className="mt-2 text-xs text-amber-700">We couldn’t find this PIN in either lookup source. It may still be valid. Enter the correct city/district and state manually; checkout remains available once all address fields are complete.</p>}{pincodeLookupStatus === "error" && <p className="mt-2 text-xs text-[#8b95aa]">The backup PIN dataset could not find this PIN or failed to load. You can enter city and state manually.</p>}</label>
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">City / district *</span><input value={form.city} onChange={(event) => update("city", event.target.value)} autoComplete="address-level2" placeholder="Filled from PIN code; editable" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50" /></label>
