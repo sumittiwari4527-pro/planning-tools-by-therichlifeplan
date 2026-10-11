@@ -27,14 +27,15 @@ const fetchRazorpay = async (url: string, keyId: string, keySecret: string) => {
 };
 
 export default async function handler(req: any, res: any) {
-  if (req.method !== "GET") {
-    res.setHeader("Allow", "GET");
+  if (req.method !== "POST") {
+    res.setHeader("Allow", "POST");
     return json(res, 405, { error: "Method not allowed." });
   }
 
-  const orderId = String(req.query?.razorpay_order_id || "");
-  const paymentId = String(req.query?.razorpay_payment_id || "");
-  const signature = String(req.query?.razorpay_signature || "");
+  const body = req.body || {};
+  const orderId = String(body.razorpay_order_id || "");
+  const paymentId = String(body.razorpay_payment_id || "");
+  const signature = String(body.razorpay_signature || "");
   if (!orderId || !paymentId || !signature) {
     return json(res, 400, { error: "Missing Razorpay payment verification parameters." });
   }
