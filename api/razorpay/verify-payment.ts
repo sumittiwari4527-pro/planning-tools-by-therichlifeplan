@@ -50,7 +50,7 @@ const getVerifiedOrder = async (orderId: string, paymentId: string, keyId: strin
     order.id === orderId && order.amount === expectedAmount && order.currency === "INR" &&
     payment.order_id === orderId && payment.id === paymentId && payment.amount === expectedAmount &&
     payment.currency === "INR" && payment.status === "captured" && notes.product === "smart-parking-sticker" &&
-    (!physicalOrder || (notes.country === "India" && String(notes.addressLine || "").length >= 5 && /^[1-9][0-9]{5}$/.test(String(notes.pincode || "")) && /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(String(notes.shippingEmail || "")) && /^\\+?[0-9]{7,15}$/.test(String(notes.shippingPhone || ""))));
+    (!physicalOrder || (notes.country === "India" && String(notes.addressLine || "").length >= 5 && /^[1-9][0-9]{5}$/.test(String(notes.pincode || "")) && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(notes.shippingEmail || "")) && /^\+?[0-9]{7,15}$/.test(String(notes.shippingPhone || ""))));
 
   if (!valid) throw new Error("Razorpay payment has not been captured for this Smart Parking Sticker order.");
 
