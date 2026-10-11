@@ -231,14 +231,14 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
     formRef.current = form;
   }, [form]);
 
-  const validPhysicalAddress = form.delivery !== "physical" || (form.addressLine.trim().length >= 5 && form.city.trim().length >= 2 && form.state.trim().length >= 2 && /^[1-9][0-9]{5}$/.test(form.pincode.trim()));
+  const validPhysicalAddress = form.addressLine.trim().length >= 5 && form.city.trim().length >= 2 && form.state.trim().length >= 2 && /^[1-9][0-9]{5}$/.test(form.pincode.trim());
   const canPreview =
     form.name.trim().length >= 2 &&
     isValidPhone(form.phone) &&
     form.vehicle.trim().length >= 2 &&
     (!form.email.trim() || isValidEmail(form.email)) &&
-    validPhysicalAddress &&
     (!activationMode || (orderId.trim().length >= 2 && Boolean(deliveryEmail.trim()) && isValidEmail(deliveryEmail)));
+  const canBuy = Boolean(previewPayload) && (form.delivery !== "physical" || validPhysicalAddress);
 
   const canSubmitRequest = Boolean(previewPayload) && !submitting && Boolean(orderId.trim()) && Boolean(deliveryEmail.trim()) && isValidEmail(deliveryEmail);
 
@@ -937,7 +937,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                     </p>
                   </div>
                   {form.delivery === "physical" ? (
-                    <button type="button" onClick={() => { setError(""); setPaymentMethodOpen(true); }} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#00b968] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-100">
+                    <button type="button" disabled={!canBuy} onClick={() => { if (!canBuy) { setError("Complete your Indian delivery address before checkout."); return; } setError(""); setPaymentMethodOpen(true); }} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#00b968] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-100 disabled:cursor-not-allowed disabled:opacity-50">
                       <ShoppingCart size={16} /> Order for ₹399
                     </button>
                   ) : (
