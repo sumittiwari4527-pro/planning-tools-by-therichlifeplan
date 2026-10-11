@@ -17,12 +17,13 @@ export default async function handler(req: any, res: any) {
 
   try {
     const { keyId, keySecret } = getCredentials();
-    const { name, phone, email, vehicle, theme, deliveryType, addressLine, city, state, pincode } = req.body || {};
+    const { name, phone, email, vehicle, theme, deliveryType, addressLine, city, state, pincode, country } = req.body || {};
     const cleanDeliveryType = deliveryType === "physical" ? "physical" : "digital";
     const cleanAddressLine = String(addressLine || "").trim();
     const cleanCity = String(city || "").trim();
     const cleanState = String(state || "").trim();
     const cleanPincode = String(pincode || "").trim();
+    const cleanCountry = String(country || "").trim();
     const cleanName = String(name || "").trim();
     const cleanPhone = String(phone || "").trim();
     const cleanEmail = String(email || "").trim();
@@ -34,6 +35,7 @@ export default async function handler(req: any, res: any) {
     if (cleanEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) return json(res, 400, { error: "Invalid email address." });
     if (cleanVehicle.length < 2 || cleanVehicle.length > 40) return json(res, 400, { error: "Invalid vehicle number." });
     if (cleanDeliveryType === "physical") {
+      if (cleanCountry !== "India") return json(res, 400, { error: "Physical delivery is currently available in India only." });
       if (cleanAddressLine.length < 5 || cleanAddressLine.length > 200) return json(res, 400, { error: "Enter a valid delivery address." });
       if (cleanCity.length < 2 || cleanCity.length > 80) return json(res, 400, { error: "Enter a valid delivery city." });
       if (cleanState.length < 2 || cleanState.length > 80) return json(res, 400, { error: "Enter a valid delivery state." });
@@ -61,7 +63,7 @@ export default async function handler(req: any, res: any) {
           city: cleanDeliveryType === "physical" ? cleanCity : "",
           state: cleanDeliveryType === "physical" ? cleanState : "",
           pincode: cleanDeliveryType === "physical" ? cleanPincode : "",
-          country: cleanDeliveryType === "physical" ? "India" : "",
+          country: cleanDeliveryType === "physical" ? cleanCountry : "",
           name: cleanName,
           phone: cleanPhone,
           email: cleanEmail,
