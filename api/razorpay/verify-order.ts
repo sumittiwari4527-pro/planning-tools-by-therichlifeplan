@@ -51,7 +51,7 @@ export default async function handler(req: any, res: any) {
     const physicalOrder = notes.deliveryType === "physical";
     const expectedAmount = physicalOrder ? 39900 : 19900;
     const capturedPayment = Array.isArray(payments?.items) ? payments.items.find((payment: any) => payment.order_id === orderId && payment.amount === expectedAmount && payment.currency === "INR" && payment.status === "captured") : null;
-    if (order.id !== orderId || order.amount !== expectedAmount || order.currency !== "INR" || notes.product !== "smart-parking-sticker" || (physicalOrder && (notes.country !== "India" || String(notes.addressLine || "").length < 5 || !/^[1-9][0-9]{5}$/.test(String(notes.pincode || "")))) || !capturedPayment) {
+    if (order.id !== orderId || order.amount !== expectedAmount || order.currency !== "INR" || notes.product !== "smart-parking-sticker" || (physicalOrder && (notes.country !== "India" || String(notes.addressLine || "").length < 5 || !/^[1-9][0-9]{5}$/.test(String(notes.pincode || "")) || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(String(notes.shippingEmail || "")) || !/^\\+?[0-9]{7,15}$/.test(String(notes.shippingPhone || "")))) || !capturedPayment) {
       return json(res, 402, { error: "Razorpay payment has not been captured for this order." });
     }
 
@@ -65,7 +65,7 @@ export default async function handler(req: any, res: any) {
       vehicle: String(notes.vehicle || ""),
       theme: notes.theme === "light" || notes.theme === "dark" || notes.theme === "physical" ? notes.theme : "dark",
       deliveryType: physicalOrder ? "physical" : "digital",
-      addressLine: String(notes.addressLine || ""), city: String(notes.city || ""), state: String(notes.state || ""),
+      addressLine: String(notes.addressLine || ""), shippingEmail: String(notes.shippingEmail || ""), shippingPhone: String(notes.shippingPhone || ""), city: String(notes.city || ""), state: String(notes.state || ""),
       pincode: String(notes.pincode || ""), country: String(notes.country || ""),
     });
   } catch (error) {
