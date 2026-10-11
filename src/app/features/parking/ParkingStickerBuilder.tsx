@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { ArrowLeft, ArrowRight, Download, Mail, Palette, Phone, QrCode, ShoppingCart, Sparkles, CheckCircle2, Loader2, CreditCard, Globe2, X } from "lucide-react";
 import QRCode from "qrcode";
+import { lookup as lookupPincode } from "indiapins";
 import {
   encryptParkingPayload,
   svgToDataUrl,
@@ -242,8 +243,40 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
     }
 
     const controller = new AbortController();
+    let timedOut = false;
+    let disposed = false;
     setPincodeLookupStatus("loading");
-    const timeout = window.setTimeout(async () => {
+
+    const applyLocalLookup = () => {
+      try {
+        const records = lookupPincode(pincode);
+        if (!Array.isArray(records) || records.length === 0) return false;
+
+        // A PIN may map to multiple post offices. Prefer a delivery office,
+        // but retain the complete address fields as customer-editable values.
+        const record = records.find((item) => item.delivery) ?? records[0];
+        setForm((current) => {
+          if (current.pincode !== pincode) return current;
+          return {
+            ...current,
+            city: String(record.district || current.city || ""),
+            state: String(record.state || current.state || ""),
+          };
+        });
+        setPincodeLookupStatus("found");
+        return true;
+      } catch {
+        // A local dataset failure must never block manual address entry.
+        return false;
+      }
+    };
+
+    const debounce = window.setTimeout(async () => {
+      const requestTimeout = window.setTimeout(() => {
+        timedOut = true;
+        controller.abort();
+      }, 5000);
+
       try {
         const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`, { signal: controller.signal });
         if (!response.ok) throw new Error("PIN lookup unavailable");
@@ -251,12 +284,13 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
         const postOffices = Array.isArray(result) && result[0]?.Status === "Success" && Array.isArray(result[0]?.PostOffice)
           ? result[0].PostOffice
           : [];
+
         if (!postOffices.length) {
-          setPincodeLookupStatus("not-found");
+          if (!applyLocalLookup() && !disposed) setPincodeLookupStatus("not-found");
           return;
         }
 
-        const match = postOffices[0];
+        const match = postOffices.find((office: { DeliveryStatus?: string }) => office.DeliveryStatus === "Delivery") ?? postOffices[0];
         setForm((current) => {
           if (current.pincode !== pincode) return current;
           return {
@@ -267,12 +301,20 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
         });
         setPincodeLookupStatus("found");
       } catch {
-        if (!controller.signal.aborted) setPincodeLookupStatus("error");
+        // Try the bundled offline dataset on network errors, non-2xx responses,
+        // malformed responses, and timeouts. Ignore requests cancelled because
+        // the customer changed the PIN or switched away from physical delivery.
+        if (!disposed && (timedOut || !controller.signal.aborted)) {
+          if (!applyLocalLookup()) setPincodeLookupStatus("error");
+        }
+      } finally {
+        window.clearTimeout(requestTimeout);
       }
     }, 300);
 
     return () => {
-      window.clearTimeout(timeout);
+      disposed = true;
+      window.clearTimeout(debounce);
       controller.abort();
     };
   }, [form.pincode, form.delivery]);
@@ -844,7 +886,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                   <div><div className="text-sm font-bold text-[#0f1523]">Delivery address</div><p className="mt-1 text-xs leading-5 text-[#6b7a99]">India only · ₹399 total, including standard delivery.</p></div>
                   <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">Country *</span><select value={form.country} onChange={(event) => update("country", event.target.value)} autoComplete="country-name" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50"><option value="India">India</option></select><span className="mt-1 block text-xs text-[#8b95aa]">More countries can be enabled here later.</span></label>
                   <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">Flat / building / locality / street *</span><input value={form.addressLine} onChange={(event) => update("addressLine", event.target.value)} autoComplete="street-address" placeholder="Flat number, building, street, locality" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50" /></label>
-                  <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">PIN code *</span><input value={form.pincode} onChange={(event) => update("pincode", event.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" autoComplete="postal-code" placeholder="6-digit PIN code" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50" />{form.pincode && !/^[1-9][0-9]{5}$/.test(form.pincode) && <p className="mt-2 text-xs text-red-600">Enter a valid 6-digit Indian PIN code.</p>}{pincodeLookupStatus === "loading" && <p className="mt-2 text-xs text-[#6b7a99]">Looking up city and state…</p>}{pincodeLookupStatus === "found" && <p className="mt-2 text-xs text-emerald-700">City/district and state filled from PIN-code records. Please confirm the details.</p>}{pincodeLookupStatus === "not-found" && <p className="mt-2 text-xs text-amber-700">We couldn’t match this PIN in the lookup service. It may still be valid. Enter the correct city/district and state manually; checkout will remain available once all address fields are complete.</p>}{pincodeLookupStatus === "error" && <p className="mt-2 text-xs text-[#8b95aa]">PIN lookup is temporarily unavailable. You can enter city and state manually.</p>}</label>
+                  <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">PIN code *</span><input value={form.pincode} onChange={(event) => update("pincode", event.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" autoComplete="postal-code" placeholder="6-digit PIN code" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50" />{form.pincode && !/^[1-9][0-9]{5}$/.test(form.pincode) && <p className="mt-2 text-xs text-red-600">Enter a valid 6-digit Indian PIN code.</p>}{pincodeLookupStatus === "loading" && <p className="mt-2 text-xs text-[#6b7a99]">Looking up city and state…</p>}{pincodeLookupStatus === "found" && <p className="mt-2 text-xs text-emerald-700">City/district and state filled from PIN-code records. Please confirm the details.</p>}{pincodeLookupStatus === "not-found" && <p className="mt-2 text-xs text-amber-700">We couldn’t find this PIN in either lookup source. It may still be valid. Enter the correct city/district and state manually; checkout remains available once all address fields are complete.</p>}{pincodeLookupStatus === "error" && <p className="mt-2 text-xs text-[#8b95aa]">Online lookup failed and no local match was found. You can enter city and state manually.</p>}</label>
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">City / district *</span><input value={form.city} onChange={(event) => update("city", event.target.value)} autoComplete="address-level2" placeholder="Filled from PIN code; editable" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50" /></label>
                     <label className="block"><span className="mb-2 block text-sm font-semibold text-[#33405a]">State *</span><input value={form.state} onChange={(event) => update("state", event.target.value)} autoComplete="address-level1" placeholder="Filled from PIN code; editable" className="w-full rounded-2xl border border-[#dbe2ec] bg-white px-4 py-3 text-sm outline-none focus:border-[#00b968] focus:ring-4 focus:ring-emerald-50" /></label>
