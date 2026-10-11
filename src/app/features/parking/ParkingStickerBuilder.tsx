@@ -757,8 +757,13 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
             trackMetaPurchase(String(verifyResult.paymentId || verifyResult.orderId));
             await sendRazorpayPaymentNotification(verifyResult);
 
+            sessionStorage.setItem("richlifetools_parking_razorpay_verification", JSON.stringify({
+              razorpay_order_id: String(paymentResponse?.razorpay_order_id || result.orderId),
+              razorpay_payment_id: String(paymentResponse?.razorpay_payment_id || ""),
+              razorpay_signature: String(paymentResponse?.razorpay_signature || ""),
+            }));
             routerNavigate(
-              `${PARKING_ORDER_SUCCESS_ROUTE}?razorpay_order_id=${encodeURIComponent(result.orderId)}&razorpay_payment_id=${encodeURIComponent(String(paymentResponse?.razorpay_payment_id || ""))}&razorpay_signature=${encodeURIComponent(String(paymentResponse?.razorpay_signature || ""))}`,
+              `${PARKING_ORDER_SUCCESS_ROUTE}?razorpay_order_id=${encodeURIComponent(result.orderId)}`,
               { replace: true }
             );
           } catch (verificationError) {
