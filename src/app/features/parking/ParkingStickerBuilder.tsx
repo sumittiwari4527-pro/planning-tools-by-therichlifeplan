@@ -266,7 +266,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
           };
         });
         setPincodeLookupStatus("found");
-      } catch (error) {
+      } catch {
         if (!controller.signal.aborted) setPincodeLookupStatus("error");
       }
     }, 300);
@@ -284,7 +284,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
     form.vehicle.trim().length >= 2 &&
     (!form.email.trim() || isValidEmail(form.email)) &&
     (!activationMode || (orderId.trim().length >= 2 && Boolean(deliveryEmail.trim()) && isValidEmail(deliveryEmail)));
-  const canBuy = Boolean(previewPayload) && (form.delivery !== "physical" || validPhysicalAddress);
+  const canBuy = Boolean(previewPayload) && (form.delivery !== "physical" || (validPhysicalAddress && pincodeLookupStatus !== "loading" && pincodeLookupStatus !== "not-found"));
 
   const canSubmitRequest = Boolean(previewPayload) && !submitting && Boolean(orderId.trim()) && Boolean(deliveryEmail.trim()) && isValidEmail(deliveryEmail);
 
