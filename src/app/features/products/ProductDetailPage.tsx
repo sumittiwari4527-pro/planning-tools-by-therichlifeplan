@@ -328,6 +328,24 @@ export function ProductDetailPage({
         <button onClick={onBack} className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-[#6b7a99] hover:text-[#0f1523] cursor-pointer">
           <ArrowLeft size={15} /> Back to products
         </button>
+        {product.slug === "moneyflow-budget-planner" ? (
+          <>
+            <section className="relative isolate min-h-[570px] overflow-hidden bg-[#073b36] text-white sm:min-h-[650px] lg:min-h-[620px]">
+              <img src={moneyFlowPreviewUrl} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover object-center opacity-35" />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,21,28,0.22)_0%,rgba(3,21,28,0.76)_52%,rgba(3,21,28,0.98)_100%)]" />
+              <div className="relative z-10 flex min-h-[570px] flex-col justify-end px-6 pb-10 pt-14 sm:min-h-[650px] sm:px-10 sm:pb-12 lg:min-h-[620px] lg:px-14">
+                <div className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-emerald-200/70 bg-emerald-200/10 px-4 py-2 text-[11px] font-mono uppercase tracking-[0.22em] text-emerald-100">Money · Digital Tool</div>
+                <h1 className="max-w-3xl text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{product.name}</h1>
+                <p className="mt-5 max-w-2xl text-xl leading-relaxed text-emerald-100 sm:text-2xl">{detail.headline}</p>
+                <p className="mt-4 max-w-2xl text-base leading-7 text-slate-100 sm:text-lg">{detail.description}</p>
+                <div className="mt-8 flex flex-wrap items-center gap-4">
+                  <div><div className="text-xs font-mono uppercase tracking-widest text-emerald-100">Digital product</div><div className="mt-1 text-3xl font-bold">₹{product.price.toLocaleString("en-IN")}</div></div>
+                  {onPrimaryAction && <button type="button" onClick={onPrimaryAction} className="inline-flex items-center gap-2 rounded-2xl bg-[#00d980] px-6 py-4 text-sm font-bold text-[#03121d] shadow-xl transition hover:bg-[#18e895]">Get MoneyFlow <ArrowRight size={17} /></button>}
+                </div>
+              </div>
+            </section>
+          </>
+        ) : (
         <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
           <div className="lg:sticky lg:top-24">
             <div className={product.slug === "moneyflow-budget-planner" ? "relative aspect-[12/7] w-full overflow-hidden bg-[#073b36]" : "relative aspect-[4/3] overflow-hidden rounded-3xl border border-[#e4e8f0] bg-[#f3f5f9] p-6 shadow-sm sm:p-5"}>
@@ -402,6 +420,7 @@ export function ProductDetailPage({
             <div className="mt-8 grid gap-3 sm:grid-cols-2"><div className="flex items-center gap-3 rounded-2xl bg-[#eef0fd] p-4"><FileText size={18} className="text-[#4f46e5]" /><span className="text-sm font-medium text-[#33405a]">Digital delivery</span></div><div className="flex items-center gap-3 rounded-2xl bg-[#eef0fd] p-4"><ShieldCheck size={18} className="text-[#4f46e5]" /><span className="text-sm font-medium text-[#33405a]">Simple, transparent pricing</span></div></div>
           </section>
         </div>
+        )}
       </main>
     </div>
   );
