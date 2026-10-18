@@ -330,7 +330,7 @@ export function ProductDetailPage({
         </button>
         <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
           <div className="lg:sticky lg:top-24">
-            <div className={product.slug === "moneyflow-budget-planner" ? "relative aspect-[12/7] overflow-hidden rounded-3xl bg-[#073b36] shadow-xl shadow-teal-950/15" : "relative aspect-[4/3] overflow-hidden rounded-3xl border border-[#e4e8f0] bg-[#f3f5f9] p-6 shadow-sm sm:p-5"}>
+            <div className={product.slug === "moneyflow-budget-planner" ? "relative aspect-[12/7] w-full overflow-hidden bg-[#073b36]" : "relative aspect-[4/3] overflow-hidden rounded-3xl border border-[#e4e8f0] bg-[#f3f5f9] p-6 shadow-sm sm:p-5"}>
               {product.slug === "moneyflow-budget-planner" ? (
                 <img src={moneyFlowPreviewUrl} alt="MoneyFlow Global Budget Planner dashboard preview" className="absolute inset-0 block h-full w-full object-fill" />
               ) : (
