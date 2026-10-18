@@ -37,3 +37,7 @@ Encrypted asset format: 12-byte nonce || 16-byte authentication tag || ciphertex
 ## Redeploy after environment changes
 
 After adding or rotating `MONEYFLOW_DOWNLOAD_SECRET` in Vercel, trigger a new deployment for the target environment so the MoneyFlow API functions receive the updated value. Confirm the variable is configured for that same environment before testing checkout.
+
+## Lemon Squeezy checkout URL
+
+Configure `VITE_LEMON_SQUEEZY_MONEYFLOW_CHECKOUT_URL` in Vercel with the MoneyFlow hosted checkout URL. This is a public frontend URL (not a secret), similar to the existing `VITE_LEMON_SQUEEZY_PARKING_CHECKOUT_URL`. Set it for each environment you use and redeploy so the Vite build picks up the new value. If it is missing, the checkout page displays a configuration notice instead of a broken button.
