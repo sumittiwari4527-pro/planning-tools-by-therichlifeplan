@@ -1,29 +1,31 @@
 # MoneyFlow deployment checklist
 
-MoneyFlow uses the existing Razorpay Standard Checkout credentials but has separate endpoints and product notes so the Smart Parking Sticker flow is not changed.
+MoneyFlow uses the existing Razorpay Standard Checkout credentials and account. It has product-specific endpoints and order notes so the Smart Parking Sticker flow remains unchanged.
+
+## Repository-only secure downloads
+
+The workbook and guide are stored in the repository as AES-256-GCM encrypted binary assets under `private-assets/`. Do not commit plaintext versions of either paid file. The download endpoint verifies the purchase and decrypts the requested asset in server memory.
+
+Encrypted asset format: 12-byte nonce || 16-byte authentication tag || ciphertext. The AES-256 key is SHA-256 of the server-only `MONEYFLOW_DOWNLOAD_SECRET`. Use a unique random nonce for each file. Keep the secret in Vercel server-side environment variables only; never use a `VITE_` prefix or reuse the QR key.
 
 ## Before enabling sales
 
-1. Upload these two files to private object storage (not this public GitHub repository and not the Vite `public/` folder):
-   - `MoneyFlow_Global_Budget_Planner_v1_9_4_Excel_and_Sheets.xlsx`
-   - `MoneyFlow_README_and_Quick_Start_Guide.pdf`
-2. Configure the following server-side Vercel environment variables for the deployment environment:
-   - `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` — use the existing Razorpay credentials already used by the parking integration.
-   - `MONEYFLOW_DOWNLOAD_SECRET` — a new random secret with at least 32 characters. Do not reuse the Razorpay secret.
-   - `MONEYFLOW_WORKBOOK_PRIVATE_URL` — private-object URL for the XLSX.
-   - `MONEYFLOW_GUIDE_PRIVATE_URL` — private-object URL for the PDF.
-   - `MONEYFLOW_ASSET_STORAGE_TOKEN` — if the storage provider requires a bearer token. If URLs are pre-signed, keep their expiry longer than a single request and rotate them as needed.
-3. Redeploy after setting the environment variables. These variables must not use the `VITE_` prefix.
-4. Make a low-value test purchase in Razorpay test mode. Confirm the order is ₹299 INR, the order notes contain `product=moneyflow-budget-planner`, both downloads work, and an invalid/expired token is rejected.
-5. Switch to live Razorpay credentials only after the test flow and storage permissions have been verified.
+1. Encrypt the original files and commit only these encrypted outputs to the branch used for deployment:
+   - `private-assets/MoneyFlow_Global_Budget_Planner_v1_9_4_Excel_and_Sheets.xlsx.enc`
+   - `private-assets/MoneyFlow_README_and_Quick_Start_Guide.pdf.enc`
+2. In Vercel, configure the existing server-side `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET`, plus a new random `MONEYFLOW_DOWNLOAD_SECRET` of at least 32 characters. Keep these server-only; do not prefix with `VITE_`.
+3. Redeploy. The encrypted files are fetched from the repository by the server endpoint, then decrypted only after a valid download token and captured payment are confirmed.
+4. Test in Razorpay test mode: order is ₹299 INR, order notes contain `product=moneyflow-budget-planner`, both files download correctly, and invalid/expired tokens are rejected.
+5. Switch to live payment credentials only after successful testing.
 
 ## Security notes
 
-- The browser never receives the Razorpay secret or private-storage token.
-- The verification endpoint checks the Razorpay signature and independently fetches the order and payment from Razorpay. It only accepts a captured ₹299 INR payment for the MoneyFlow product.
-- Download tokens expire after 30 minutes. Each download request verifies the token and rechecks the order/payment status with Razorpay.
-- Keep the object storage private. A publicly readable file URL defeats the download gate even if the API endpoint verifies payment.
+- Public repository viewers can download the encrypted blobs but cannot read the original files without the server secret. Never commit plaintext files or secrets.
+- The browser never receives the Razorpay secret or MoneyFlow download secret.
+- Payment verification checks Razorpay's signature and independently fetches the order and payment. Only a captured ₹299 INR payment for the MoneyFlow product is accepted.
+- Download tokens expire after 30 minutes. Every download rechecks order/payment status.
 - The dashboard illustration on the product page uses sample figures and is not a live financial account or an exact screenshot of the workbook.
+- The existing Smart Parking Sticker API files are not changed.
 
 ## Endpoints
 
@@ -31,5 +33,3 @@ MoneyFlow uses the existing Razorpay Standard Checkout credentials but has separ
 - `POST /api/razorpay/moneyflow-verify-payment`
 - `GET /api/razorpay/moneyflow-download?asset=workbook&token=...`
 - `GET /api/razorpay/moneyflow-download?asset=guide&token=...`
-
-These endpoints are separate from the existing Smart Parking Sticker endpoints.
