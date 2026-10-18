@@ -350,12 +350,6 @@ export function ProductDetailPage({
             <h1 className="text-4xl font-bold leading-tight tracking-tight text-[#0f1523] sm:text-5xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{product.name}</h1>
             <p className="mt-5 text-xl leading-relaxed text-[#4f46e5]">{detail.headline}</p>
             <p className="mt-5 text-base leading-7 text-[#6b7a99]">{detail.description}</p>
-            {product.slug === "moneyflow-budget-planner" && (
-              <figure className="mt-8 overflow-hidden rounded-3xl border border-[#d8e8e4] bg-[#f1f8f6] p-2 shadow-lg sm:p-3">
-                <img src={moneyFlowPreviewUrl} alt="MoneyFlow Global Budget Planner dashboard preview" className="block h-auto w-full rounded-2xl" />
-                <figcaption className="px-3 py-2 text-center text-xs text-slate-500">Dashboard preview · Excel workbook + Quick Start PDF</figcaption>
-              </figure>
-            )}
             <div className="mt-8 rounded-3xl border border-[#e4e8f0] bg-white p-6 shadow-sm">
               <div className="flex flex-wrap items-end justify-between gap-5">
                 <div><div className="text-xs font-mono uppercase tracking-widest text-[#6b7a99]">Digital product</div><div className="mt-1 text-3xl font-bold text-[#0f1523]">{product.isFree ? "FREE" : `₹${product.price.toLocaleString("en-IN")}`}</div></div>
