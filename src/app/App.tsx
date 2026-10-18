@@ -19,6 +19,7 @@ import { ProductDetailPage } from "./features/products/ProductDetailPage";
 import { ParkingStickerBuilder } from "./features/parking/ParkingStickerBuilder";
 import { ParkingOrderSuccessPage } from "./features/parking/ParkingOrderSuccessPage";
 import { ParkingScanPage } from "./features/parking/ParkingScanPage";
+import { MoneyFlowCheckout } from "./features/products/MoneyFlowCheckout";
 import { getProductBySlug, products } from "./data/products/products";
 import { ProductCard } from "./features/products/components/ProductCard";
 import { ContactUsPage } from "./features/contact/ContactUsPage";
@@ -70,6 +71,7 @@ export default function App() {
   const productSlug = productSlugFromPath(path);
   const routeProduct = productSlug ? getProductBySlug(productSlug) : undefined;
   const parkingBuilderMode = routeProduct?.slug === "smart-parking-sticker" && new URLSearchParams(location.search).get("mode") === "builder";
+  const moneyFlowCheckoutMode = routeProduct?.slug === "moneyflow-budget-planner" && new URLSearchParams(location.search).get("checkout") === "1";
   const parkingEncryptedPayload = new URLSearchParams(location.search).get("data");
   const parkingActivationMode = page === "parking-activation";
   const [currency, setCurrency] = useState<CurrencyCode>("USD");
@@ -432,9 +434,10 @@ export default function App() {
         {page === "products" && <ProductsPage onOpenProduct={(product) => routerNavigate(productPath(product.slug))} />}
 
         {page === "product" && parkingBuilderMode && <ParkingStickerBuilder key="parking-create" onBack={() => routerNavigate(productPath("smart-parking-sticker"))} />}
+        {page === "product" && routeProduct?.slug === "moneyflow-budget-planner" && moneyFlowCheckoutMode && <MoneyFlowCheckout onBack={() => routerNavigate(productPath("moneyflow-budget-planner"))} />}
 
-        {page === "product" && routeProduct && !parkingBuilderMode && (
-          <ProductDetailPage product={routeProduct} onBack={() => routerNavigate(PRODUCTS_ROUTE)} onPrimaryAction={routeProduct.slug === "smart-parking-sticker" ? () => routerNavigate(`${productPath(routeProduct.slug)}?mode=builder`) : routeProduct.slug === "moneyflow-budget-planner" ? () => { const checkoutUrl = (import.meta as any).env?.VITE_LEMON_SQUEEZY_MONEYFLOW_CHECKOUT_URL || "https://thrichlifeplan.lemonsqueezy.com/checkout/buy/48565a85-c0ad-40f8-b60a-cda1c664277e"; window.location.assign(checkoutUrl); } : undefined} onAlreadyPurchased={routeProduct.slug === "smart-parking-sticker" ? () => routerNavigate(PARKING_ACTIVATION_ROUTE) : undefined} />
+        {page === "product" && routeProduct && !parkingBuilderMode && !moneyFlowCheckoutMode && (
+          <ProductDetailPage product={routeProduct} onBack={() => routerNavigate(PRODUCTS_ROUTE)} onPrimaryAction={routeProduct.slug === "smart-parking-sticker" ? () => routerNavigate(`${productPath(routeProduct.slug)}?mode=builder`) : routeProduct.slug === "moneyflow-budget-planner" ? () => routerNavigate(`${productPath(routeProduct.slug)}?checkout=1`) : undefined} onAlreadyPurchased={routeProduct.slug === "smart-parking-sticker" ? () => routerNavigate(PARKING_ACTIVATION_ROUTE) : undefined} />
         )}
 
         {page === "product" && !routeProduct && (

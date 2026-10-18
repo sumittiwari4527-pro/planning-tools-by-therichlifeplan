@@ -354,7 +354,7 @@ export function ProductDetailPage({
                   <button type="button" disabled title="Checkout is not configured for this product yet." className="inline-flex cursor-not-allowed items-center gap-2 rounded-2xl bg-[#d9ddea] px-6 py-3.5 text-sm font-semibold text-[#7a849b]">Get this product <Sparkles size={15} /></button>
                 )}
               </div>
-              <p className="mt-3 text-xs text-[#8b95aa]">{product.slug === "moneyflow-budget-planner" ? "Checkout is handled by Lemon Squeezy. Digital file delivery must be configured on the product in your Lemon Squeezy dashboard." : "Secure checkout is not configured for this product yet."}</p>
+              <p className="mt-3 text-xs text-[#8b95aa]">{product.slug === "moneyflow-budget-planner" ? "Checkout uses Razorpay. Downloads unlock only after server-side payment verification." : "Secure checkout is not configured for this product yet."}</p>
             </div>
             {product.slug === "moneyflow-budget-planner" && (
               <section aria-label="MoneyFlow dashboard preview" className="mt-10 overflow-hidden rounded-3xl border border-[#d8e8e4] bg-[#f1f8f6] p-4 shadow-sm sm:p-7">
