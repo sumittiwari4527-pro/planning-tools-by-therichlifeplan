@@ -1,13 +1,33 @@
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { createDecipheriv, createHmac, createHash, timingSafeEqual } from "node:crypto";
 
 const json = (res: any, status: number, body: unknown) => res.status(status).setHeader("Content-Type", "application/json").json(body);
+const ASSET_BASE = "https://raw.githubusercontent.com/sumittiwari4527-pro/planning-tools-by-therichlifeplan/feat/moneyflow-budget-planner/private-assets/";
+const ASSETS: Record<string, { path: string; mime: string; filename: string }> = {
+  workbook: { path: "MoneyFlow_Global_Budget_Planner_v1_9_4_Excel_and_Sheets.xlsx.enc", mime: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename: "MoneyFlow_Global_Budget_Planner_v1_9_4.xlsx" },
+  guide: { path: "MoneyFlow_README_and_Quick_Start_Guide.pdf.enc", mime: "application/pdf", filename: "MoneyFlow_README_and_Quick_Start_Guide.pdf" },
+};
+
+// Encrypted file format: 12-byte nonce || 16-byte AES-GCM auth tag || ciphertext.
+// The AES-256 key is SHA-256(MONEYFLOW_DOWNLOAD_SECRET). Never commit plaintext assets or the key.
+const decryptAsset = (data: Buffer, secret: string) => {
+  if (data.length < 29) throw new Error("Encrypted asset is malformed.");
+  const nonce = data.subarray(0, 12);
+  const tag = data.subarray(12, 28);
+  const ciphertext = data.subarray(28);
+  const key = createHash("sha256").update(secret, "utf8").digest();
+  const decipher = createDecipheriv("aes-256-gcm", key, nonce);
+  decipher.setAuthTag(tag);
+  return Buffer.concat([decipher.update(ciphertext), decipher.final()]);
+};
 
 export default async function handler(req: any, res: any) {
   if (req.method !== "GET") { res.setHeader("Allow", "GET"); return json(res, 405, { error: "Method not allowed." }); }
   const secret = process.env.MONEYFLOW_DOWNLOAD_SECRET?.trim();
   const token = String(req.query?.token || "");
   const asset = String(req.query?.asset || "");
+  const assetInfo = ASSETS[asset];
   if (!secret || secret.length < 32) return json(res, 503, { error: "Secure downloads are not configured yet." });
+  if (!assetInfo) return json(res, 400, { error: "Unknown download." });
 
   let payload: any;
   try {
@@ -24,10 +44,7 @@ export default async function handler(req: any, res: any) {
 
   const id = process.env.RAZORPAY_KEY_ID?.trim();
   const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim();
-  const storageToken = process.env.MONEYFLOW_ASSET_STORAGE_TOKEN?.trim();
-  const sourceUrl = asset === "workbook" ? process.env.MONEYFLOW_WORKBOOK_PRIVATE_URL?.trim()
-    : asset === "guide" ? process.env.MONEYFLOW_GUIDE_PRIVATE_URL?.trim() : "";
-  if (!id || !keySecret || !sourceUrl) return json(res, 503, { error: "The digital file is not configured. Please contact support." });
+  if (!id || !keySecret) return json(res, 503, { error: "Payment verification is not configured." });
 
   try {
     const headers = { Authorization: "Basic " + Buffer.from(id + ":" + keySecret).toString("base64"), Accept: "application/json" };
@@ -42,13 +59,12 @@ export default async function handler(req: any, res: any) {
       return json(res, 403, { error: "A verified captured MoneyFlow payment is required for this download." });
     }
 
-    // Files must live in private storage, never in this public repository or /public.
-    const fileResponse = await fetch(sourceUrl, { headers: storageToken ? { Authorization: "Bearer " + storageToken } : {} });
-    if (!fileResponse.ok) return json(res, 502, { error: "Unable to retrieve the file from private storage." });
-    const bytes = Buffer.from(await fileResponse.arrayBuffer());
-    const workbook = asset === "workbook";
-    res.setHeader("Content-Type", workbook ? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : "application/pdf");
-    res.setHeader("Content-Disposition", 'attachment; filename="' + (workbook ? "MoneyFlow_Global_Budget_Planner.xlsx" : "MoneyFlow_README_and_Quick_Start_Guide.pdf") + '"');
+    const fileResponse = await fetch(ASSET_BASE + assetInfo.path, { headers: { Accept: "application/octet-stream" } });
+    if (!fileResponse.ok) return json(res, 503, { error: "The encrypted product file is not present in the repository yet." });
+    const encrypted = Buffer.from(await fileResponse.arrayBuffer());
+    const bytes = decryptAsset(encrypted, secret);
+    res.setHeader("Content-Type", assetInfo.mime);
+    res.setHeader("Content-Disposition", 'attachment; filename="' + assetInfo.filename + '"');
     res.setHeader("Cache-Control", "private, no-store");
     res.setHeader("X-Content-Type-Options", "nosniff");
     return res.status(200).send(bytes);
