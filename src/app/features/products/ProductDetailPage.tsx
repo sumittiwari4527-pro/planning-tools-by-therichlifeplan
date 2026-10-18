@@ -330,12 +330,16 @@ export function ProductDetailPage({
         </button>
         <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
           <div className="lg:sticky lg:top-24">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-[#e4e8f0] bg-[#f3f5f9] p-6 shadow-sm">
-              <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-2xl px-8 text-center shadow-xl" style={{ background: `linear-gradient(145deg, ${product.coverAccent}, #0f1523)` }}>
-                <div className="absolute -right-16 -top-16 h-44 w-44 rounded-full bg-white/10" />
-                <div className="absolute -bottom-16 -left-12 h-48 w-48 rounded-full bg-white/10" />
-                <div className="relative whitespace-pre-line text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{product.coverLabel}</div>
-              </div>
+            <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-[#e4e8f0] bg-[#f3f5f9] p-3 shadow-sm sm:p-5">
+              {product.slug === "moneyflow-budget-planner" ? (
+                <img src={moneyFlowPreviewUrl} alt="MoneyFlow Global Budget Planner dashboard preview" className="h-full w-full rounded-2xl object-cover shadow-xl" />
+              ) : (
+                <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-2xl px-8 text-center shadow-xl" style={{ background: `linear-gradient(145deg, ${product.coverAccent}, #0f1523)` }}>
+                  <div className="absolute -right-16 -top-16 h-44 w-44 rounded-full bg-white/10" />
+                  <div className="absolute -bottom-16 -left-12 h-48 w-48 rounded-full bg-white/10" />
+                  <div className="relative whitespace-pre-line text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{product.coverLabel}</div>
+                </div>
+              )}
             </div>
           </div>
           <section>
