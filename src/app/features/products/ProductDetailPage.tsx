@@ -349,20 +349,7 @@ export function ProductDetailPage({
             </div>
             <h1 className="text-4xl font-bold leading-tight tracking-tight text-[#0f1523] sm:text-5xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{product.name}</h1>
             <p className="mt-5 text-xl leading-relaxed text-[#4f46e5]">{detail.headline}</p>
-                        {product.slug === "moneyflow-budget-planner" ? (
-              <>
-                <div className="mt-6 rounded-3xl border border-[#d8e8e4] bg-white p-5 shadow-sm sm:p-6">
-                  <div className="flex flex-wrap items-center justify-between gap-4">
-                    <div><div className="text-xs font-mono uppercase tracking-widest text-[#6b7a99]">One-time payment · No subscription</div><div className="mt-1 text-3xl font-bold text-[#0f1523]">₹{product.price.toLocaleString("en-IN")}</div></div>
-                    {onPrimaryAction && <button type="button" onClick={onPrimaryAction} className="inline-flex items-center gap-2 rounded-2xl bg-[#0f766e] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-teal-900/15 transition hover:bg-[#115e59]">Get MoneyFlow <ArrowRight size={16} /></button>}
-                  </div>
-                  <p className="mt-3 text-xs leading-5 text-[#8b95aa]">Manual entry · No bank connection required.</p>
-                </div>
-                <div className="mt-7"><h2 className="text-lg font-bold text-[#0f1523]">Give every rupee a clear job</h2><ul className="mt-3 space-y-3 text-base leading-6 text-[#526078]"><li className="flex gap-3"><span className="font-bold text-[#0f766e]">✓</span><span>Track income, expenses and refunds in one place.</span></li><li className="flex gap-3"><span className="font-bold text-[#0f766e]">✓</span><span>Compare planned budgets with actual spending.</span></li><li className="flex gap-3"><span className="font-bold text-[#0f766e]">✓</span><span>Plan savings goals and see how much money is unallocated.</span></li></ul></div>
-                <div className="mt-6 rounded-2xl border border-[#d8e8e4] bg-[#f1f8f6] p-4"><h3 className="font-semibold text-[#0f1523]">What you’ll receive</h3><div className="mt-3 flex items-start gap-3"><FileText size={19} className="mt-0.5 text-[#0f766e]"/><div><p className="font-medium text-[#0f1523]">MoneyFlow budget planner</p><p className="text-sm text-[#6b7a99]">Excel workbook for budgeting and savings planning.</p></div></div><div className="mt-3 flex items-start gap-3"><FileText size={19} className="mt-0.5 text-[#0f766e]"/><div><p className="font-medium text-[#0f1523]">Quick Start Guide</p><p className="text-sm text-[#6b7a99]">PDF instructions to help you get started.</p></div></div></div>
-              </>
-            ) : (
-              <><p className="mt-5 text-base leading-7 text-[#6b7a99]">{detail.description}</p>
+            <p className="mt-5 text-base leading-7 text-[#6b7a99]">{detail.description}</p>
             <div className="mt-8 rounded-3xl border border-[#e4e8f0] bg-white p-6 shadow-sm">
               <div className="flex flex-wrap items-end justify-between gap-5">
                 <div><div className="text-xs font-mono uppercase tracking-widest text-[#6b7a99]">Digital product</div><div className="mt-1 text-3xl font-bold text-[#0f1523]">{product.isFree ? "FREE" : `₹${product.price.toLocaleString("en-IN")}`}</div></div>
@@ -374,9 +361,38 @@ export function ProductDetailPage({
               </div>
               <p className="mt-3 text-xs text-[#8b95aa]">{product.slug === "moneyflow-budget-planner" ? "Checkout uses Razorpay. Downloads unlock only after server-side payment verification." : "Secure checkout is not configured for this product yet."}</p>
             </div>
-              </>
+            {product.slug === "moneyflow-budget-planner" && (
+              <section aria-label="MoneyFlow dashboard preview" className="mt-10 overflow-hidden rounded-3xl border border-[#d8e8e4] bg-[#f1f8f6] p-4 shadow-sm sm:p-7">
+                <div className="mx-auto max-w-3xl rounded-2xl border border-[#dce7e4] bg-white p-4 shadow-xl shadow-teal-950/5 sm:p-6">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                    <div><div className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#0f766e]">MONEYFLOW</div><div className="mt-1 text-lg font-bold text-slate-900">Your money at a glance</div></div>
+                    <span className="rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-800">Monthly overview</span>
+                  </div>
+                  <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    {[
+                      { label: "Income", value: "₹80,000", color: "text-slate-900" },
+                      { label: "Expenses", value: "₹46,500", color: "text-slate-900" },
+                      { label: "Savings", value: "₹33,500", color: "text-[#0f766e]" },
+                      { label: "Savings rate", value: "41.9%", color: "text-[#0f766e]" },
+                    ].map((metric) => <div key={metric.label} className="rounded-xl border border-slate-100 bg-slate-50 p-3"><div className="text-[11px] text-slate-500">{metric.label}</div><div className={`mt-1 text-lg font-bold ${metric.color}`}>{metric.value}</div></div>)}
+                  </div>
+                  <div className="mt-4 grid gap-4 sm:grid-cols-[1.2fr_0.8fr]">
+                    <div className="rounded-xl border border-slate-100 p-4"><div className="text-xs font-semibold text-slate-700">Planned vs actual spending</div><div className="mt-4 space-y-3">
+                      {[
+                        { label: "Housing", width: "72%", amount: "₹18,000" },
+                        { label: "Food", width: "58%", amount: "₹7,200" },
+                        { label: "Transport", width: "44%", amount: "₹3,600" },
+                        { label: "Lifestyle", width: "31%", amount: "₹2,900" },
+                      ].map((item) => <div key={item.label}><div className="mb-1 flex items-center justify-between gap-2 text-[11px] text-slate-500"><span>{item.label}</span><span>{item.amount}</span></div><div className="h-2 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-[#0f766e]" style={{ width: item.width }} /></div></div>)}
+                    </div></div>
+                    <div className="rounded-xl border border-slate-100 p-4"><div className="text-xs font-semibold text-slate-700">Savings goal</div><div className="mt-5 flex justify-center"><div className="flex h-28 w-28 items-center justify-center rounded-full border-[10px] border-[#d6efea] border-t-[#0f766e] border-r-[#0f766e]"><div className="text-center"><div className="text-xl font-bold text-slate-900">68%</div><div className="text-[10px] text-slate-500">of target</div></div></div></div><div className="mt-4 text-center text-xs text-slate-500">Emergency fund progress</div></div>
+                  </div>
+                  <div className="mt-4 rounded-xl bg-[#e7f5f1] p-3 text-xs leading-5 text-[#115e59]"><strong>Next best action:</strong> Review your highest-spend categories and move any unallocated money toward a savings goal.</div>
+                </div>
+                <p className="mt-3 text-center text-[11px] text-slate-500">Illustrative dashboard preview — sample figures, not from a live account.</p>
+              </section>
             )}
-                        <div className="mt-10"><h2 className="text-2xl font-bold text-[#0f1523]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>What you get</h2><div className="mt-5 grid gap-3 sm:grid-cols-2">{detail.highlights.map((item) => <div key={item} className="flex gap-3 rounded-2xl border border-[#e4e8f0] bg-white p-4 shadow-sm"><div className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600"><Check size={14} /></div><span className="text-sm leading-6 text-[#45516a]">{item}</span></div>)}</div></div>
+            <div className="mt-10"><h2 className="text-2xl font-bold text-[#0f1523]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>What you get</h2><div className="mt-5 grid gap-3 sm:grid-cols-2">{detail.highlights.map((item) => <div key={item} className="flex gap-3 rounded-2xl border border-[#e4e8f0] bg-white p-4 shadow-sm"><div className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600"><Check size={14} /></div><span className="text-sm leading-6 text-[#45516a]">{item}</span></div>)}</div></div>
             <div className="mt-8 grid gap-3 sm:grid-cols-2"><div className="flex items-center gap-3 rounded-2xl bg-[#eef0fd] p-4"><FileText size={18} className="text-[#4f46e5]" /><span className="text-sm font-medium text-[#33405a]">Digital delivery</span></div><div className="flex items-center gap-3 rounded-2xl bg-[#eef0fd] p-4"><ShieldCheck size={18} className="text-[#4f46e5]" /><span className="text-sm font-medium text-[#33405a]">Simple, transparent pricing</span></div></div>
           </section>
         </div>
