@@ -2,6 +2,7 @@ import { ArrowRight } from "lucide-react";
 import type { Product } from "../types";
 import { ProductBadge } from "./ProductBadge";
 import option2CarUrl from "../assets/option2-car-hero.webp?url";
+import moneyFlowPreviewUrl from "../assets/moneyflow-dashboard-preview.svg?url";
 
 const typeLabels: Record<Product["type"], string> = {
   ebook: "Ebook",
@@ -23,6 +24,8 @@ export function ProductCard({ product, onOpen }: { product: Product; onOpen: (pr
                 className="h-full w-full object-cover object-[78%_58%] transition-transform duration-500 group-hover:scale-[1.03]"
               />
             </div>
+          ) : product.slug === "moneyflow-budget-planner" ? (
+            <img src={moneyFlowPreviewUrl} alt="MoneyFlow budget planner dashboard preview" loading="lazy" className="h-full w-full rounded-2xl object-cover shadow-lg transition-transform duration-500 group-hover:scale-[1.02]" />
           ) : (
             <div
               className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-2xl px-8 text-center shadow-lg transition-transform duration-500 group-hover:scale-[1.02]"
