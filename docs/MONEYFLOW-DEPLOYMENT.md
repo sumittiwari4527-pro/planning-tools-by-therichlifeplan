@@ -41,3 +41,7 @@ After adding or rotating `MONEYFLOW_DOWNLOAD_SECRET` in Vercel, trigger a new de
 ## Lemon Squeezy checkout URL
 
 Configure `VITE_LEMON_SQUEEZY_MONEYFLOW_CHECKOUT_URL` in Vercel with the MoneyFlow hosted checkout URL. This is a public frontend URL (not a secret), similar to the existing `VITE_LEMON_SQUEEZY_PARKING_CHECKOUT_URL`. Set it for each environment you use and redeploy so the Vite build picks up the new value. If it is missing, the checkout page displays a configuration notice instead of a broken button.
+
+## Deployment refresh
+
+When environment variables are changed in Vercel, create a fresh deployment from this branch so the Vite frontend rebuilds with the configured `VITE_LEMON_SQUEEZY_MONEYFLOW_CHECKOUT_URL` value. Confirm the deployment status is Ready before testing the checkout button.
