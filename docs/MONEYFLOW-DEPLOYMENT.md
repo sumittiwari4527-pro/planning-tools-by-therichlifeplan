@@ -33,3 +33,7 @@ Encrypted asset format: 12-byte nonce || 16-byte authentication tag || ciphertex
 - `POST /api/razorpay/moneyflow-verify-payment`
 - `GET /api/razorpay/moneyflow-download?asset=workbook&token=...`
 - `GET /api/razorpay/moneyflow-download?asset=guide&token=...`
+
+## Redeploy after environment changes
+
+After adding or rotating `MONEYFLOW_DOWNLOAD_SECRET` in Vercel, trigger a new deployment for the target environment so the MoneyFlow API functions receive the updated value. Confirm the variable is configured for that same environment before testing checkout.
