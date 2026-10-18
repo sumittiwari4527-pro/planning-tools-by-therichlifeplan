@@ -6,6 +6,7 @@ import darkTemplateUrl from "../parking/assets/parking-template-dark.svg?url";
 import physicalTemplateUrl from "../parking/assets/parking-template-physical.svg?url";
 
 import option2CarUrl from "./assets/option2-car-hero.webp?url";
+import moneyFlowPreviewUrl from "./assets/moneyflow-dashboard-preview.svg?url";
 import { trackMetaEvent } from "../../utils/metaPixel";
 
 const typeLabels: Record<Product["type"], string> = {
@@ -48,6 +49,19 @@ const productDetails: Record<string, {
     headline: "A fun printable mermaid adventure for little artists.",
     description: "A kid-friendly printable coloring experience designed for young children, with simple illustrations and plenty of space to color.",
     highlights: ["Designed for ages 3–6", "24-page printable experience", "Simple, child-friendly illustrations", "Easy to print at home"],
+  },
+  "moneyflow-budget-planner": {
+    headline: "Give every rupee a clear job.",
+    description: "MoneyFlow is a manual-entry budget workbook for Excel and Google Sheets. Track income, expenses, refunds and savings transfers, compare planned budgets with actual spending, and follow savings goals from one dashboard.",
+    highlights: [
+      "Monthly dashboard with income, expenses and savings rate",
+      "Track up to 5,000 transactions",
+      "Set category budgets and spot overspending",
+      "Track savings goals and emergency-fund targets",
+      "Monthly spending insights and charts",
+      "Excel workbook plus Quick Start Guide PDF",
+      "No bank connection or account required",
+    ],
   },
   "everyday-ai-prompt-pack": {
     headline: "Stop staring at a blank chat box.",
@@ -316,12 +330,16 @@ export function ProductDetailPage({
         </button>
         <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
           <div className="lg:sticky lg:top-24">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-[#e4e8f0] bg-[#f3f5f9] p-6 shadow-sm">
-              <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-2xl px-8 text-center shadow-xl" style={{ background: `linear-gradient(145deg, ${product.coverAccent}, #0f1523)` }}>
-                <div className="absolute -right-16 -top-16 h-44 w-44 rounded-full bg-white/10" />
-                <div className="absolute -bottom-16 -left-12 h-48 w-48 rounded-full bg-white/10" />
-                <div className="relative whitespace-pre-line text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{product.coverLabel}</div>
-              </div>
+            <div className={product.slug === "moneyflow-budget-planner" ? "relative aspect-[12/7] w-full overflow-hidden bg-[#073b36]" : "relative aspect-[4/3] overflow-hidden rounded-3xl border border-[#e4e8f0] bg-[#f3f5f9] p-6 shadow-sm sm:p-5"}>
+              {product.slug === "moneyflow-budget-planner" ? (
+                <img src={moneyFlowPreviewUrl} alt="MoneyFlow Global Budget Planner dashboard preview" className="absolute inset-0 block h-full w-full object-fill" />
+              ) : (
+                <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-2xl px-8 text-center shadow-xl" style={{ background: `linear-gradient(145deg, ${product.coverAccent}, #0f1523)` }}>
+                  <div className="absolute -right-16 -top-16 h-44 w-44 rounded-full bg-white/10" />
+                  <div className="absolute -bottom-16 -left-12 h-48 w-48 rounded-full bg-white/10" />
+                  <div className="relative whitespace-pre-line text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{product.coverLabel}</div>
+                </div>
+              )}
             </div>
           </div>
           <section>
@@ -335,10 +353,45 @@ export function ProductDetailPage({
             <div className="mt-8 rounded-3xl border border-[#e4e8f0] bg-white p-6 shadow-sm">
               <div className="flex flex-wrap items-end justify-between gap-5">
                 <div><div className="text-xs font-mono uppercase tracking-widest text-[#6b7a99]">Digital product</div><div className="mt-1 text-3xl font-bold text-[#0f1523]">{product.isFree ? "FREE" : `₹${product.price.toLocaleString("en-IN")}`}</div></div>
-                <button type="button" disabled title="Checkout will be connected in the payment integration phase." className="inline-flex cursor-not-allowed items-center gap-2 rounded-2xl bg-[#d9ddea] px-6 py-3.5 text-sm font-semibold text-[#7a849b]">Get this product <Sparkles size={15} /></button>
+                {product.slug === "moneyflow-budget-planner" && onPrimaryAction ? (
+                  <button type="button" onClick={onPrimaryAction} className="inline-flex items-center gap-2 rounded-2xl bg-[#0f766e] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-teal-900/15 transition hover:bg-[#115e59]">Get MoneyFlow <ArrowRight size={16} /></button>
+                ) : (
+                  <button type="button" disabled title="Checkout is not configured for this product yet." className="inline-flex cursor-not-allowed items-center gap-2 rounded-2xl bg-[#d9ddea] px-6 py-3.5 text-sm font-semibold text-[#7a849b]">Get this product <Sparkles size={15} /></button>
+                )}
               </div>
-              <p className="mt-3 text-xs text-[#8b95aa]">Secure checkout will be connected in the next commerce phase. No payment flow is added to this PR.</p>
+
             </div>
+            {product.slug === "moneyflow-budget-planner" && (
+              <section aria-label="MoneyFlow dashboard preview" className="mt-10 overflow-hidden rounded-3xl border border-[#d8e8e4] bg-[#f1f8f6] p-4 shadow-sm sm:p-7">
+                <div className="mx-auto max-w-3xl rounded-2xl border border-[#dce7e4] bg-white p-4 shadow-xl shadow-teal-950/5 sm:p-6">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                    <div><div className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#0f766e]">MONEYFLOW</div><div className="mt-1 text-lg font-bold text-slate-900">Your money at a glance</div></div>
+                    <span className="rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-800">Monthly overview</span>
+                  </div>
+                  <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    {[
+                      { label: "Income", value: "₹80,000", color: "text-slate-900" },
+                      { label: "Expenses", value: "₹46,500", color: "text-slate-900" },
+                      { label: "Savings", value: "₹33,500", color: "text-[#0f766e]" },
+                      { label: "Savings rate", value: "41.9%", color: "text-[#0f766e]" },
+                    ].map((metric) => <div key={metric.label} className="rounded-xl border border-slate-100 bg-slate-50 p-3"><div className="text-[11px] text-slate-500">{metric.label}</div><div className={`mt-1 text-lg font-bold ${metric.color}`}>{metric.value}</div></div>)}
+                  </div>
+                  <div className="mt-4 grid gap-4 sm:grid-cols-[1.2fr_0.8fr]">
+                    <div className="rounded-xl border border-slate-100 p-4"><div className="text-xs font-semibold text-slate-700">Planned vs actual spending</div><div className="mt-4 space-y-3">
+                      {[
+                        { label: "Housing", width: "72%", amount: "₹18,000" },
+                        { label: "Food", width: "58%", amount: "₹7,200" },
+                        { label: "Transport", width: "44%", amount: "₹3,600" },
+                        { label: "Lifestyle", width: "31%", amount: "₹2,900" },
+                      ].map((item) => <div key={item.label}><div className="mb-1 flex items-center justify-between gap-2 text-[11px] text-slate-500"><span>{item.label}</span><span>{item.amount}</span></div><div className="h-2 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-[#0f766e]" style={{ width: item.width }} /></div></div>)}
+                    </div></div>
+                    <div className="rounded-xl border border-slate-100 p-4"><div className="text-xs font-semibold text-slate-700">Savings goal</div><div className="mt-5 flex justify-center"><div className="flex h-28 w-28 items-center justify-center rounded-full border-[10px] border-[#d6efea] border-t-[#0f766e] border-r-[#0f766e]"><div className="text-center"><div className="text-xl font-bold text-slate-900">68%</div><div className="text-[10px] text-slate-500">of target</div></div></div></div><div className="mt-4 text-center text-xs text-slate-500">Emergency fund progress</div></div>
+                  </div>
+                  <div className="mt-4 rounded-xl bg-[#e7f5f1] p-3 text-xs leading-5 text-[#115e59]"><strong>Next best action:</strong> Review your highest-spend categories and move any unallocated money toward a savings goal.</div>
+                </div>
+                <p className="mt-3 text-center text-[11px] text-slate-500">Illustrative dashboard preview — sample figures, not from a live account.</p>
+              </section>
+            )}
             <div className="mt-10"><h2 className="text-2xl font-bold text-[#0f1523]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>What you get</h2><div className="mt-5 grid gap-3 sm:grid-cols-2">{detail.highlights.map((item) => <div key={item} className="flex gap-3 rounded-2xl border border-[#e4e8f0] bg-white p-4 shadow-sm"><div className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600"><Check size={14} /></div><span className="text-sm leading-6 text-[#45516a]">{item}</span></div>)}</div></div>
             <div className="mt-8 grid gap-3 sm:grid-cols-2"><div className="flex items-center gap-3 rounded-2xl bg-[#eef0fd] p-4"><FileText size={18} className="text-[#4f46e5]" /><span className="text-sm font-medium text-[#33405a]">Digital delivery</span></div><div className="flex items-center gap-3 rounded-2xl bg-[#eef0fd] p-4"><ShieldCheck size={18} className="text-[#4f46e5]" /><span className="text-sm font-medium text-[#33405a]">Simple, transparent pricing</span></div></div>
           </section>
