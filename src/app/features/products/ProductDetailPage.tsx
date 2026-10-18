@@ -49,6 +49,19 @@ const productDetails: Record<string, {
     description: "A kid-friendly printable coloring experience designed for young children, with simple illustrations and plenty of space to color.",
     highlights: ["Designed for ages 3–6", "24-page printable experience", "Simple, child-friendly illustrations", "Easy to print at home"],
   },
+  "moneyflow-budget-planner": {
+    headline: "Give every rupee a clear job.",
+    description: "MoneyFlow is a manual-entry budget workbook for Excel and Google Sheets. Track income, expenses, refunds and savings transfers, compare planned budgets with actual spending, and follow savings goals from one dashboard.",
+    highlights: [
+      "Monthly dashboard with income, expenses and savings rate",
+      "Track up to 5,000 transactions",
+      "Set category budgets and spot overspending",
+      "Track savings goals and emergency-fund targets",
+      "Monthly spending insights and charts",
+      "Excel workbook plus Quick Start Guide PDF",
+      "No bank connection or account required",
+    ],
+  },
   "everyday-ai-prompt-pack": {
     headline: "Stop staring at a blank chat box.",
     description: "A collection of practical prompts you can copy, adapt and use for work, research, planning, writing and everyday problem solving.",
@@ -335,9 +348,13 @@ export function ProductDetailPage({
             <div className="mt-8 rounded-3xl border border-[#e4e8f0] bg-white p-6 shadow-sm">
               <div className="flex flex-wrap items-end justify-between gap-5">
                 <div><div className="text-xs font-mono uppercase tracking-widest text-[#6b7a99]">Digital product</div><div className="mt-1 text-3xl font-bold text-[#0f1523]">{product.isFree ? "FREE" : `₹${product.price.toLocaleString("en-IN")}`}</div></div>
-                <button type="button" disabled title="Checkout will be connected in the payment integration phase." className="inline-flex cursor-not-allowed items-center gap-2 rounded-2xl bg-[#d9ddea] px-6 py-3.5 text-sm font-semibold text-[#7a849b]">Get this product <Sparkles size={15} /></button>
+                {product.slug === "moneyflow-budget-planner" && onPrimaryAction ? (
+                  <button type="button" onClick={onPrimaryAction} className="inline-flex items-center gap-2 rounded-2xl bg-[#0f766e] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-teal-900/15 transition hover:bg-[#115e59]">Get MoneyFlow <ArrowRight size={16} /></button>
+                ) : (
+                  <button type="button" disabled title="Checkout is not configured for this product yet." className="inline-flex cursor-not-allowed items-center gap-2 rounded-2xl bg-[#d9ddea] px-6 py-3.5 text-sm font-semibold text-[#7a849b]">Get this product <Sparkles size={15} /></button>
+                )}
               </div>
-              <p className="mt-3 text-xs text-[#8b95aa]">Secure checkout will be connected in the next commerce phase. No payment flow is added to this PR.</p>
+              <p className="mt-3 text-xs text-[#8b95aa]">{product.slug === "moneyflow-budget-planner" ? "Checkout is handled by Lemon Squeezy. Digital file delivery must be configured on the product in your Lemon Squeezy dashboard." : "Secure checkout is not configured for this product yet."}</p>
             </div>
             <div className="mt-10"><h2 className="text-2xl font-bold text-[#0f1523]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>What you get</h2><div className="mt-5 grid gap-3 sm:grid-cols-2">{detail.highlights.map((item) => <div key={item} className="flex gap-3 rounded-2xl border border-[#e4e8f0] bg-white p-4 shadow-sm"><div className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600"><Check size={14} /></div><span className="text-sm leading-6 text-[#45516a]">{item}</span></div>)}</div></div>
             <div className="mt-8 grid gap-3 sm:grid-cols-2"><div className="flex items-center gap-3 rounded-2xl bg-[#eef0fd] p-4"><FileText size={18} className="text-[#4f46e5]" /><span className="text-sm font-medium text-[#33405a]">Digital delivery</span></div><div className="flex items-center gap-3 rounded-2xl bg-[#eef0fd] p-4"><ShieldCheck size={18} className="text-[#4f46e5]" /><span className="text-sm font-medium text-[#33405a]">Simple, transparent pricing</span></div></div>

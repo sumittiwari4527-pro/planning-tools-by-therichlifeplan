@@ -434,7 +434,7 @@ export default function App() {
         {page === "product" && parkingBuilderMode && <ParkingStickerBuilder key="parking-create" onBack={() => routerNavigate(productPath("smart-parking-sticker"))} />}
 
         {page === "product" && routeProduct && !parkingBuilderMode && (
-          <ProductDetailPage product={routeProduct} onBack={() => routerNavigate(PRODUCTS_ROUTE)} onPrimaryAction={routeProduct.slug === "smart-parking-sticker" ? () => routerNavigate(`${productPath(routeProduct.slug)}?mode=builder`) : undefined} onAlreadyPurchased={routeProduct.slug === "smart-parking-sticker" ? () => routerNavigate(PARKING_ACTIVATION_ROUTE) : undefined} />
+          <ProductDetailPage product={routeProduct} onBack={() => routerNavigate(PRODUCTS_ROUTE)} onPrimaryAction={routeProduct.slug === "smart-parking-sticker" ? () => routerNavigate(`${productPath(routeProduct.slug)}?mode=builder`) : routeProduct.slug === "moneyflow-budget-planner" ? () => { const checkoutUrl = (import.meta as any).env?.VITE_LEMON_SQUEEZY_MONEYFLOW_CHECKOUT_URL || "https://thrichlifeplan.lemonsqueezy.com/checkout/buy/48565a85-c0ad-40f8-b60a-cda1c664277e"; window.location.assign(checkoutUrl); } : undefined} onAlreadyPurchased={routeProduct.slug === "smart-parking-sticker" ? () => routerNavigate(PARKING_ACTIVATION_ROUTE) : undefined} />
         )}
 
         {page === "product" && !routeProduct && (
