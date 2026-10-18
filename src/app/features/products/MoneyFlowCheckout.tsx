@@ -32,7 +32,7 @@ export function MoneyFlowCheckout({ onBack }: { onBack: () => void }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [receipt, setReceipt] = useState<{ orderId: string; token: string } | null>(null);
-  const lemonSqueezyCheckoutUrl = "https://thrichlifeplan.lemonsqueezy.com/checkout/buy/48565a85-c0ad-40f8-b60a-cda1c664277e";
+  const lemonSqueezyCheckoutUrl = import.meta.env.VITE_LEMON_SQUEEZY_MONEYFLOW_CHECKOUT_URL?.trim() || "";
 
   const startCheckout = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -108,7 +108,7 @@ export function MoneyFlowCheckout({ onBack }: { onBack: () => void }) {
                   <label className="block text-sm font-medium text-slate-700">Email for your order<input required type="email" autoComplete="email" value={email} onChange={e => setEmail(e.target.value)} className="mt-1.5 w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100" /></label>
                   <button type="submit" disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#0f766e] px-4 py-3.5 text-sm font-bold text-white disabled:opacity-60">{busy ? <><Loader2 className="animate-spin" size={16} /> Preparing secure checkout…</> : "Pay ₹299 with Razorpay"}</button>
                   <div className="flex items-center gap-3 text-xs text-slate-400"><span className="h-px flex-1 bg-slate-200" /> OR <span className="h-px flex-1 bg-slate-200" /></div>
-                  <a href={lemonSqueezyCheckoutUrl} target="_blank" rel="noopener noreferrer" className="flex w-full items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-3.5 text-sm font-bold text-slate-700 hover:border-teal-600 hover:text-[#0f766e]">Pay with Lemon Squeezy</a>
+                  {lemonSqueezyCheckoutUrl ? <a href={lemonSqueezyCheckoutUrl} target="_blank" rel="noopener noreferrer" className="flex w-full items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-3.5 text-sm font-bold text-slate-700 hover:border-teal-600 hover:text-[#0f766e]">Pay with Lemon Squeezy</a> : <p className="rounded-xl bg-amber-50 p-3 text-sm text-amber-800">Lemon Squeezy checkout is not configured yet.</p>}
                   <p className="text-xs leading-5 text-slate-500">Lemon Squeezy opens its hosted checkout in a new tab. Site-verified downloads currently activate automatically for Razorpay purchases only.</p>
                   {error && <p role="alert" className="rounded-xl bg-red-50 p-3 text-sm leading-5 text-red-700">{error}</p>}
                   <p className="text-xs leading-5 text-slate-500">Your payment is verified on our server before downloads are enabled.</p>
