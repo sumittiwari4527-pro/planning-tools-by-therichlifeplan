@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { ArrowLeft, CheckCircle2, Download, Loader2, ShieldCheck } from "lucide-react";
+import moneyFlowPreviewUrl from "./assets/moneyflow-dashboard-preview.svg?url";
 
 declare global {
   interface Window {
@@ -116,6 +117,7 @@ export function MoneyFlowCheckout({ onBack }: { onBack: () => void }) {
               )}
             </div>
             <aside className="rounded-2xl bg-[#f1f8f6] p-5">
+              <img src={moneyFlowPreviewUrl} alt="MoneyFlow budget planner dashboard preview" className="mb-5 block w-full rounded-xl border border-teal-100 bg-white" />
               <div className="text-xs font-bold uppercase tracking-widest text-[#0f766e]">Included · ₹299</div>
               <h2 className="mt-2 text-xl font-bold text-slate-900">MoneyFlow bundle</h2>
               <ul className="mt-4 space-y-3 text-sm leading-5 text-slate-600">
