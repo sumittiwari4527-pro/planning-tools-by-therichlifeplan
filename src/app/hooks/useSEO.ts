@@ -15,6 +15,56 @@ export interface SEOMeta {
   jsonLd?: object;
 }
 
+function defaultJsonLd({ title, description, url, type }: SEOMeta) {
+  const canonical = url ? `${SITE_URL}${url}` : SITE_URL;
+  const breadcrumbItems: object[] = [
+    { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+  ];
+
+  if (url?.startsWith("/tools/")) {
+    breadcrumbItems.push({ "@type": "ListItem", position: 2, name: "Tools", item: `${SITE_URL}/tools` });
+    breadcrumbItems.push({ "@type": "ListItem", position: 3, name: title, item: canonical });
+    return [
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        name: title,
+        url: canonical,
+        description,
+        applicationCategory: "UtilitiesApplication",
+        operatingSystem: "Web",
+        isAccessibleForFree: true,
+        publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
+      },
+      { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: breadcrumbItems },
+    ];
+  }
+
+  if (type === "article" || url?.startsWith("/blog/")) {
+    breadcrumbItems.push({ "@type": "ListItem", position: 2, name: "Articles", item: `${SITE_URL}/blog` });
+    breadcrumbItems.push({ "@type": "ListItem", position: 3, name: title, item: canonical });
+    return [
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: title,
+        description,
+        mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
+        publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
+      },
+      { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: breadcrumbItems },
+    ];
+  }
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: SITE_NAME,
+    url: SITE_URL,
+    description,
+  };
+}
+
 export function useSEO({ title, description, image, url, type = "website", jsonLd }: SEOMeta) {
   useEffect(() => {
     const fullTitle = title === SITE_NAME ? title : `${title} — ${SITE_NAME}`;
@@ -61,14 +111,6 @@ export function useSEO({ title, description, image, url, type = "website", jsonL
       ldEl.type = "application/ld+json";
       document.head.appendChild(ldEl);
     }
-    ldEl.textContent = JSON.stringify(
-      jsonLd || {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        name: SITE_NAME,
-        url: SITE_URL,
-        description,
-      }
-    );
+    ldEl.textContent = JSON.stringify(jsonLd || defaultJsonLd({ title, description, image, url, type }));
   }, [title, description, image, url, type, jsonLd]);
 }
