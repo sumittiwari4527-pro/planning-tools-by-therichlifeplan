@@ -72,8 +72,10 @@ function extractPdfText(bytes: Uint8Array): string {
     const before = raw.slice(Math.max(0, match.index - 500), match.index);
     if (/\/FlateDecode/.test(before)) {
       try {
-        const start = new TextEncoder().encode(raw.slice(0, match.index + match[0].indexOf(match[1]))).length;
-        const streamBytes = bytes.subarray(start, start + new TextEncoder().encode(stream).length);
+        const start = match.index + match[0].indexOf(match[1]);
+        // `raw` is a one-byte-per-character view of the PDF bytes. Do not use
+        // TextEncoder here: UTF-8 would change offsets for binary stream data.
+        const streamBytes = bytes.subarray(start, start + stream.length);
         stream = new TextDecoder("latin1").decode(inflate(streamBytes));
       } catch { continue; }
     }
