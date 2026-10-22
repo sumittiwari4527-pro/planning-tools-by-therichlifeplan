@@ -399,7 +399,7 @@ export default function App() {
         )}
 
         {/* ATS RESUME CHECKER */}
-        {page === "ats" && <ATSResumeChecker onBack={() => navigate("tools")} />}
+        {page === "ats" && <ATSResumeChecker onBack={() => navigate("tools", "fire")} />}
 
         {/* TOOLS PAGE */}
         {page === "tools" && (
