@@ -64,24 +64,38 @@ function extractPdfText(bytes: Uint8Array): string {
     raw += String.fromCharCode(...bytes.subarray(offset, Math.min(offset + 0x8000, bytes.length)));
   }
   if (!raw.startsWith("%PDF-")) throw new Error("This file doesn't appear to be a valid PDF.");
+
   const chunks: string[] = [];
-  const streamPattern = /stream\r?\n([\s\S]*?)\r?\nendstream/g;
+  // Pair each stream with its own object dictionary. Looking at an arbitrary
+  // window before "stream" can miss /FlateDecode and accidentally read binary
+  // compressed bytes as if they were resume text.
+  const streamPattern = /<<(?:.|\r|\n)*?>>\s*stream\r?\n([\s\S]*?)\r?\nendstream/g;
   let match: RegExpExecArray | null;
   while ((match = streamPattern.exec(raw)) !== null) {
-    let stream = match[1];
-    const before = raw.slice(Math.max(0, match.index - 500), match.index);
-    if (/\/FlateDecode/.test(before)) {
+    const dictionary = match[0].slice(0, match[0].indexOf("stream"));
+    const stream = match[1];
+    let decoded = stream;
+
+    if (/\/FlateDecode\b/.test(dictionary)) {
       try {
-        const start = match.index + match[0].indexOf(match[1]);
-        // `raw` is a one-byte-per-character view of the PDF bytes. Do not use
-        // TextEncoder here: UTF-8 would change offsets for binary stream data.
+        const start = match.index + match[0].indexOf(stream);
         const streamBytes = bytes.subarray(start, start + stream.length);
-        stream = new TextDecoder("latin1").decode(inflate(streamBytes));
-      } catch { continue; }
+        decoded = new TextDecoder("latin1").decode(inflate(streamBytes));
+      } catch {
+        // Ignore streams that cannot be decompressed; never scan their binary
+        // payload for accidental text-like sequences.
+        continue;
+      }
+    } else if (/\/Filter\b/.test(dictionary)) {
+      // Unsupported filters (for example DCTDecode) are not text streams.
+      continue;
     }
+
+    // Only parse streams that look like PDF text content.
+    if (!/\bBT\b|\bTj\b|\bTJ\b/.test(decoded)) continue;
     const tokenPattern = /\(((?:\\.|[^\\)])*)\)\s*Tj|\[((?:.|\n)*?)\]\s*TJ/g;
     let token: RegExpExecArray | null;
-    while ((token = tokenPattern.exec(stream)) !== null) {
+    while ((token = tokenPattern.exec(decoded)) !== null) {
       if (token[1] !== undefined) chunks.push(decodePdfLiteral(token[1]));
       else {
         const literals = token[2].match(/\(((?:\\.|[^\\)])*)\)/g) || [];
@@ -89,13 +103,16 @@ function extractPdfText(bytes: Uint8Array): string {
       }
     }
   }
+
   const text = chunks.join(" ").replace(/[\x00-\x08\x0b\x0c\x0e-\x1f]/g, " ").trim();
-  if (text.length < 30) {
-    throw new Error("We couldn't extract enough text from this PDF. It may be scanned or use an unsupported text encoding. Try a text-based PDF or paste the resume text instead.");
+  const letters = (text.match(/[A-Za-z]/g) || []).length;
+  const printable = (text.match(/[A-Za-z0-9\s.,;:'"()&/@+%#-]/g) || []).length;
+  const quality = text.length ? printable / text.length : 0;
+  if (text.length < 30 || letters < 20 || quality < 0.72) {
+    throw new Error("We couldn't read the text in this PDF reliably. It may use a font encoding this basic parser doesn't support, or it may be scanned. Please paste the resume text instead, or upload a DOCX/TXT file.");
   }
   return text;
 }
-
 export async function extractResumeText(file: File): Promise<string> {
   if (file.size > MAX_FILE_BYTES) throw new Error("Please choose a file smaller than 8 MB.");
   const lowerName = file.name.toLowerCase();
