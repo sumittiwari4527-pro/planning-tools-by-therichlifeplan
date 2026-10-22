@@ -59,7 +59,7 @@ function decodePdfLiteral(value: string): string {
 }
 
 function extractPdfText(bytes: Uint8Array): string {
-  const raw = new TextDecoder("latin1").decode(bytes);
+  let raw = "";\n  for (let offset = 0; offset < bytes.length; offset += 0x8000) {\n    raw += String.fromCharCode(...bytes.subarray(offset, Math.min(offset + 0x8000, bytes.length)));\n  }
   if (!raw.startsWith("%PDF-")) throw new Error("This file doesn't appear to be a valid PDF.");
   const chunks: string[] = [];
   const streamPattern = /stream\r?\n([\s\S]*?)\r?\nendstream/g;
