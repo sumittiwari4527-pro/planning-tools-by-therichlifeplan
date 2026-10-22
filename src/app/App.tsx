@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Menu, X, Flame, Target, TrendingUp, Hash, ChevronRight, ArrowRight, ShoppingBag } from "lucide-react";
+import { Menu, X, Flame, Target, TrendingUp, Hash, ChevronRight, ArrowRight, ShoppingBag, FileSearch } from "lucide-react";
 import { useLocation, useNavigate as useRouterNavigate } from "react-router";
 
 // ─── Constants & Types ───────────────────────────────────────────
@@ -26,12 +26,13 @@ import { ContactUsPage } from "./features/contact/ContactUsPage";
 import { PrivacyPolicyPage } from "./features/legal/PrivacyPolicyPage";
 import { TermsOfServicePage } from "./features/legal/TermsOfServicePage";
 import { RefundPolicyPage } from "./features/legal/RefundPolicyPage";
+import { ATSResumeChecker } from "./features/ats-resume-checker/ATSResumeChecker";
 
 // ─── Data ───────────────────────────────────────────────────────
 import { articles } from "./data/articles";
 
 // ─── Types ──────────────────────────────────────────────────────
-type Page = "home" | "tools" | "blog" | "article" | "products" | "product" | "parking" | "parking-activation" | "parking-success" | "contact" | "privacy" | "terms" | "refund";
+type Page = "home" | "tools" | "blog" | "article" | "products" | "product" | "parking" | "parking-activation" | "parking-success" | "ats" | "contact" | "privacy" | "terms" | "refund";
 
 // ─── Tool Definitions ───────────────────────────────────────────
 const tools = [
@@ -39,10 +40,12 @@ const tools = [
   { id: "goal", icon: Target, name: "Goal Planner", desc: "Multi-goal financial planning with actionable steps", color: "#8b5cf6", bg: "#f3f0ff" },
   { id: "bmi", icon: TrendingUp, name: "BMI Calculator", desc: "Body mass index with health context", color: "#10b981", bg: "#d1fae5" },
   { id: "unit", icon: Hash, name: "Unit Converter", desc: "Convert between length, weight, and temperature", color: "#f59e0b", bg: "#fef3c7" },
+  { id: "ats", icon: FileSearch, name: "ATS Resume Checker", desc: "Check resume compatibility and find improvement areas", color: "#4f46e5", bg: "#eef0fd" },
 ] satisfies Array<{ id: ToolId; icon: typeof Flame; name: string; desc: string; color: string; bg: string }>;
 
 const pageFromPath = (path: string): Page => {
   if (path === "/") return "home";
+  if (path === "/tools/ats-resume-checker") return "ats";
   if (path === "/blog") return "blog";
   if (path === "/contact") return "contact";
   if (path === "/privacy") return "privacy";
