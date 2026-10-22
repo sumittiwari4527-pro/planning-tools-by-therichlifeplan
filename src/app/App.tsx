@@ -103,6 +103,11 @@ export default function App() {
       description: "Free FIRE calculator, goal planning calculator, BMI calculator, and unit converter. Set financial goals and build an actionable savings plan — no sign-up required.",
       url: "/",
     },
+    ats: {
+      title: "Free ATS Resume Score Checker",
+      description: "Check your resume structure, skills, keyword coverage, and improvement areas with a free, private resume checker.",
+      url: "/tools/ats-resume-checker",
+    },
     tools: {
       title: "Tools",
       description: "Precision calculators for financial planning, goal tracking, health metrics, and unit conversions.",
@@ -392,6 +397,9 @@ export default function App() {
             </section>
           </div>
         )}
+
+        {/* ATS RESUME CHECKER */}
+        {page === "ats" && <ATSResumeChecker onBack={() => navigate("tools")} />}
 
         {/* TOOLS PAGE */}
         {page === "tools" && (
