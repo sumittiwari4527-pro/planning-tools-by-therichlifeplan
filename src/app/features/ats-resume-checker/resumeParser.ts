@@ -114,14 +114,43 @@ async function extractPdfText(bytes: Uint8Array): Promise<string> {
   for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
     const page = await pdf.getPage(pageNumber);
     const content = await page.getTextContent();
-    const pageText = content.items
-      .map((item) => "str" in item ? item.str || "" : "")
+    const lines: Array<{ y: number; parts: Array<{ x: number; width: number; text: string }> }> = [];
+
+    for (const item of content.items) {
+      if (!("str" in item) || !item.str?.trim()) continue;
+      const transform = (item as PdfJsTextItem & { transform?: number[]; width?: number }).transform;
+      const x = transform?.[4] ?? 0;
+      const y = transform?.[5] ?? 0;
+      const width = (item as PdfJsTextItem & { width?: number }).width ?? 0;
+      // PDF.js returns positioned text runs. Group runs by baseline so paragraphs
+      // and headings don't collapse into one long sentence.
+      let line = lines.find((candidate) => Math.abs(candidate.y - y) < 3);
+      if (!line) {
+        line = { y, parts: [] };
+        lines.push(line);
+      }
+      line.parts.push({ x, width, text: item.str.trim() });
+    }
+
+    const pageText = lines
+      .sort((a, b) => b.y - a.y)
+      .map((line) => {
+        const parts = line.parts.sort((a, b) => a.x - b.x);
+        let result = "";
+        let previousEnd = Number.NEGATIVE_INFINITY;
+        for (const part of parts) {
+          if (result && part.x - previousEnd > 1.5 && !result.endsWith("-")) result += " ";
+          result += part.text;
+          previousEnd = part.x + part.width;
+        }
+        return result.trim();
+      })
       .filter(Boolean)
-      .join(" ");
+      .join("\n");
     pages.push(pageText);
   }
 
-  const text = pages.join("\n").replace(/\s+/g, " ").trim();
+  const text = pages.join("\n\n").replace(/[ \t]+\n/g, "\n").replace(/\n[ \t]+/g, "\n").trim();
   const letters = (text.match(/[A-Za-z]/g) || []).length;
   if (text.length < 30 || letters < 20) {
     throw new Error("We couldn't find selectable text in this PDF. It may be scanned; please upload a DOCX/TXT file or paste the resume text.");
