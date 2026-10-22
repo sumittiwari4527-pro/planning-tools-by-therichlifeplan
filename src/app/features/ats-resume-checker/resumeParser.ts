@@ -58,58 +58,73 @@ function decodePdfLiteral(value: string): string {
     .replace(/\\([0-7]{1,3})/g, (_, oct) => String.fromCharCode(parseInt(oct, 8)));
 }
 
-function extractPdfText(bytes: Uint8Array): string {
-  let raw = "";
-  for (let offset = 0; offset < bytes.length; offset += 0x8000) {
-    raw += String.fromCharCode(...bytes.subarray(offset, Math.min(offset + 0x8000, bytes.length)));
+type PdfJsTextItem = { str?: string; hasEOL?: boolean };
+type PdfJsDocument = {
+  numPages: number;
+  getPage(pageNumber: number): Promise<{
+    getTextContent(): Promise<{ items: Array<PdfJsTextItem | { type: string }> }>;
+  }>;
+};
+type PdfJsLibrary = {
+  GlobalWorkerOptions: { workerSrc: string };
+  getDocument(options: { data: Uint8Array }): { promise: Promise<PdfJsDocument> };
+};
+
+declare global {
+  interface Window {
+    pdfjsLib?: PdfJsLibrary;
   }
-  if (!raw.startsWith("%PDF-")) throw new Error("This file doesn't appear to be a valid PDF.");
+}
 
-  const chunks: string[] = [];
-  // Pair each stream with its own object dictionary. Looking at an arbitrary
-  // window before "stream" can miss /FlateDecode and accidentally read binary
-  // compressed bytes as if they were resume text.
-  const streamPattern = /<<(?:.|\r|\n)*?>>\s*stream\r?\n([\s\S]*?)\r?\nendstream/g;
-  let match: RegExpExecArray | null;
-  while ((match = streamPattern.exec(raw)) !== null) {
-    const dictionary = match[0].slice(0, match[0].indexOf("stream"));
-    const stream = match[1];
-    let decoded = stream;
+const PDFJS_VERSION = "3.11.174";
+let pdfJsLoadPromise: Promise<PdfJsLibrary> | undefined;
 
-    if (/\/FlateDecode\b/.test(dictionary)) {
-      try {
-        const start = match.index + match[0].indexOf(stream);
-        const streamBytes = bytes.subarray(start, start + stream.length);
-        decoded = new TextDecoder("latin1").decode(inflate(streamBytes));
-      } catch {
-        // Ignore streams that cannot be decompressed; never scan their binary
-        // payload for accidental text-like sequences.
-        continue;
-      }
-    } else if (/\/Filter\b/.test(dictionary)) {
-      // Unsupported filters (for example DCTDecode) are not text streams.
-      continue;
-    }
+function loadPdfJs(): Promise<PdfJsLibrary> {
+  if (typeof window === "undefined") return Promise.reject(new Error("PDF reading is only available in a browser."));
+  if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+  if (!pdfJsLoadPromise) {
+    pdfJsLoadPromise = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VERSION}/pdf.min.js`;
+      script.async = true;
+      script.onload = () => {
+        if (window.pdfjsLib) resolve(window.pdfjsLib);
+        else reject(new Error("The PDF reader loaded but could not be initialized. Please try a DOCX file."));
+      };
+      script.onerror = () => {
+        pdfJsLoadPromise = undefined;
+        reject(new Error("The PDF reader couldn't be loaded. Check your internet connection or upload a DOCX/TXT file."));
+      };
+      document.head.appendChild(script);
+    });
+  }
+  return pdfJsLoadPromise;
+}
 
-    // Only parse streams that look like PDF text content.
-    if (!/\bBT\b|\bTj\b|\bTJ\b/.test(decoded)) continue;
-    const tokenPattern = /\(((?:\\.|[^\\)])*)\)\s*Tj|\[((?:.|\n)*?)\]\s*TJ/g;
-    let token: RegExpExecArray | null;
-    while ((token = tokenPattern.exec(decoded)) !== null) {
-      if (token[1] !== undefined) chunks.push(decodePdfLiteral(token[1]));
-      else {
-        const literals = token[2].match(/\(((?:\\.|[^\\)])*)\)/g) || [];
-        chunks.push(literals.map((literal) => decodePdfLiteral(literal.slice(1, -1))).join(""));
-      }
-    }
+async function extractPdfText(bytes: Uint8Array): Promise<string> {
+  if (bytes.length < 5 || new TextDecoder("latin1").decode(bytes.subarray(0, 5)) !== "%PDF-") {
+    throw new Error("This file doesn't appear to be a valid PDF.");
   }
 
-  const text = chunks.join(" ").replace(/[\x00-\x08\x0b\x0c\x0e-\x1f]/g, " ").trim();
+  const pdfjs = await loadPdfJs();
+  pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VERSION}/pdf.worker.min.js`;
+  const pdf = await pdfjs.getDocument({ data: bytes }).promise;
+  const pages: string[] = [];
+
+  for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+    const page = await pdf.getPage(pageNumber);
+    const content = await page.getTextContent();
+    const pageText = content.items
+      .map((item) => "str" in item ? item.str || "" : "")
+      .filter(Boolean)
+      .join(" ");
+    pages.push(pageText);
+  }
+
+  const text = pages.join("\n").replace(/\s+/g, " ").trim();
   const letters = (text.match(/[A-Za-z]/g) || []).length;
-  const printable = (text.match(/[A-Za-z0-9\s.,;:'"()&/@+%#-]/g) || []).length;
-  const quality = text.length ? printable / text.length : 0;
-  if (text.length < 30 || letters < 20 || quality < 0.72) {
-    throw new Error("We couldn't read the text in this PDF reliably. It may use a font encoding this basic parser doesn't support, or it may be scanned. Please paste the resume text instead, or upload a DOCX/TXT file.");
+  if (text.length < 30 || letters < 20) {
+    throw new Error("We couldn't find selectable text in this PDF. It may be scanned; please upload a DOCX/TXT file or paste the resume text.");
   }
   return text;
 }
@@ -124,6 +139,6 @@ export async function extractResumeText(file: File): Promise<string> {
     if (text.length < 20) throw new Error("No readable resume text was found in this DOCX file.");
     return text;
   }
-  if (lowerName.endsWith(".pdf")) return extractPdfText(bytes);
+  if (lowerName.endsWith(".pdf")) return await extractPdfText(bytes);
   throw new Error("Please upload a PDF, DOCX, or TXT file.");
 }
