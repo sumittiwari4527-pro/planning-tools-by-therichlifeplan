@@ -4,6 +4,26 @@ function pdfSafe(value: string): string {
   return value.normalize("NFKD").replace(/[^\x20-\x7E]/g, "").replace(/([\\()])/g, "\\$1");
 }
 
+function wrapLine(line: string, maxLength = 88): string[] {
+  if (line.length <= maxLength) return [line];
+  const words = line.split(/\s+/);
+  const wrapped: string[] = [];
+  let current = "";
+  for (const word of words) {
+    if (word.length > maxLength) {
+      if (current) wrapped.push(current);
+      current = "";
+      for (let i = 0; i < word.length; i += maxLength) wrapped.push(word.slice(i, i + maxLength));
+      continue;
+    }
+    if (!current) current = word;
+    else if ((current + " " + word).length <= maxLength) current += " " + word;
+    else { wrapped.push(current); current = word; }
+  }
+  if (current) wrapped.push(current);
+  return wrapped;
+}
+
 export function downloadAnalysisPdf(analysis: ResumeAnalysis): void {
   const lines = [
     "RichLifeTools - ATS Resume Check",
@@ -29,16 +49,11 @@ export function downloadAnalysisPdf(analysis: ResumeAnalysis): void {
     "DISCLAIMER",
     "This is an estimated, rule-based review, not a score from a specific ATS. ATS products vary.",
     "Only add keywords, skills, and achievements that accurately reflect your experience.",
-  ].flatMap((line) => {
-    if (line.length <= 92) return [line];
-    const parts: string[] = [];
-    for (let i = 0; i < line.length; i += 92) parts.push(line.slice(i, i + 92));
-    return parts;
-  });
+  ].flatMap((line) => wrapLine(line));
+
   const pages: string[][] = [];
   for (let i = 0; i < lines.length; i += 48) pages.push(lines.slice(i, i + 48));
   const objects: string[] = [];
-  const pageIds: number[] = [];
   const fontId = 3;
   objects[1] = "<< /Type /Catalog /Pages 2 0 R >>";
   objects[fontId] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>";
@@ -46,7 +61,6 @@ export function downloadAnalysisPdf(analysis: ResumeAnalysis): void {
   pages.forEach((page, index) => {
     const pageId = 4 + index * 2;
     const contentId = pageId + 1;
-    pageIds.push(pageId);
     kids.push(`${pageId} 0 R`);
     const commands = ["BT", "/F1 10 Tf", "50 790 Td", "14 TL", ...page.flatMap((line) => [`(${pdfSafe(line)}) Tj`, "T*"]), "ET"].join("\n");
     objects[pageId] = `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 ${fontId} 0 R >> >> /Contents ${contentId} 0 R >>`;
@@ -69,8 +83,10 @@ export function downloadAnalysisPdf(analysis: ResumeAnalysis): void {
   const link = document.createElement("a");
   link.href = url;
   link.download = "richlifetools-resume-analysis.pdf";
+  link.style.display = "none";
   document.body.appendChild(link);
   link.click();
   link.remove();
-  URL.revokeObjectURL(url);
+  // Safari may begin consuming the object URL asynchronously after the click.
+  window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
 }
