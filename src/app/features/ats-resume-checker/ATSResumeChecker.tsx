@@ -77,7 +77,7 @@ export function ATSResumeChecker({ onBack }: { onBack: () => void }) {
         <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-6 items-start">
           <section className="bg-white border border-[#e4e8f0] rounded-3xl p-5 sm:p-7 shadow-sm">
             <h2 className="text-xl font-bold text-[#0f1523] mb-2">1. Add your resume</h2>
-            <p className="text-sm text-[#6b7a99] mb-5">PDF, DOCX, or TXT · Maximum 8 MB. Your file is processed locally and is not uploaded.</p>
+            <p className="text-sm text-[#6b7a99] mb-5">PDF, DOCX, or TXT · Maximum 8 MB. Your resume file is processed in this browser and is not sent to our server. PDF reading loads the PDF.js library from a third-party CDN.</p>
             <input ref={inputRef} type="file" accept=".pdf,.docx,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" className="hidden" onChange={(event) => void handleFile(event.target.files?.[0])} />
             <button onClick={() => inputRef.current?.click()} disabled={busy} className="w-full rounded-2xl border-2 border-dashed border-indigo-200 bg-indigo-50/50 p-6 text-left hover:border-indigo-400 disabled:opacity-50">
               <span className="flex items-center gap-3">
