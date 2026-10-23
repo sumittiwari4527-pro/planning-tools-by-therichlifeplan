@@ -43,7 +43,7 @@ function color(rgb: RGB, stroke = false): string {
 function scoreColor(score: number): RGB {
   return score >= 80 ? COLORS.green : score >= 60 ? COLORS.amber : COLORS.red;
 }
-function buildPageCommands(analysis: ResumeAnalysis): string[] {
+function buildPageCommands(analysis: ResumeAnalysis): string[][] {
   const pages: string[][] = [];
   let commands: string[] = [];
   let y = 0;
@@ -177,7 +177,7 @@ function buildPageCommands(analysis: ResumeAnalysis): string[] {
   addText("ATS products vary. Only include skills and achievements that are accurate.", 54, y - 35, 8, COLORS.muted);
 
   pages.push(commands);
-  return pages.flatMap((page, index) => {
+  return pages.map((page, index) => {
     const footer = [
       color(COLORS.border),
       "42 34 m 570 34 l S",
