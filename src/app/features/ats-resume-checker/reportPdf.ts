@@ -145,7 +145,9 @@ function buildPageCommands(analysis: ResumeAnalysis): string[][] {
       const severityFill = finding.severity === "high" ? COLORS.paleRed : finding.severity === "medium" ? COLORS.paleAmber : COLORS.paleGreen;
       const detailLines = wrapText(finding.detail, 90);
       ensureSpace(30 + detailLines.length * 12);
-      addRect(48, y - 3, 4, 27 + detailLines.length * 12, severityColor);
+      const findingHeight = 27 + detailLines.length * 12;
+      // PDF rectangles grow upward from their bottom coordinate, so anchor this bar below the current text baseline.
+      addRect(48, y - 3 - findingHeight, 4, findingHeight, severityColor);
       addRect(58, y - 1, 56, 15, severityFill);
       addText(finding.severity.toUpperCase(), 63, y + 4, 7, severityColor, true);
       addText(finding.title, 123, y + 3, 9, COLORS.ink, true);
