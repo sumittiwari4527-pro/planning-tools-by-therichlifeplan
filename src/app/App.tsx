@@ -389,7 +389,7 @@ export default function App() {
 
             <section className="bg-[#4f46e5] mx-4 sm:mx-8 lg:mx-16 rounded-3xl mb-24 px-8 py-10">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                {[{ num: String(tools.length), label: "Precision tools" }, { num: String(articles.length), label: "In-depth articles" }, { num: "100%", label: "Free to use" }, { num: String(products.length), label: "Digital products" }].map(s => (
+                {[{ num: String(tools.length), label: "Precision tools" }, { num: String(articles.length), label: "In-depth articles" }, { num: "100%", label: "Free to use" }, { num: String(products.filter((product) => ["smart-parking-sticker", "moneyflow-budget-planner"].includes(product.slug)).length), label: "Digital products" }].map(s => (
                   <div key={s.label}>
                     <div className="text-4xl font-bold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{s.num}</div>
                     <div className="text-indigo-300 text-sm mt-1">{s.label}</div>
