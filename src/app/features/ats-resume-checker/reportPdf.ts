@@ -148,8 +148,8 @@ function buildPageCommands(analysis: ResumeAnalysis): string[][] {
       const detailLines = wrapText(finding.detail, 90);
       ensureSpace(30 + detailLines.length * 12);
       const findingTopY = y;
-      addText(finding.severity.toUpperCase(), 63, findingTopY + 4, 7, severityColor, true);
       addRect(58, findingTopY - 1, 56, 15, severityFill);
+      addText(finding.severity.toUpperCase(), 63, findingTopY + 4, 7, severityColor, true);
       addText(finding.title, 123, findingTopY + 3, 9, COLORS.ink, true);
       y -= 14;
       for (const line of detailLines) {
