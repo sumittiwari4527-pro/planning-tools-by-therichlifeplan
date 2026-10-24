@@ -77,8 +77,9 @@ function buildPageCommands(analysis: ResumeAnalysis): string[][] {
     commands.push(color(fill), `${x} ${bottom} ${width} ${height} re f`);
     if (stroke) commands.push(color(stroke, true), `${x} ${bottom} ${width} ${height} re S`);
   };
-  const addSection = (title: string) => {
-    ensureSpace(35);
+  const addSection = (title: string, followingSpace = 0) => {
+    // Keep a section heading with the first content block that follows it.
+    ensureSpace(35 + followingSpace);
     addText(title.toUpperCase(), 42, y, 9, COLORS.indigo, true);
     y -= 12;
     commands.push(color(COLORS.border), `42 ${y} m 570 ${y} l S`);
@@ -138,15 +139,17 @@ function buildPageCommands(analysis: ResumeAnalysis): string[][] {
     }
   } else addParagraph("Keep building clear, relevant evidence for your target role.");
 
-  addSection("Improvement plan");
+  const firstFindingLines = analysis.findings.length ? wrapText(analysis.findings[0].detail, 90).length : 0;
+  addSection("Improvement plan", analysis.findings.length ? 30 + firstFindingLines * 12 : 0);
   if (analysis.findings.length) {
     for (const finding of analysis.findings) {
       const severityColor = finding.severity === "high" ? COLORS.red : finding.severity === "medium" ? COLORS.amber : COLORS.green;
       const severityFill = finding.severity === "high" ? COLORS.paleRed : finding.severity === "medium" ? COLORS.paleAmber : COLORS.paleGreen;
       const detailLines = wrapText(finding.detail, 90);
       ensureSpace(30 + detailLines.length * 12);
-      const findingHeight = 27 + detailLines.length * 12;
-      // PDF rectangles grow upward from their bottom coordinate, so anchor this bar below the current text baseline.
+      // The finding occupies 14 points for its title, 12 per detail line, and 10 points of trailing space.
+      const findingHeight = 24 + detailLines.length * 12;
+      // PDF rectangles grow upward from their bottom coordinate, so align the bar with this finding only.
       addRect(48, y - 3 - findingHeight, 4, findingHeight, severityColor);
       addRect(58, y - 1, 56, 15, severityFill);
       addText(finding.severity.toUpperCase(), 63, y + 4, 7, severityColor, true);
