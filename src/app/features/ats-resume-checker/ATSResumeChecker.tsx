@@ -121,6 +121,42 @@ export function ATSResumeChecker({ onBack }: { onBack: () => void }) {
           </div>
         </div>
 
+        <section aria-label="How the resume checker works" className="relative overflow-hidden rounded-3xl border border-indigo-100 bg-gradient-to-br from-indigo-50 via-white to-cyan-50 p-5 sm:p-7 mb-7">
+          <div className="absolute -right-10 -top-12 h-44 w-44 rounded-full bg-indigo-200/30 blur-2xl pointer-events-none" />
+          <div className="relative grid md:grid-cols-[1.1fr_0.9fr] gap-6 items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/80 px-3 py-1.5 text-xs font-semibold text-indigo-700 mb-3"><Sparkles size={13} /> A clearer path to a stronger resume</div>
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#0f1523] mb-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Turn your resume into an actionable plan.</h2>
+              <p className="text-sm leading-relaxed text-[#6b7a99] max-w-xl">See what is working, spot keywords to review, and get practical next steps before you apply.</p>
+              <div className="mt-5 flex flex-wrap gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white border border-emerald-100 px-3 py-1.5 text-xs font-medium text-emerald-700"><CheckCircle2 size={13} /> Structure check</span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white border border-indigo-100 px-3 py-1.5 text-xs font-medium text-indigo-700"><Target size={13} /> Keyword match</span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white border border-amber-100 px-3 py-1.5 text-xs font-medium text-amber-700"><FileText size={13} /> PDF report</span>
+              </div>
+            </div>
+            <div className="relative mx-auto w-full max-w-xs" aria-hidden="true">
+              <div className="absolute -right-2 top-5 h-40 w-40 rounded-full bg-cyan-200/40 blur-xl" />
+              <div className="relative rotate-2 rounded-2xl border border-slate-200 bg-white p-4 shadow-xl shadow-indigo-900/10">
+                <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-white"><FileText size={21} /></div>
+                  <div className="flex-1"><div className="h-2.5 w-28 rounded-full bg-slate-800" /><div className="mt-2 h-2 w-20 rounded-full bg-slate-200" /></div>
+                  <div className="rounded-lg bg-emerald-50 px-2 py-1 text-xs font-bold text-emerald-700">PDF</div>
+                </div>
+                <div className="flex items-center gap-3 py-4">
+                  <div className="flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-full border-[5px] border-emerald-500 bg-emerald-50"><span className="text-xl font-bold text-slate-900">82</span><span className="text-[9px] font-semibold text-slate-500">SCORE</span></div>
+                  <div className="flex-1 space-y-2.5">
+                    <div><div className="mb-1 flex justify-between text-[9px] font-semibold text-slate-500"><span>Structure</span><span>Strong</span></div><div className="h-1.5 rounded-full bg-slate-100"><div className="h-1.5 w-[92%] rounded-full bg-emerald-500" /></div></div>
+                    <div><div className="mb-1 flex justify-between text-[9px] font-semibold text-slate-500"><span>Keywords</span><span>Review</span></div><div className="h-1.5 rounded-full bg-slate-100"><div className="h-1.5 w-[54%] rounded-full bg-amber-500" /></div></div>
+                    <div><div className="mb-1 flex justify-between text-[9px] font-semibold text-slate-500"><span>Impact</span><span>Good</span></div><div className="h-1.5 rounded-full bg-slate-100"><div className="h-1.5 w-[76%] rounded-full bg-indigo-500" /></div></div>
+                  </div>
+                </div>
+                <div className="rounded-xl bg-indigo-50 p-3"><div className="mb-2 flex items-center gap-2 text-[10px] font-bold text-indigo-700"><Sparkles size={12} /> NEXT BEST STEPS</div><div className="mb-1.5 h-2 w-full rounded-full bg-indigo-200" /><div className="h-2 w-3/4 rounded-full bg-indigo-100" /></div>
+              </div>
+              <div className="absolute -left-3 bottom-5 flex items-center gap-2 rounded-xl border border-emerald-100 bg-white px-3 py-2 shadow-lg"><ShieldCheck size={17} className="text-emerald-600" /><span className="text-xs font-semibold text-slate-700">Resume stays in browser</span></div>
+            </div>
+          </div>
+        </section>
+
         <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-6 items-start">
           <section className="bg-white border border-[#e4e8f0] rounded-3xl p-5 sm:p-7 shadow-sm">
             <h2 className="text-xl font-bold text-[#0f1523] mb-2">1. Add your resume</h2>
