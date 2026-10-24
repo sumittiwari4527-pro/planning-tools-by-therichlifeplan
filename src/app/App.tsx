@@ -104,9 +104,59 @@ export default function App() {
       url: "/",
     },
     ats: {
-      title: "Free ATS Resume Score Checker",
-      description: "Check your resume structure, skills, keyword coverage, and improvement areas with a free, private resume checker.",
+      title: "Free ATS Resume Checker & Resume Score",
+      description: "Check your resume for ATS-friendly structure, skills, job-description keywords, readability, and measurable achievements. Get a free resume score and downloadable PDF report.",
       url: "/tools/ats-resume-checker",
+      jsonLd: {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "SoftwareApplication",
+            name: "Free ATS Resume Checker",
+            applicationCategory: "BusinessApplication",
+            operatingSystem: "Any",
+            url: "https://richlifetools.com/tools/ats-resume-checker",
+            description: "A free browser-based resume checker that reviews resume structure, keyword coverage, readability, experience evidence, and job-description alignment, with a downloadable PDF report.",
+            offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+            featureList: [
+              "Resume structure and section checks",
+              "Job-description keyword comparison",
+              "Resume readability and experience feedback",
+              "Downloadable PDF resume analysis report",
+              "Browser-based resume processing"
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            mainEntity: [
+              {
+                "@type": "Question",
+                name: "How does the free ATS resume checker work?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "It uses rule-based checks to review resume structure, skills, keywords, readability, and evidence of achievements. Adding a job description enables a keyword comparison."
+                }
+              },
+              {
+                "@type": "Question",
+                name: "Does this tool upload or store my resume?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Resume text is processed in your browser and is not sent to RichLifeTools. PDF reading loads the PDF.js library from a third-party CDN."
+                }
+              },
+              {
+                "@type": "Question",
+                name: "Does the resume score guarantee that an ATS will accept my resume?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "No. The score is an estimate from general rule-based checks and does not reproduce any specific applicant tracking system or guarantee an interview."
+                }
+              }
+            ]
+          }
+        ]
+      }
     },
     tools: {
       title: "Tools",
