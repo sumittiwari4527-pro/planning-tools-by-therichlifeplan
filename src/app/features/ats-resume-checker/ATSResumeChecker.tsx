@@ -206,7 +206,7 @@ export function ATSResumeChecker({ onBack }: { onBack: () => void }) {
                   </form>
                 ) : (
                   <div>
-                    <div className="mb-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800"><CheckCircle2 size={16} className="inline mr-2" />Email submitted successfully. Your report is unlocked.</div>
+                    <div className="mb-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800"><CheckCircle2 size={16} className="inline mr-2" />Your report is unlocked.</div>
                     <button onClick={() => downloadAnalysisPdf(analysis)} className="w-full inline-flex justify-center items-center gap-2 rounded-2xl bg-[#0f1523] px-5 py-3.5 text-sm font-semibold text-white hover:bg-[#27334b]"><Download size={17} /> Download PDF report</button>
                   </div>
                 )}
