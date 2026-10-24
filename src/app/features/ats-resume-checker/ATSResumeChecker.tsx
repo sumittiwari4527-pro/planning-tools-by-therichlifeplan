@@ -13,6 +13,10 @@ export function ATSResumeChecker({ onBack }: { onBack: () => void }) {
   const [analysis, setAnalysis] = useState<ResumeAnalysis | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [reportEmail, setReportEmail] = useState("");
+  const [emailSubmitting, setEmailSubmitting] = useState(false);
+  const [emailSubmitted, setEmailSubmitted] = useState(false);
+  const [emailError, setEmailError] = useState("");
 
   const handleFile = async (file?: File) => {
     if (!file) return;
@@ -47,6 +51,49 @@ export function ATSResumeChecker({ onBack }: { onBack: () => void }) {
     setFileName("");
     setAnalysis(null);
     setError("");
+    setReportEmail("");
+    setEmailSubmitting(false);
+    setEmailSubmitted(false);
+    setEmailError("");
+  };
+
+  const submitReportEmail = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setEmailError("");
+    if (!reportEmail.trim()) {
+      setEmailError("Enter your email address to unlock the PDF report.");
+      return;
+    }
+
+    setEmailSubmitting(true);
+    try {
+      const response = await fetch("https://formsubmit.co/ajax/richlifetools.support@gmail.com", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          email: reportEmail.trim(),
+          _replyto: reportEmail.trim(),
+          _subject: "New ATS Resume Checker report request",
+          _template: "table",
+          source: "RichLifeTools ATS Resume Score Checker",
+          note: "The visitor submitted their email to unlock the locally generated resume report. Resume text and report contents were not sent.",
+        }),
+      });
+
+      if (!response.ok) throw new Error("Email submission failed. Please try again.");
+      const result = await response.json();
+      if (result.success === "false" || result.success === false) {
+        throw new Error(result.message || "Email submission failed. Please try again.");
+      }
+      setEmailSubmitted(true);
+    } catch (e) {
+      setEmailError(e instanceof Error ? e.message : "Unable to submit your email. Please try again.");
+    } finally {
+      setEmailSubmitting(false);
+    }
   };
 
   const scoreLabel = (score: number) => score >= 80 ? "Strong signals" : score >= 60 ? "Room to improve" : "Needs attention";
@@ -137,7 +184,32 @@ export function ATSResumeChecker({ onBack }: { onBack: () => void }) {
                   <div><div className="text-xs font-semibold text-amber-700 mb-2">Review if relevant</div><div className="flex flex-wrap gap-2">{analysis.missingKeywords.length ? analysis.missingKeywords.slice(0, 14).map((word) => <span key={word} className="rounded-full bg-amber-50 border border-amber-100 px-2.5 py-1 text-xs text-amber-800">{word}</span>) : <span className="text-xs text-[#9aa5ba]">No obvious gaps in the selected comparison set</span>}</div></div>
                 </div>
                 <div className="mb-6"><h3 className="font-bold text-[#0f1523] mb-3">What is already working</h3>{analysis.strengths.length ? <ul className="space-y-2">{analysis.strengths.map((item) => <li key={item} className="flex gap-2 text-sm text-[#426b57]"><CheckCircle2 size={16} className="shrink-0 mt-0.5" />{item}</li>)}</ul> : <p className="text-sm text-[#6b7a99]">Add standard section headings and concrete achievements to give the checker more evidence.</p>}</div>
-                <button onClick={() => downloadAnalysisPdf(analysis)} className="w-full inline-flex justify-center items-center gap-2 rounded-2xl bg-[#0f1523] px-5 py-3.5 text-sm font-semibold text-white hover:bg-[#27334b]"><Download size={17} /> Download PDF report</button>
+                {!emailSubmitted ? (
+                  <form onSubmit={(event) => void submitReportEmail(event)} className="rounded-2xl border border-[#e4e8f0] bg-[#f8f9fb] p-4">
+                    <label htmlFor="ats-report-email" className="block text-sm font-semibold text-[#0f1523] mb-2">Enter your email to unlock the PDF report</label>
+                    <input
+                      id="ats-report-email"
+                      type="email"
+                      autoComplete="email"
+                      required
+                      value={reportEmail}
+                      onChange={(event) => { setReportEmail(event.target.value); setEmailError(""); }}
+                      placeholder="you@example.com"
+                      className="w-full rounded-xl border border-[#dce2ed] bg-white px-4 py-3 text-sm text-[#0f1523] outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                    />
+                    <button type="submit" disabled={emailSubmitting || !reportEmail.trim()} className="mt-3 w-full inline-flex justify-center items-center gap-2 rounded-2xl bg-[#0f1523] px-5 py-3.5 text-sm font-semibold text-white hover:bg-[#27334b] disabled:opacity-50">
+                      {emailSubmitting ? <LoaderCircle size={17} className="animate-spin" /> : <CheckCircle2 size={17} />}
+                      {emailSubmitting ? "Submitting email…" : "Submit email & unlock report"}
+                    </button>
+                    {emailError && <p role="alert" className="mt-3 text-sm text-rose-700">{emailError}</p>}
+                    <p className="mt-3 text-xs text-[#6b7a99]">Your email will be sent to RichLifeTools for product follow-up. Your resume text and report contents stay on this device and are not emailed.</p>
+                  </form>
+                ) : (
+                  <div>
+                    <div className="mb-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800"><CheckCircle2 size={16} className="inline mr-2" />Email submitted successfully. Your report is unlocked.</div>
+                    <button onClick={() => downloadAnalysisPdf(analysis)} className="w-full inline-flex justify-center items-center gap-2 rounded-2xl bg-[#0f1523] px-5 py-3.5 text-sm font-semibold text-white hover:bg-[#27334b]"><Download size={17} /> Download PDF report</button>
+                  </div>
+                )}
                 <p className="mt-3 text-xs text-[#9aa5ba]">Your report is generated on this device. Your resume text is not included in analytics or sent to our servers.</p>
               </div>
             )}
