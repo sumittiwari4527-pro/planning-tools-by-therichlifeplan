@@ -147,9 +147,8 @@ function buildPageCommands(analysis: ResumeAnalysis): string[][] {
       const severityFill = finding.severity === "high" ? COLORS.paleRed : finding.severity === "medium" ? COLORS.paleAmber : COLORS.paleGreen;
       const detailLines = wrapText(finding.detail, 90);
       ensureSpace(30 + detailLines.length * 12);
-      // The finding occupies 14 points for its title, 12 per detail line, and 10 points of trailing space.
-      const findingHeight = 24 + detailLines.length * 12;
-      // PDF rectangles grow upward from their bottom coordinate, so align the bar with this finding only.
+      // Align the bar only with the title and detail lines; keep the trailing gap clear before the next finding/section.
+      const findingHeight = 14 + detailLines.length * 12;
       addRect(48, y - 3 - findingHeight, 4, findingHeight, severityColor);
       addRect(58, y - 1, 56, 15, severityFill);
       addText(finding.severity.toUpperCase(), 63, y + 4, 7, severityColor, true);
