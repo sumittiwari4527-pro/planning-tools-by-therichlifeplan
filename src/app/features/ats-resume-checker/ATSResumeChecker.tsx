@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { AlertCircle, ArrowLeft, CheckCircle2, Download, FileText, FileUp, LoaderCircle, RotateCcw, ShieldCheck, Sparkles, Target } from "lucide-react";
 import { analyzeResume } from "./scoringEngine";
 import { extractResumeText } from "./resumeParser";
@@ -57,7 +57,7 @@ export function ATSResumeChecker({ onBack }: { onBack: () => void }) {
     setEmailError("");
   };
 
-  const submitReportEmail = async (event: React.FormEvent<HTMLFormElement>) => {
+  const submitReportEmail = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setEmailError("");
     if (!reportEmail.trim()) {
