@@ -147,17 +147,20 @@ function buildPageCommands(analysis: ResumeAnalysis): string[][] {
       const severityFill = finding.severity === "high" ? COLORS.paleRed : finding.severity === "medium" ? COLORS.paleAmber : COLORS.paleGreen;
       const detailLines = wrapText(finding.detail, 90);
       ensureSpace(30 + detailLines.length * 12);
-      // Keep the severity bar inset from the text block and leave clear space before the next item/section.
-      const findingHeight = 14 + detailLines.length * 12;
-      addRect(48, y - 7 - findingHeight, 4, findingHeight, severityColor);
-      addRect(58, y - 1, 56, 15, severityFill);
-      addText(finding.severity.toUpperCase(), 63, y + 4, 7, severityColor, true);
-      addText(finding.title, 123, y + 3, 9, COLORS.ink, true);
+      const findingTopY = y;
+      addText(finding.severity.toUpperCase(), 63, findingTopY + 4, 7, severityColor, true);
+      addRect(58, findingTopY - 1, 56, 15, severityFill);
+      addText(finding.title, 123, findingTopY + 3, 9, COLORS.ink, true);
       y -= 14;
       for (const line of detailLines) {
         addText(line, 123, y, 8, COLORS.muted);
         y -= 12;
       }
+      // Calculate the bar from the finding's original top coordinate, not the mutated text cursor.
+      // This keeps every bar beside its own title/details and clear of the following finding/section.
+      const findingBarHeight = 14 + detailLines.length * 12;
+      const findingBarBottom = findingTopY - findingBarHeight + 4;
+      addRect(48, findingBarBottom, 4, findingBarHeight, severityColor);
       y -= 10;
     }
   } else addParagraph("No major improvement areas were flagged by these basic checks.");
