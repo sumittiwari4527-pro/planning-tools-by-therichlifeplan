@@ -186,7 +186,7 @@ export function ATSResumeChecker({ onBack }: { onBack: () => void }) {
                 <div className="mb-6"><h3 className="font-bold text-[#0f1523] mb-3">What is already working</h3>{analysis.strengths.length ? <ul className="space-y-2">{analysis.strengths.map((item) => <li key={item} className="flex gap-2 text-sm text-[#426b57]"><CheckCircle2 size={16} className="shrink-0 mt-0.5" />{item}</li>)}</ul> : <p className="text-sm text-[#6b7a99]">Add standard section headings and concrete achievements to give the checker more evidence.</p>}</div>
                 {!emailSubmitted ? (
                   <form onSubmit={(event) => void submitReportEmail(event)} className="rounded-2xl border border-[#e4e8f0] bg-[#f8f9fb] p-4">
-                    <label htmlFor="ats-report-email" className="block text-sm font-semibold text-[#0f1523] mb-2">Enter your email to unlock the PDF report</label>
+                    <label htmlFor="ats-report-email" className="block text-sm font-semibold text-[#0f1523] mb-2">Enter your email to get your free PDF report</label>
                     <input
                       id="ats-report-email"
                       type="email"
@@ -199,10 +199,10 @@ export function ATSResumeChecker({ onBack }: { onBack: () => void }) {
                     />
                     <button type="submit" disabled={emailSubmitting || !reportEmail.trim()} className="mt-3 w-full inline-flex justify-center items-center gap-2 rounded-2xl bg-[#0f1523] px-5 py-3.5 text-sm font-semibold text-white hover:bg-[#27334b] disabled:opacity-50">
                       {emailSubmitting ? <LoaderCircle size={17} className="animate-spin" /> : <CheckCircle2 size={17} />}
-                      {emailSubmitting ? "Submitting email…" : "Submit email & unlock report"}
+                      {emailSubmitting ? "Submitting email…" : "Get my free report"}
                     </button>
                     {emailError && <p role="alert" className="mt-3 text-sm text-rose-700">{emailError}</p>}
-                    <p className="mt-3 text-xs text-[#6b7a99]">Your email will be sent to RichLifeTools for product follow-up. Your resume text and report contents stay on this device and are not emailed.</p>
+                    <p className="mt-3 text-xs text-[#6b7a99]">Your email will be used by RichLifeTools for follow-up. Your resume and report contents stay on your device.</p>
                   </form>
                 ) : (
                   <div>
