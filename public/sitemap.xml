@@ -7,6 +7,12 @@
   <url><loc>https://richlifetools.com/tools/goal-planner</loc></url>
   <url><loc>https://richlifetools.com/tools/bmi-calculator</loc></url>
   <url><loc>https://richlifetools.com/tools/unit-converter</loc></url>
+  <url>
+    <loc>https://richlifetools.com/tools/ats-resume-checker</loc>
+    <lastmod>2026-10-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
   <url><loc>https://richlifetools.com/products</loc></url>
   <url><loc>https://richlifetools.com/products/smart-parking-sticker</loc></url>
   <url><loc>https://richlifetools.com/products/moneyflow-budget-planner</loc></url>

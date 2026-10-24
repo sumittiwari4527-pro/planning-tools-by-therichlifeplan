@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Menu, X, Flame, Target, TrendingUp, Hash, ChevronRight, ArrowRight, ShoppingBag } from "lucide-react";
+import { Menu, X, Flame, Target, TrendingUp, Hash, ChevronRight, ArrowRight, ShoppingBag, FileSearch } from "lucide-react";
 import { useLocation, useNavigate as useRouterNavigate } from "react-router";
 
 // ─── Constants & Types ───────────────────────────────────────────
@@ -26,12 +26,13 @@ import { ContactUsPage } from "./features/contact/ContactUsPage";
 import { PrivacyPolicyPage } from "./features/legal/PrivacyPolicyPage";
 import { TermsOfServicePage } from "./features/legal/TermsOfServicePage";
 import { RefundPolicyPage } from "./features/legal/RefundPolicyPage";
+import { ATSResumeChecker } from "./features/ats-resume-checker/ATSResumeChecker";
 
 // ─── Data ───────────────────────────────────────────────────────
 import { articles } from "./data/articles";
 
 // ─── Types ──────────────────────────────────────────────────────
-type Page = "home" | "tools" | "blog" | "article" | "products" | "product" | "parking" | "parking-activation" | "parking-success" | "contact" | "privacy" | "terms" | "refund";
+type Page = "home" | "tools" | "blog" | "article" | "products" | "product" | "parking" | "parking-activation" | "parking-success" | "ats" | "contact" | "privacy" | "terms" | "refund";
 
 // ─── Tool Definitions ───────────────────────────────────────────
 const tools = [
@@ -39,10 +40,12 @@ const tools = [
   { id: "goal", icon: Target, name: "Goal Planner", desc: "Multi-goal financial planning with actionable steps", color: "#8b5cf6", bg: "#f3f0ff" },
   { id: "bmi", icon: TrendingUp, name: "BMI Calculator", desc: "Body mass index with health context", color: "#10b981", bg: "#d1fae5" },
   { id: "unit", icon: Hash, name: "Unit Converter", desc: "Convert between length, weight, and temperature", color: "#f59e0b", bg: "#fef3c7" },
+  { id: "ats", icon: FileSearch, name: "ATS Resume Checker", desc: "Check resume compatibility and find improvement areas", color: "#4f46e5", bg: "#eef0fd" },
 ] satisfies Array<{ id: ToolId; icon: typeof Flame; name: string; desc: string; color: string; bg: string }>;
 
 const pageFromPath = (path: string): Page => {
   if (path === "/") return "home";
+  if (path === "/tools/ats-resume-checker") return "ats";
   if (path === "/blog") return "blog";
   if (path === "/contact") return "contact";
   if (path === "/privacy") return "privacy";
@@ -99,6 +102,61 @@ export default function App() {
       title: SITE_NAME,
       description: "Free FIRE calculator, goal planning calculator, BMI calculator, and unit converter. Set financial goals and build an actionable savings plan — no sign-up required.",
       url: "/",
+    },
+    ats: {
+      title: "Free ATS Resume Checker & Resume Score",
+      description: "Check your resume for ATS-friendly structure, skills, job-description keywords, readability, and measurable achievements. Get a free resume score and downloadable PDF report.",
+      url: "/tools/ats-resume-checker",
+      jsonLd: {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "SoftwareApplication",
+            name: "Free ATS Resume Checker",
+            applicationCategory: "BusinessApplication",
+            operatingSystem: "Any",
+            url: "https://richlifetools.com/tools/ats-resume-checker",
+            description: "A free browser-based resume checker that reviews resume structure, keyword coverage, readability, experience evidence, and job-description alignment, with a downloadable PDF report.",
+            offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+            featureList: [
+              "Resume structure and section checks",
+              "Job-description keyword comparison",
+              "Resume readability and experience feedback",
+              "Downloadable PDF resume analysis report",
+              "Browser-based resume processing"
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            mainEntity: [
+              {
+                "@type": "Question",
+                name: "How does the free ATS resume checker work?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "It uses rule-based checks to review resume structure, skills, keywords, readability, and evidence of achievements. Adding a job description enables a keyword comparison."
+                }
+              },
+              {
+                "@type": "Question",
+                name: "Does this tool upload or store my resume?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Resume text is processed in your browser and is not sent to RichLifeTools. PDF reading loads the PDF.js library from a third-party CDN."
+                }
+              },
+              {
+                "@type": "Question",
+                name: "Does the resume score guarantee that an ATS will accept my resume?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "No. The score is an estimate from general rule-based checks and does not reproduce any specific applicant tracking system or guarantee an interview."
+                }
+              }
+            ]
+          }
+        ]
+      }
     },
     tools: {
       title: "Tools",
@@ -389,6 +447,9 @@ export default function App() {
             </section>
           </div>
         )}
+
+        {/* ATS RESUME CHECKER */}
+        {page === "ats" && <ATSResumeChecker onBack={() => { setSelectedTool("fire"); routerNavigate("/tools"); }} />}
 
         {/* TOOLS PAGE */}
         {page === "tools" && (

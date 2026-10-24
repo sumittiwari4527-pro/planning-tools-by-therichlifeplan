@@ -5,6 +5,7 @@ export const TOOL_ROUTES = {
   goal: "/tools/goal-planner",
   bmi: "/tools/bmi-calculator",
   unit: "/tools/unit-converter",
+  ats: "/tools/ats-resume-checker",
 } as const;
 
 export type ToolId = keyof typeof TOOL_ROUTES;
