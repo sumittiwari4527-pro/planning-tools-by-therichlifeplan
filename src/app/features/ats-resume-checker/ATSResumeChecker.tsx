@@ -215,6 +215,42 @@ export function ATSResumeChecker({ onBack }: { onBack: () => void }) {
             )}
           </section>
         </div>
+        <section className="mt-12 rounded-3xl border border-[#e4e8f0] bg-white p-6 sm:p-8 shadow-sm" aria-labelledby="ats-guide-title">
+          <div className="max-w-3xl">
+            <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600 mb-3">Resume guide</p>
+            <h2 id="ats-guide-title" className="text-2xl sm:text-3xl font-bold text-[#0f1523] mb-4">How to improve your ATS resume score</h2>
+            <p className="text-sm sm:text-base leading-relaxed text-[#6b7a99] mb-6">Applicant tracking systems (ATS) help employers organize job applications and search resume information. This free ATS resume checker gives you a practical first-pass review of your resume structure, relevant terminology, readability, experience evidence, and measurable achievements. Add the target job description to compare important terms with the content already in your resume.</p>
+            <h3 className="text-lg font-bold text-[#0f1523] mb-3">What does the resume checker review?</h3>
+            <ul className="list-disc pl-5 space-y-2 text-sm leading-relaxed text-[#6b7a99] mb-6">
+              <li><strong className="text-[#0f1523]">Resume format and sections:</strong> checks for recognizable headings and contact details.</li>
+              <li><strong className="text-[#0f1523]">Job-description keywords:</strong> highlights relevant terms found in your resume and terms to review.</li>
+              <li><strong className="text-[#0f1523]">Experience and impact:</strong> looks for action-led bullets and evidence of outcomes.</li>
+              <li><strong className="text-[#0f1523]">Readability and credentials:</strong> reviews text length, basic readability signals, education, and certifications.</li>
+            </ul>
+            <h3 className="text-lg font-bold text-[#0f1523] mb-3">How to use this free ATS checker</h3>
+            <ol className="list-decimal pl-5 space-y-2 text-sm leading-relaxed text-[#6b7a99] mb-6">
+              <li>Upload a PDF, DOCX, or TXT resume, or paste your resume text.</li>
+              <li>Optionally paste the job description for a more relevant keyword comparison.</li>
+              <li>Select <strong className="text-[#0f1523]">Check my resume</strong> to see the estimated score, strengths, and improvement priorities.</li>
+              <li>Enter your email to unlock and download the PDF report.</li>
+            </ol>
+            <h3 className="text-lg font-bold text-[#0f1523] mb-3">Frequently asked questions</h3>
+            <div className="space-y-5">
+              <div>
+                <h4 className="font-semibold text-[#0f1523] mb-1">Is this ATS resume checker free?</h4>
+                <p className="text-sm leading-relaxed text-[#6b7a99]">Yes. You can analyze your resume for free. An email address is required to unlock the downloadable PDF report.</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-[#0f1523] mb-1">Is my resume uploaded to a server?</h4>
+                <p className="text-sm leading-relaxed text-[#6b7a99]">Your resume text is processed in your browser and is not sent to RichLifeTools. PDF reading loads the PDF.js library from a third-party CDN.</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-[#0f1523] mb-1">Will a high score guarantee an interview?</h4>
+                <p className="text-sm leading-relaxed text-[#6b7a99]">No. This is a general, rule-based estimate, not a score from a specific ATS. Employers use different systems and hiring criteria, so tailor your resume honestly to each role.</p>
+              </div>
+            </div>
+          </div>
+        </section>
         <div className="mt-8 grid sm:grid-cols-3 gap-4">
           <div className="rounded-2xl border border-[#e4e8f0] bg-white p-5"><ShieldCheck className="text-emerald-600 mb-3" size={22} /><h3 className="font-semibold text-[#0f1523] mb-1">Private by design</h3><p className="text-sm text-[#6b7a99]">Files are read locally. No account, upload service, or resume database.</p></div>
           <div className="rounded-2xl border border-[#e4e8f0] bg-white p-5"><Target className="text-indigo-600 mb-3" size={22} /><h3 className="font-semibold text-[#0f1523] mb-1">Actionable feedback</h3><p className="text-sm text-[#6b7a99]">See practical improvements instead of a score with no explanation.</p></div>
