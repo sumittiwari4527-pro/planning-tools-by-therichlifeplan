@@ -147,9 +147,9 @@ function buildPageCommands(analysis: ResumeAnalysis): string[][] {
       const severityFill = finding.severity === "high" ? COLORS.paleRed : finding.severity === "medium" ? COLORS.paleAmber : COLORS.paleGreen;
       const detailLines = wrapText(finding.detail, 90);
       ensureSpace(30 + detailLines.length * 12);
-      // Align the bar only with the title and detail lines; keep the trailing gap clear before the next finding/section.
+      // Keep the severity bar inset from the text block and leave clear space before the next item/section.
       const findingHeight = 14 + detailLines.length * 12;
-      addRect(48, y - 3 - findingHeight, 4, findingHeight, severityColor);
+      addRect(48, y - 7 - findingHeight, 4, findingHeight, severityColor);
       addRect(58, y - 1, 56, 15, severityFill);
       addText(finding.severity.toUpperCase(), 63, y + 4, 7, severityColor, true);
       addText(finding.title, 123, y + 3, 9, COLORS.ink, true);
