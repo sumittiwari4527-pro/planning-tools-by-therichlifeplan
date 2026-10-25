@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Menu, X, Flame, Target, TrendingUp, Hash, ChevronRight, ArrowRight, ShoppingBag, FileSearch } from "lucide-react";
+import { Menu, X, Flame, Target, TrendingUp, Hash, ChevronRight, ArrowRight, ShoppingBag, FileSearch, Youtube, Instagram } from "lucide-react";
 import { useLocation, useNavigate as useRouterNavigate } from "react-router";
 
 // ─── Constants & Types ───────────────────────────────────────────
@@ -536,7 +536,7 @@ export default function App() {
             {SITE_NAME}
           </div>
           <p className="text-[#c4cad9] text-sm mb-8">Free precision calculators for everyone.</p>
-          <div className="flex justify-center gap-6 flex-wrap mb-8 text-sm">
+          <div className="flex justify-center gap-6 flex-wrap mb-6 text-sm">
             {navLinks.map(([p, label]) => (
               <button
                 key={p}
@@ -546,6 +546,28 @@ export default function App() {
                 {label}
               </button>
             ))}
+          </div>
+          <div className="flex justify-center items-center gap-5 flex-wrap mb-8">
+            <a
+              href="https://www.youtube.com/@therichlifeplan"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Visit TheRichLifePlan on YouTube (opens in a new tab)"
+              className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-sm text-[#c4cad9] hover:text-white hover:border-white/25 hover:bg-white/5 transition-colors"
+            >
+              <Youtube size={17} aria-hidden="true" />
+              <span>YouTube</span>
+            </a>
+            <a
+              href="https://www.instagram.com/the.richlifeplan"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Visit TheRichLifePlan on Instagram (opens in a new tab)"
+              className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-sm text-[#c4cad9] hover:text-white hover:border-white/25 hover:bg-white/5 transition-colors"
+            >
+              <Instagram size={17} aria-hidden="true" />
+              <span>Instagram</span>
+            </a>
           </div>
           <div className="flex justify-center gap-6 flex-wrap mb-8 text-sm">
             <button onClick={() => navigate("privacy")} className="text-[#c4cad9] hover:text-white transition-colors cursor-pointer">Privacy Policy</button>
