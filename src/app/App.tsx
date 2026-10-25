@@ -398,6 +398,52 @@ export default function App() {
               </div>
             </section>
 
+            {/* SOCIAL COMMUNITY */}
+            <section className="mx-4 sm:mx-8 lg:mx-16 mb-24 overflow-hidden rounded-[2rem] bg-[#0f1523] relative">
+              <div className="absolute -top-24 -right-16 w-80 h-80 rounded-full bg-indigo-500/25 blur-3xl pointer-events-none" />
+              <div className="absolute -bottom-28 left-1/4 w-72 h-72 rounded-full bg-pink-500/15 blur-3xl pointer-events-none" />
+              <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-10 items-center px-6 py-10 sm:px-10 sm:py-14 lg:px-14">
+                <div className="max-w-xl">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 mb-5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                    <span className="text-xs font-mono uppercase tracking-widest text-indigo-200">Join the community</span>
+                  </div>
+                  <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight tracking-tight text-white mb-4" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                    Make life a little <span className="text-indigo-300">smarter.</span>
+                  </h2>
+                  <p className="text-slate-300 text-base sm:text-lg leading-relaxed max-w-lg">
+                    Follow TheRichLifePlan for practical tutorials, useful tools, and the honest journey of building digital products from scratch.
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <a href="https://www.youtube.com/@therichlifeplan" target="_blank" rel="noopener noreferrer" aria-label="Follow TheRichLifePlan on YouTube (opens in a new tab)"
+                    className="group rounded-2xl border border-white/10 bg-white/[0.06] p-5 sm:p-6 hover:bg-white/10 hover:border-red-400/40 transition-all duration-300">
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="w-12 h-12 rounded-2xl bg-red-500/15 text-red-300 flex items-center justify-center group-hover:scale-105 transition-transform">
+                        <Youtube size={25} aria-hidden="true" />
+                      </div>
+                      <ArrowRight size={18} className="text-slate-500 group-hover:text-white group-hover:translate-x-1 transition-all" aria-hidden="true" />
+                    </div>
+                    <div className="text-white text-lg font-semibold mb-1">Watch on YouTube</div>
+                    <p className="text-slate-400 text-sm leading-relaxed">Step-by-step tutorials, experiments, and real creator updates.</p>
+                    <div className="mt-5 text-sm font-semibold text-red-300">Explore the channel <span aria-hidden="true">↗</span></div>
+                  </a>
+                  <a href="https://www.instagram.com/the.richlifeplan" target="_blank" rel="noopener noreferrer" aria-label="Follow TheRichLifePlan on Instagram (opens in a new tab)"
+                    className="group rounded-2xl border border-white/10 bg-white/[0.06] p-5 sm:p-6 hover:bg-white/10 hover:border-pink-400/40 transition-all duration-300">
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="w-12 h-12 rounded-2xl bg-pink-500/15 text-pink-300 flex items-center justify-center group-hover:scale-105 transition-transform">
+                        <Instagram size={25} aria-hidden="true" />
+                      </div>
+                      <ArrowRight size={18} className="text-slate-500 group-hover:text-white group-hover:translate-x-1 transition-all" aria-hidden="true" />
+                    </div>
+                    <div className="text-white text-lg font-semibold mb-1">Follow on Instagram</div>
+                    <p className="text-slate-400 text-sm leading-relaxed">Quick ideas, bite-sized tips, and behind-the-scenes moments.</p>
+                    <div className="mt-5 text-sm font-semibold text-pink-300">See what’s new <span aria-hidden="true">↗</span></div>
+                  </a>
+                </div>
+              </div>
+            </section>
+
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
               <div className="flex items-end justify-between mb-10">
                 <div>
