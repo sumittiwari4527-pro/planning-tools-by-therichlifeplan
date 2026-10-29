@@ -364,7 +364,7 @@ export function ProductDetailPage({
             <p className="mt-5 text-base leading-7 text-[#6b7a99]">{detail.description}</p>
             <div className="mt-8 rounded-3xl border border-[#e4e8f0] bg-white p-6 shadow-sm">
               <div className="flex flex-wrap items-end justify-between gap-5">
-                <div><div className="text-xs font-mono uppercase tracking-widest text-[#6b7a99]">Digital product</div><div className="mt-1 text-3xl font-bold text-[#0f1523]">{product.isFree ? "FREE" : product.slug === "my-fun-learning-activity-book" ? "$12 USD" : `₹${product.price.toLocaleString("en-IN")}`}</div></div>
+                <div><div className="text-xs font-mono uppercase tracking-widest text-[#6b7a99]">Digital product</div><div className="mt-1 text-3xl font-bold text-[#0f1523]">{product.isFree ? "FREE" : product.slug === "my-fun-learning-activity-book" ? <span className="flex flex-col"><span className="text-sm font-medium text-slate-400 line-through">₹1,153</span><span>₹299 <span className="text-xs font-semibold text-emerald-600">74% OFF</span></span><span className="text-xs font-medium text-slate-500">Gumroad: $12 USD</span></span> : `₹${product.price.toLocaleString("en-IN")}`}</div></div>
                 {product.slug === "my-fun-learning-activity-book" && product.purchaseUrl ? (
                   <a href={product.purchaseUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-2xl bg-[#4f46e5] px-6 py-3.5 text-sm font-semibold text-white shadow-lg transition hover:bg-[#4338ca]">Buy on Gumroad <ArrowRight size={16} /></a>
                 ) : product.slug === "moneyflow-budget-planner" && onPrimaryAction ? (
