@@ -45,6 +45,18 @@ const productDetails: Record<string, {
     description: "A goal-based planning system that helps you understand affordability, monthly allocations, timelines and trade-offs before you commit your money.",
     highlights: ["Plan multiple financial goals", "Account for expenses and EMIs", "See goal feasibility and timelines", "Build a practical SIP strategy"],
   },
+  "my-fun-learning-activity-book": {
+    headline: "Make early learning playful, colourful and fun.",
+    description: "A 24-page printable activity book for preschoolers aged 3 and up. Little learners can explore colours, numbers, shapes, animals, tracing, mazes, matching, patterns, feelings and more — plus a completion certificate.",
+    highlights: [
+      "24 pages of preschool activities",
+      "Practise colours, numbers, shapes and first letters",
+      "Tracing, mazes, matching, patterns and spot-the-difference games",
+      "Black-and-white activity pages for colouring",
+      "Includes a colourful cover and completion certificate",
+      "Instant digital purchase through Gumroad",
+    ],
+  },
   "mermaid-coloring-book": {
     headline: "A fun printable mermaid adventure for little artists.",
     description: "A kid-friendly printable coloring experience designed for young children, with simple illustrations and plenty of space to color.",
@@ -352,9 +364,11 @@ export function ProductDetailPage({
             <p className="mt-5 text-base leading-7 text-[#6b7a99]">{detail.description}</p>
             <div className="mt-8 rounded-3xl border border-[#e4e8f0] bg-white p-6 shadow-sm">
               <div className="flex flex-wrap items-end justify-between gap-5">
-                <div><div className="text-xs font-mono uppercase tracking-widest text-[#6b7a99]">Digital product</div><div className="mt-1 text-3xl font-bold text-[#0f1523]">{product.isFree ? "FREE" : `₹${product.price.toLocaleString("en-IN")}`}</div></div>
-                {product.slug === "moneyflow-budget-planner" && onPrimaryAction ? (
-                  <button type="button" onClick={onPrimaryAction} className="inline-flex items-center gap-2 rounded-2xl bg-[#0f766e] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-teal-900/15 transition hover:bg-[#115e59]">Get MoneyFlow <ArrowRight size={16} /></button>
+                <div><div className="text-xs font-mono uppercase tracking-widest text-[#6b7a99]">Digital product</div><div className="mt-1 text-3xl font-bold text-[#0f1523]">{product.isFree ? "FREE" : product.slug === "my-fun-learning-activity-book" ? "$12 USD" : `₹${product.price.toLocaleString("en-IN")}`}</div></div>
+                {product.slug === "my-fun-learning-activity-book" && product.purchaseUrl ? (
+                  <a href={product.purchaseUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-2xl bg-[#4f46e5] px-6 py-3.5 text-sm font-semibold text-white shadow-lg transition hover:bg-[#4338ca]">Buy on Gumroad <ArrowRight size={16} /></a>
+                ) : product.slug === "moneyflow-budget-planner" && onPrimaryAction ? (
+                  <button type="button" onClick={onPrimaryAction} className="inline-flex items-center gap-2 rounded-2xl bg-[#0f766e] px-6 py-3.5 text-sm font-semibold text-white shadow-lg transition hover:bg-teal-800">Get MoneyFlow <ArrowRight size={16} /></button>
                 ) : (
                   <button type="button" disabled title="Checkout is not configured for this product yet." className="inline-flex cursor-not-allowed items-center gap-2 rounded-2xl bg-[#d9ddea] px-6 py-3.5 text-sm font-semibold text-[#7a849b]">Get this product <Sparkles size={15} /></button>
                 )}
