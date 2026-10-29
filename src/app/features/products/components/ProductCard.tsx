@@ -56,7 +56,7 @@ export function ProductCard({ product, onOpen }: { product: Product; onOpen: (pr
           <p className="min-h-[48px] text-sm leading-relaxed text-[#6b7a99]">{product.shortDescription}</p>
           <div className="mt-6 flex items-center justify-between gap-4">
             <span className="text-base font-semibold text-[#0f1523]">
-              {product.isFree ? "FREE" : `₹${product.price.toLocaleString("en-IN")}`}
+              {product.isFree ? "FREE" : product.slug === "my-fun-learning-activity-book" ? "$12 USD" : `₹${product.price.toLocaleString("en-IN")}`}
             </span>
             <span className="inline-flex items-center gap-2 rounded-full bg-[#4f46e5] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all group-hover:bg-[#4338ca] group-hover:shadow-md">
               Buy now <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
