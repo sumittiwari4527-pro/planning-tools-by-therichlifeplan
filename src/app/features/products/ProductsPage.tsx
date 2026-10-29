@@ -8,7 +8,7 @@ import { ProductGrid } from "./components/ProductGrid";
 
 export function ProductsPage({ onOpenProduct }: { onOpenProduct: (product: Product) => void }) {
   const [activeCategory, setActiveCategory] = useState<(typeof productCategories)[number]["id"]>("all");
-  const readyProductSlugs = new Set(["smart-parking-sticker", "moneyflow-budget-planner"]);
+  const readyProductSlugs = new Set(["smart-parking-sticker", "moneyflow-budget-planner", "my-fun-learning-activity-book"]);
   const featured = products.filter((product) => readyProductSlugs.has(product.slug));
 
   const visibleProducts = useMemo(
