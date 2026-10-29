@@ -2,6 +2,23 @@ import type { Product } from "../../features/products/types";
 
 export const products: Product[] = [
   {
+    id: "my-fun-learning-activity-book",
+    slug: "my-fun-learning-activity-book",
+    name: "My Fun Learning Activity Book",
+    shortDescription: "A colourful 24-page activity book for ages 3+ with tracing, counting, shapes, animals, mazes and more.",
+    category: "Family & Kids",
+    type: "printable",
+    price: 12,
+    currency: "INR",
+    coverLabel: "MY FUN\nLEARNING\nACTIVITY BOOK",
+    coverAccent: "#f59e0b",
+    featured: true,
+    badge: "NEW",
+    isFree: false,
+    href: "/products/my-fun-learning-activity-book",
+    purchaseUrl: "https://richlife348.gumroad.com/l/ffnuo?wanted=true",
+  },
+  {
     id: "ai-life-upgrade",
     slug: "ai-life-upgrade",
     name: "AI Life Upgrade",
