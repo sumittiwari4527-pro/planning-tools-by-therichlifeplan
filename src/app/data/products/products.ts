@@ -8,7 +8,7 @@ export const products: Product[] = [
     shortDescription: "A colourful 24-page activity book for ages 3+ with tracing, counting, shapes, animals, mazes and more.",
     category: "Family & Kids",
     type: "printable",
-    price: 12,
+    price: 299,
     currency: "INR",
     coverLabel: "MY FUN\nLEARNING\nACTIVITY BOOK",
     coverAccent: "#f59e0b",
