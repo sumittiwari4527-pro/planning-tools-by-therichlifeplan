@@ -86,7 +86,7 @@ export function ProductDetailPage({
   useEffect(() => {
     if (!isParking) return;
     trackMetaEvent("ViewContent", {
-      value: 199,
+      value: 99,
       currency: "INR",
       content_name: "Smart Car Parking Sticker",
       content_type: "product",
@@ -155,8 +155,8 @@ export function ProductDetailPage({
                     Create My Sticker <ArrowRight size={19} />
                   </button>
                   <div className="shrink-0 border-l border-white/45 pl-3 sm:pl-6">
-                    <div className="text-2xl font-bold text-white sm:text-3xl">₹199</div>
-                    <div className="mt-1 text-xs text-slate-300 sm:text-sm">one-time</div>
+                    <div className="flex items-baseline gap-2"><span className="text-2xl font-bold text-white sm:text-3xl">₹99</span><span className="text-sm text-slate-300 line-through">₹199</span></div>
+                    <div className="mt-1 text-xs text-slate-300 sm:text-sm">one-time · 50% off</div>
                   </div>
                 </div>
 
@@ -289,7 +289,7 @@ export function ProductDetailPage({
                 <div className="text-xs font-mono uppercase tracking-widest text-[#4f46e5]">Simple purchase</div>
                 <h2 className="mt-2 text-2xl font-bold text-[#0f1523]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Personalize. Preview. Buy.</h2>
                 <p className="mt-4 text-sm leading-7 text-[#6b7a99]">Create your sticker first. You will see the personalized preview before the payment step.</p>
-                <button type="button" onClick={onPrimaryAction} className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-[#00c878] px-5 py-3 text-sm font-bold text-[#03121d] hover:bg-[#18d688] cursor-pointer">Create My Sticker · ₹199 <ArrowRight size={16} /></button>
+                <button type="button" onClick={onPrimaryAction} className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-[#00c878] px-5 py-3 text-sm font-bold text-[#03121d] hover:bg-[#18d688] cursor-pointer">Create My Sticker · ₹99 <ArrowRight size={16} /></button>
               </div>
             </div>
           </section>
@@ -352,7 +352,7 @@ export function ProductDetailPage({
             <p className="mt-5 text-base leading-7 text-[#6b7a99]">{detail.description}</p>
             <div className="mt-8 rounded-3xl border border-[#e4e8f0] bg-white p-6 shadow-sm">
               <div className="flex flex-wrap items-end justify-between gap-5">
-                <div><div className="text-xs font-mono uppercase tracking-widest text-[#6b7a99]">Digital product</div><div className="mt-1 text-3xl font-bold text-[#0f1523]">{product.isFree ? "FREE" : `₹${product.price.toLocaleString("en-IN")}`}</div></div>
+                <div><div className="text-xs font-mono uppercase tracking-widest text-[#6b7a99]">Digital product</div><div className="mt-1 flex items-baseline gap-2 text-3xl font-bold text-[#0f1523]">{product.isFree ? "FREE" : `₹${product.price.toLocaleString("en-IN")}`}{product.originalPrice && <span className="text-base font-medium text-[#8b95aa] line-through">₹{product.originalPrice.toLocaleString("en-IN")}</span>}</div></div>
                 {product.slug === "moneyflow-budget-planner" && onPrimaryAction ? (
                   <button type="button" onClick={onPrimaryAction} className="inline-flex items-center gap-2 rounded-2xl bg-[#0f766e] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-teal-900/15 transition hover:bg-[#115e59]">Get MoneyFlow <ArrowRight size={16} /></button>
                 ) : (

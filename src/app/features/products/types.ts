@@ -9,6 +9,7 @@ export interface Product {
   category: ProductCategory;
   type: ProductType;
   price: number;
+  originalPrice?: number;
   currency: "INR";
   coverLabel: string;
   coverAccent: string;
