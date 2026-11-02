@@ -152,7 +152,7 @@ const sendRazorpayPaymentNotification = async (result: Record<string, unknown>) 
     customerName: String(result.name || ""),
     customerEmail: String(result.email || ""),
     currency: "INR",
-    total: String(result.deliveryType || "digital") === "physical" ? "₹399" : "₹199",
+    total: String(result.deliveryType || "digital") === "physical" ? "₹399" : "₹99",
     formName: String(result.name || ""),
     formPhone: String(result.phone || ""),
     formEmail: String(result.email || ""),
@@ -656,7 +656,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
   };
   const startCheckout = async (method: "razorpay" | "lemonsqueezy") => {
     const physicalOrder = form.delivery === "physical";
-    const price = physicalOrder ? 399 : 199;
+    const price = physicalOrder ? 399 : 99;
     trackMetaEvent("InitiateCheckout", { value: price, currency: "INR", content_name: "Smart Car Parking Sticker", content_type: "product" });
     if (!previewPayload) return;
     if (method === "lemonsqueezy") {
@@ -1052,7 +1052,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                       className={"rounded-2xl border p-4 text-left transition " + (form.delivery === delivery ? "border-[#00b968] bg-[#eefaf3] ring-4 ring-emerald-50" : "border-[#dbe2ec] bg-white")}
                     >
                       <div className="text-sm font-bold text-[#0f1523]">{delivery === "digital" ? "Downloadable" : "Physical sticker"}</div>
-                      <div className="mt-1 text-xs text-[#6b7a99]">{delivery === "digital" ? "₹199 · SVG download" : "₹399 · Printed and delivered in India"}</div>
+                      <div className="mt-1 text-xs text-[#6b7a99]">{delivery === "digital" ? "₹99 · SVG download (MRP ₹199)" : "₹399 · Printed and delivered in India"}</div>
                     </button>
                   ))}
                 </div>
@@ -1162,7 +1162,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                       <div className="flex items-start justify-between gap-4">
                         <div>
                           <div className="text-lg font-bold text-[#0f1523]">Choose your payment method</div>
-                          <p className="mt-1 text-xs leading-5 text-[#6b7a99]">{form.delivery === "physical" ? "Pay ₹399 for a printed sticker delivered to your Indian address." : "Pay securely for your digital Smart Car Parking Sticker for ₹199."}</p>
+                          <p className="mt-1 text-xs leading-5 text-[#6b7a99]">{form.delivery === "physical" ? "Pay ₹399 for a printed sticker delivered to your Indian address." : "Pay securely for your digital Smart Car Parking Sticker for ₹99 (MRP ₹199)."}</p>
                         </div>
                         <button
                           type="button"
@@ -1215,7 +1215,7 @@ export function ParkingStickerBuilder({ onBack, activationMode = false }: { onBa
                       </div>
 
                       <p className="mt-4 text-center text-[11px] leading-5 text-[#8b95aa]">
-                        {form.delivery === "physical" ? "Physical orders are available in India only. Printing and courier dispatch are handled manually." : "Digital sticker orders remain ₹199 and can be paid using either available checkout."}
+                        {form.delivery === "physical" ? "Physical orders are available in India only. Printing and courier dispatch are handled manually." : "Digital sticker offer: ₹99 (MRP ₹199). Pay using either available checkout."}
                       </p>
                     </div>
                   </div>
