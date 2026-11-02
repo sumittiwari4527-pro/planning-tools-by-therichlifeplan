@@ -56,7 +56,7 @@ export default async function handler(req: any, res: any) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        amount: cleanDeliveryType === "physical" ? 39900 : 19900,
+        amount: cleanDeliveryType === "physical" ? 39900 : 9900,
         currency: "INR",
         receipt,
         partial_payment: false,
