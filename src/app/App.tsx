@@ -209,6 +209,7 @@ export default function App() {
           title: routeProduct.name,
           description: routeProduct.shortDescription,
           url: productPath(routeProduct.slug),
+          image: routeProduct.slug === "digital-product-playbook" ? "https://richlifetools.com/images/digital-product-playbook-cover.webp" : undefined,
         }
       : {
           title: "Product Not Found",
