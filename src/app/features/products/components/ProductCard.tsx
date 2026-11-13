@@ -13,6 +13,10 @@ const typeLabels: Record<Product["type"], string> = {
 };
 
 export function ProductCard({ product, onOpen }: { product: Product; onOpen: (product: Product) => void }) {
+  const visitorCurrency = detectVisitorCurrency();
+  const localizedPlaybookPrice = product.slug === "digital-product-playbook" && visitorCurrency === "USD"
+    ? "$9.99"
+    : `₹${product.price.toLocaleString("en-IN")}`;
   return (
     <article className="group overflow-hidden rounded-3xl border border-[#e4e8f0] bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-50">
       <button onClick={() => onOpen(product)} className="block w-full text-left cursor-pointer" aria-label={`View ${product.name}`}>
