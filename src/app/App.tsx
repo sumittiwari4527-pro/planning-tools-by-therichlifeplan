@@ -27,6 +27,7 @@ import { PrivacyPolicyPage } from "./features/legal/PrivacyPolicyPage";
 import { TermsOfServicePage } from "./features/legal/TermsOfServicePage";
 import { RefundPolicyPage } from "./features/legal/RefundPolicyPage";
 import { ATSResumeChecker } from "./features/ats-resume-checker/ATSResumeChecker";
+import { DigitalProductPlaybookPage } from "./features/products/DigitalProductPlaybookPage";
 
 // ─── Data ───────────────────────────────────────────────────────
 import { articles } from "./data/articles";
@@ -208,6 +209,7 @@ export default function App() {
           title: routeProduct.name,
           description: routeProduct.shortDescription,
           url: productPath(routeProduct.slug),
+          image: routeProduct.slug === "digital-product-playbook" ? "https://richlifetools.com/images/digital-product-playbook-cover.webp" : undefined,
         }
       : {
           title: "Product Not Found",
@@ -367,7 +369,7 @@ export default function App() {
               </div>
 
               {(() => {
-                const readySlugs = new Set(["smart-parking-sticker", "moneyflow-budget-planner"]);
+                const readySlugs = new Set(["digital-product-playbook", "smart-parking-sticker", "moneyflow-budget-planner"]);
                 const readyProducts = products.filter((product) => readySlugs.has(product.slug));
 
                 return (
@@ -389,7 +391,7 @@ export default function App() {
 
             <section className="bg-[#4f46e5] mx-4 sm:mx-8 lg:mx-16 rounded-3xl mb-24 px-8 py-10">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                {[{ num: String(tools.length), label: "Precision tools" }, { num: String(articles.length), label: "In-depth articles" }, { num: "100%", label: "Free to use" }, { num: String(products.filter((product) => ["smart-parking-sticker", "moneyflow-budget-planner"].includes(product.slug)).length), label: "Digital products" }].map(s => (
+                {[{ num: String(tools.length), label: "Precision tools" }, { num: String(articles.length), label: "In-depth articles" }, { num: "100%", label: "Free to use" }, { num: String(products.filter((product) => ["digital-product-playbook", "smart-parking-sticker", "moneyflow-budget-planner"].includes(product.slug)).length), label: "Digital products" }].map(s => (
                   <div key={s.label}>
                     <div className="text-4xl font-bold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{s.num}</div>
                     <div className="text-indigo-300 text-sm mt-1">{s.label}</div>
@@ -543,7 +545,9 @@ export default function App() {
         {page === "product" && parkingBuilderMode && <ParkingStickerBuilder key="parking-create" onBack={() => routerNavigate(productPath("smart-parking-sticker"))} />}
         {page === "product" && routeProduct?.slug === "moneyflow-budget-planner" && moneyFlowCheckoutMode && <MoneyFlowCheckout onBack={() => routerNavigate(productPath("moneyflow-budget-planner"))} />}
 
-        {page === "product" && routeProduct && !parkingBuilderMode && !moneyFlowCheckoutMode && (
+        {page === "product" && routeProduct?.slug === "digital-product-playbook" && <DigitalProductPlaybookPage />}
+
+        {page === "product" && routeProduct && routeProduct.slug !== "digital-product-playbook" && !parkingBuilderMode && !moneyFlowCheckoutMode && (
           <ProductDetailPage product={routeProduct} onBack={() => routerNavigate(PRODUCTS_ROUTE)} onPrimaryAction={routeProduct.slug === "smart-parking-sticker" ? () => routerNavigate(`${productPath(routeProduct.slug)}?mode=builder`) : routeProduct.slug === "moneyflow-budget-planner" ? () => routerNavigate(`${productPath(routeProduct.slug)}?checkout=1`) : undefined} onAlreadyPurchased={routeProduct.slug === "smart-parking-sticker" ? () => routerNavigate(PARKING_ACTIVATION_ROUTE) : undefined} />
         )}
 
