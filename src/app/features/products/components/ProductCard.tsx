@@ -16,7 +16,9 @@ export function ProductCard({ product, onOpen }: { product: Product; onOpen: (pr
     <article className="group overflow-hidden rounded-3xl border border-[#e4e8f0] bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-50">
       <button onClick={() => onOpen(product)} className="block w-full text-left cursor-pointer" aria-label={`View ${product.name}`}>
         <div className={product.slug === "moneyflow-budget-planner" ? "relative overflow-hidden bg-[#073b36] p-0" : "relative aspect-[4/3] overflow-hidden bg-[#f3f5f9] p-5"}>
-          {product.slug === "smart-parking-sticker" ? (
+          {product.slug === "digital-product-playbook" ? (
+            <img src="/images/digital-product-playbook-cover.webp" alt="35+ Digital Product Ideas playbook cover" loading="lazy" className="block h-full w-full object-contain p-3 transition-transform duration-500 group-hover:scale-[1.02]" />
+          ) : product.slug === "smart-parking-sticker" ? (
             <div className="relative h-full w-full overflow-hidden rounded-2xl bg-[#03151c] shadow-lg transition-transform duration-500 group-hover:scale-[1.02]">
               <img
                 src={option2CarUrl}
