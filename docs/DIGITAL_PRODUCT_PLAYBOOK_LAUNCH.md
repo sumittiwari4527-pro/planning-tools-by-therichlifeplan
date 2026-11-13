@@ -5,6 +5,7 @@
 - Catalog entry: Digital Products
 - India price: INR 499 (Razorpay order amount 49,900 paise)
 - International price: USD 9.99 (Razorpay order amount 999 cents)
+- Currency is selected automatically from the browser's preferred locale region; Asia/Kolkata is the fallback when the locale has no region. Visitors with an India locale see INR; other locales see USD. This is a convenience signal, not verified billing-country detection.
 - Checkout endpoints are separate from the existing Smart Parking Sticker and MoneyFlow flows.
 
 ## Upload the product assets after merging this branch
