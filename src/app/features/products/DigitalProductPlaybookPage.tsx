@@ -1,5 +1,6 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { ArrowRight, BookOpen, CheckCircle2, ChevronDown, Download, Globe2, Loader2, LockKeyhole, ShieldCheck, Sparkles } from "lucide-react";
+import { trackMetaEvent } from "../../utils/metaPixel";
 
 declare global {
   interface Window {
@@ -45,6 +46,15 @@ export function DigitalProductPlaybookPage() {
   const [error, setError] = useState("");
   const [receipt, setReceipt] = useState<{ orderId: string; token: string } | null>(null);
 
+  useEffect(() => {
+    trackMetaEvent("ViewContent", {
+      value: currency === "INR" ? 499 : 9.99,
+      currency,
+      content_name: "35+ Digital Product Ideas — From Idea to Income",
+      content_type: "product",
+    });
+  }, [currency]);
+
   const price = currency === "INR" ? "₹499" : "$9.99";
 
   const startCheckout = async (event: FormEvent<HTMLFormElement>) => {
@@ -61,6 +71,7 @@ export function DigitalProductPlaybookPage() {
       const order = await orderResponse.json();
       if (!orderResponse.ok || !order.orderId || !order.keyId) throw new Error(order.error || "Could not start checkout.");
 
+      trackMetaEvent("InitiateCheckout", { value: currency === "INR" ? 499 : 9.99, currency, content_name: "35+ Digital Product Ideas — From Idea to Income", content_type: "product" });
       const checkout = new window.Razorpay!({
         key: order.keyId,
         amount: order.amount,
@@ -83,6 +94,7 @@ export function DigitalProductPlaybookPage() {
             if (!verifiedResponse.ok || !verified.paid || !verified.downloadToken) {
               throw new Error(verified.error || "Payment verification failed.");
             }
+            trackMetaEvent("Purchase", { value: currency === "INR" ? 499 : 9.99, currency, content_name: "35+ Digital Product Ideas — From Idea to Income", content_type: "product" }, verified.orderId);
             setReceipt({ orderId: verified.orderId, token: verified.downloadToken });
           } catch (verificationError) {
             setError(verificationError instanceof Error ? verificationError.message : "Payment was received but verification needs attention. Contact support with your payment ID.");
