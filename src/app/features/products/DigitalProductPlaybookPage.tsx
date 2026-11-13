@@ -41,23 +41,25 @@ const previews = [
 const detectVisitorCurrency = (): Currency => {
   if (typeof navigator === "undefined") return "USD";
 
-  // Prefer an explicit country/region in the browser's preferred locales.
+  // An explicit Indian locale is the strongest signal.
   const locales = [...(navigator.languages || []), navigator.language].filter(Boolean);
   for (const locale of locales) {
     try {
-      const region = new Intl.Locale(locale).region?.toUpperCase();
-      if (region) return region === "IN" ? "INR" : "USD";
+      if (new Intl.Locale(locale).region?.toUpperCase() === "IN") return "INR";
     } catch {
       // Ignore malformed locale values and try the next available signal.
     }
   }
 
-  // Fall back to the browser's time zone when its locale has no region.
+  // Browser language is often left as en-US even for visitors in India.
+  // Prefer the device's local time zone before treating another locale region as USD.
   try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone === "Asia/Kolkata" ? "INR" : "USD";
+    if (["Asia/Kolkata", "Asia/Calcutta"].includes(Intl.DateTimeFormat().resolvedOptions().timeZone)) return "INR";
   } catch {
-    return "USD";
+    // Continue to the locale fallback.
   }
+
+  return "USD";
 };
 
 export function DigitalProductPlaybookPage() {

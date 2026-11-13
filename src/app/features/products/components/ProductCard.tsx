@@ -3,6 +3,7 @@ import type { Product } from "../types";
 import { ProductBadge } from "./ProductBadge";
 import option2CarUrl from "../assets/option2-car-hero.webp?url";
 import moneyFlowPreviewUrl from "../assets/moneyflow-dashboard-preview.svg?url";
+import { detectVisitorCurrency } from "../../../utils/visitorCurrency";
 
 const typeLabels: Record<Product["type"], string> = {
   ebook: "Ebook",
@@ -12,6 +13,10 @@ const typeLabels: Record<Product["type"], string> = {
 };
 
 export function ProductCard({ product, onOpen }: { product: Product; onOpen: (product: Product) => void }) {
+  const visitorCurrency = detectVisitorCurrency();
+  const localizedPlaybookPrice = product.slug === "digital-product-playbook" && visitorCurrency === "USD"
+    ? "$9.99"
+    : `₹${product.price.toLocaleString("en-IN")}`;
   return (
     <article className="group overflow-hidden rounded-3xl border border-[#e4e8f0] bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-50">
       <button onClick={() => onOpen(product)} className="block w-full text-left cursor-pointer" aria-label={`View ${product.name}`}>
@@ -58,7 +63,7 @@ export function ProductCard({ product, onOpen }: { product: Product; onOpen: (pr
           <p className="min-h-[48px] text-sm leading-relaxed text-[#6b7a99]">{product.shortDescription}</p>
           <div className="mt-6 flex items-center justify-between gap-4">
             <span className="inline-flex items-baseline gap-2 text-base font-semibold text-[#0f1523]">
-              {product.isFree ? "FREE" : `₹${product.price.toLocaleString("en-IN")}`}
+              {product.isFree ? "FREE" : localizedPlaybookPrice}
               {product.originalPrice && <span className="text-xs font-medium text-[#8b95aa] line-through">₹{product.originalPrice.toLocaleString("en-IN")}</span>}
             </span>
             <span className="inline-flex items-center gap-2 rounded-full bg-[#4f46e5] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all group-hover:bg-[#4338ca] group-hover:shadow-md">
