@@ -38,8 +38,30 @@ const previews = [
   { src: "/images/playbook-preview-launch.webp", title: "Follow a 30-day launch plan", caption: "Turn the idea into a measured launch experiment." },
 ];
 
+const detectVisitorCurrency = (): Currency => {
+  if (typeof navigator === "undefined") return "USD";
+
+  // Prefer an explicit country/region in the browser's preferred locales.
+  const locales = [...(navigator.languages || []), navigator.language].filter(Boolean);
+  for (const locale of locales) {
+    try {
+      const region = new Intl.Locale(locale).region?.toUpperCase();
+      if (region) return region === "IN" ? "INR" : "USD";
+    } catch {
+      // Ignore malformed locale values and try the next available signal.
+    }
+  }
+
+  // Fall back to the browser's time zone when its locale has no region.
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone === "Asia/Kolkata" ? "INR" : "USD";
+  } catch {
+    return "USD";
+  }
+};
+
 export function DigitalProductPlaybookPage() {
-  const [currency, setCurrency] = useState<Currency>(() => navigator.language.toLowerCase().includes("-in") ? "INR" : "USD");
+  const [currency] = useState<Currency>(detectVisitorCurrency);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
@@ -295,9 +317,9 @@ export function DigitalProductPlaybookPage() {
                     <div><div className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">Choose your region</div><h3 className="mt-1 text-xl font-bold">Your playbook</h3></div>
                     <Globe2 className="text-emerald-700" size={24} />
                   </div>
-                  <div className="mt-5 grid grid-cols-2 gap-2 rounded-xl bg-slate-100 p-1">
-                    <button type="button" onClick={() => setCurrency("INR")} className={"rounded-lg px-3 py-2.5 text-sm font-bold transition " + (currency === "INR" ? "bg-white text-emerald-800 shadow-sm" : "text-slate-500")}>India · INR</button>
-                    <button type="button" onClick={() => setCurrency("USD")} className={"rounded-lg px-3 py-2.5 text-sm font-bold transition " + (currency === "USD" ? "bg-white text-emerald-800 shadow-sm" : "text-slate-500")}>International · USD</button>
+                  <div className="mt-5 flex items-center gap-2 text-xs text-slate-500">
+                    <Globe2 size={14} className="text-emerald-700" />
+                    Price shown for your region · {currency === "INR" ? "India (INR)" : "International (USD)"}
                   </div>
                   <div className="mt-5 rounded-2xl bg-[#edf5f0] p-5">
                     <div className="text-sm font-medium text-slate-600">One-time price</div>
