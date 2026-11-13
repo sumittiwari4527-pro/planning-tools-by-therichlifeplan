@@ -27,6 +27,7 @@ import { PrivacyPolicyPage } from "./features/legal/PrivacyPolicyPage";
 import { TermsOfServicePage } from "./features/legal/TermsOfServicePage";
 import { RefundPolicyPage } from "./features/legal/RefundPolicyPage";
 import { ATSResumeChecker } from "./features/ats-resume-checker/ATSResumeChecker";
+import { DigitalProductPlaybookPage } from "./features/products/DigitalProductPlaybookPage";
 
 // ─── Data ───────────────────────────────────────────────────────
 import { articles } from "./data/articles";
@@ -543,7 +544,9 @@ export default function App() {
         {page === "product" && parkingBuilderMode && <ParkingStickerBuilder key="parking-create" onBack={() => routerNavigate(productPath("smart-parking-sticker"))} />}
         {page === "product" && routeProduct?.slug === "moneyflow-budget-planner" && moneyFlowCheckoutMode && <MoneyFlowCheckout onBack={() => routerNavigate(productPath("moneyflow-budget-planner"))} />}
 
-        {page === "product" && routeProduct && !parkingBuilderMode && !moneyFlowCheckoutMode && (
+        {page === "product" && routeProduct?.slug === "digital-product-playbook" && <DigitalProductPlaybookPage />}
+
+        {page === "product" && routeProduct && routeProduct.slug !== "digital-product-playbook" && !parkingBuilderMode && !moneyFlowCheckoutMode && (
           <ProductDetailPage product={routeProduct} onBack={() => routerNavigate(PRODUCTS_ROUTE)} onPrimaryAction={routeProduct.slug === "smart-parking-sticker" ? () => routerNavigate(`${productPath(routeProduct.slug)}?mode=builder`) : routeProduct.slug === "moneyflow-budget-planner" ? () => routerNavigate(`${productPath(routeProduct.slug)}?checkout=1`) : undefined} onAlreadyPurchased={routeProduct.slug === "smart-parking-sticker" ? () => routerNavigate(PARKING_ACTIVATION_ROUTE) : undefined} />
         )}
 
