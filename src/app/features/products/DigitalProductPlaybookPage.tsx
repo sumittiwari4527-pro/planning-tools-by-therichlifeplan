@@ -54,7 +54,7 @@ const detectVisitorCurrency = (): Currency => {
   // Browser language is often left as en-US even for visitors in India.
   // Prefer the device's local time zone before treating another locale region as USD.
   try {
-    if (Intl.DateTimeFormat().resolvedOptions().timeZone === "Asia/Kolkata") return "INR";
+    if (["Asia/Kolkata", "Asia/Calcutta"].includes(Intl.DateTimeFormat().resolvedOptions().timeZone)) return "INR";
   } catch {
     // Continue to the locale fallback.
   }
